@@ -67,13 +67,13 @@ namespace CaeModel
             _hashName = Tools.GetRandomString(8);
             _geometry = new FeMesh(MeshRepresentation.Geometry);
             _mesh = new FeMesh(MeshRepresentation.Mesh);
-            _materials = new OrderedDictionary<string, Material>();
-            _sections = new OrderedDictionary<string, Section>();
-            _constraints = new OrderedDictionary<string, Constraint>();
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>();
-            _contactPairs = new OrderedDictionary<string, ContactPair>();
-            _initialConditions = new OrderedDictionary<string, InitialCondition>();
-            _amplitudes = new OrderedDictionary<string, Amplitude>();
+            _materials = new OrderedDictionary<string, Material>("Materials");
+            _sections = new OrderedDictionary<string, Section>("Sections");
+            _constraints = new OrderedDictionary<string, Constraint>("Constraints");
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions");
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions");
+            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
             _stepCollection = new StepCollection();
             _properties = new ModelProperties();
             _unitSystem = new UnitSystem();
@@ -83,16 +83,16 @@ namespace CaeModel
         public FeModel(SerializationInfo info, StreamingContext context)
         {
             // Compatibility for version v.0.6.0
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>();
-            _contactPairs = new OrderedDictionary<string, ContactPair>();
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions");
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
             // Compatibility for version v.0.7.0
             _unitSystem = new UnitSystem();
             // Compatibility for version v.0.8.0
             _hashName = Tools.GetRandomString(8);
             // Compatibility for version v.1.0.0
-            _initialConditions = new OrderedDictionary<string, InitialCondition>();
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions");
             // Compatibility for version v.1.2.1
-            _amplitudes = new OrderedDictionary<string, Amplitude>();
+            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
             //
             foreach (SerializationEntry entry in info)
             {
@@ -110,7 +110,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             md.OnDeserialization(null);
-                            _materials = new OrderedDictionary<string, Material>(md);
+                            _materials = new OrderedDictionary<string, Material>("", md);
                         }
                         else if (entry.Value is OrderedDictionary<string, Material> mod) _materials = mod;
                         else if (entry.Value == null) _materials = null;
@@ -121,7 +121,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             sd.OnDeserialization(null);
-                            _sections = new OrderedDictionary<string, Section>(sd);
+                            _sections = new OrderedDictionary<string, Section>("", sd);
                         }
                         else if (entry.Value is OrderedDictionary<string, Section> sod) _sections = sod;
                         else if (entry.Value == null) _sections = null;
@@ -132,7 +132,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             cd.OnDeserialization(null);
-                            _constraints = new OrderedDictionary<string, Constraint>(cd);
+                            _constraints = new OrderedDictionary<string, Constraint>("", cd);
                         }
                         else if (entry.Value is OrderedDictionary<string, Constraint> cod) _constraints = cod;
                         else if (entry.Value == null) _constraints = null;
@@ -153,7 +153,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             cukd.OnDeserialization(null);
-                            _calculixUserKeywords = new OrderedDictionary<int[], Calculix.CalculixUserKeyword>(cukd);
+                            _calculixUserKeywords = new OrderedDictionary<int[], Calculix.CalculixUserKeyword>("", cukd);
                         }
                         else if (entry.Value is OrderedDictionary<int[], Calculix.CalculixUserKeyword> cukod)
                             _calculixUserKeywords = cukod;
@@ -463,6 +463,10 @@ namespace CaeModel
             else if (load is HydrostaticPressure hpl)
             {
                 valid = (_mesh.Surfaces.TryGetValue(hpl.SurfaceName, out s) && s.Valid);
+            }
+            else if (load is ImportedPressure ip)
+            {
+                valid = (_mesh.Surfaces.TryGetValue(ip.SurfaceName, out s) && s.Valid);
             }
             else if (load is STLoad stl)
             {
@@ -1084,6 +1088,8 @@ namespace CaeModel
             double area;
             GetDistributedNodalValuesFromSurface(spring.RegionName, out nodalStiffnesses, out area);
             //
+            if (spring.StiffnessPerArea) area = 1;      // account for the stiffness type
+            //
             List<PointSpring> springs = new List<PointSpring>();
             foreach (var entry in nodalStiffnesses)
             {
@@ -1182,7 +1188,7 @@ namespace CaeModel
                 }
             }
         }
-        public CLoad[] GetNodalLoadsFromHydrostaticPressure(HydrostaticPressure load)
+        public CLoad[] GetNodalLoadsFromVariablePressureLoad(VariablePressure load)
         {
             Dictionary<int, int> elementIdSectionId;
             Dictionary<int, double> sectionIdThickness = new Dictionary<int, double>();
@@ -1217,6 +1223,7 @@ namespace CaeModel
             FeElement element;
             Dictionary<int, double> nodeIdPressure = new Dictionary<int, double>();
             Dictionary<int, double[]> nodeIdForce = new Dictionary<int, double[]>();
+            //
             foreach (var entry in surface.ElementFaces)
             {
                 foreach (var elementId in _mesh.ElementSets[entry.Value].Labels)
@@ -1225,9 +1232,9 @@ namespace CaeModel
                     //
                     _mesh.GetElementFaceCenterAndNormal(elementId, entry.Key, out double[] faceCenter, out faceNormal,
                                                         out bool shellElement);
-                   A = element.GetArea(entry.Key, _mesh.Nodes);
-                    // Accounf for 2D area
-                    if (element is FeElement2D element2D)
+                    A = element.GetArea(entry.Key, _mesh.Nodes);
+                    // Account for 2D area when an edge is selected
+                    if (element is FeElement2D element2D && entry.Key != FeFaceName.S1 && entry.Key != FeFaceName.S2)
                     {
                         sectionId = elementIdSectionId[elementId];
                         if (sectionId == -1) throw new CaeException("Missing section assignment at element " + elementId +

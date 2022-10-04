@@ -163,15 +163,16 @@
             this.btnAddCategory.UseVisualStyleBackColor = true;
             this.btnAddCategory.Click += new System.EventHandler(this.btnAddCategory_Click);
             // 
-            // btvLibrary
+            // cltvLibrary
             // 
             this.cltvLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.cltvLibrary.ChangeHighlightOnFocusLost = true;
             this.cltvLibrary.DisableMouse = false;
             this.cltvLibrary.HighlightForeErrorColor = System.Drawing.Color.Red;
             this.cltvLibrary.Location = new System.Drawing.Point(6, 51);
-            this.cltvLibrary.Name = "btvLibrary";
+            this.cltvLibrary.Name = "cltvLibrary";
             treeNode1.Name = "Materials";
             treeNode1.Text = "Materials";
             this.cltvLibrary.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
@@ -183,6 +184,7 @@
             this.cltvLibrary.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cltvLibrary_AfterSelect);
             this.cltvLibrary.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDoubleClick);
             this.cltvLibrary.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDown);
+            this.cltvLibrary.MouseUp += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseUp);
             // 
             // btnOK
             // 

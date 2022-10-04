@@ -231,7 +231,7 @@ namespace vtkControl
                 //
                 if (PointPickedOnLeftUpEvt != null)
                 {
-                    if (_clickPos == null) PointPickedOnLeftUpEvt(mousePos[0], mousePos[1], _rubberBandSelection, 0, 0);
+                    if (_clickPos == null) { } // PointPickedOnLeftUpEvt(mousePos[0], mousePos[1], _rubberBandSelection, -1, -1);
                     else PointPickedOnLeftUpEvt(mousePos[0], mousePos[1], _rubberBandSelection, _clickPos[0], _clickPos[1]);
                 }
             }

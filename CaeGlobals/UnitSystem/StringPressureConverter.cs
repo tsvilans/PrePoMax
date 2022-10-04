@@ -15,7 +15,7 @@ namespace CaeGlobals
     {
         // Variables                                                                                                                
         protected static PressureUnit _pressureUnit = PressureUnit.Pascal;
-        
+
 
         // Properties                                                                                                               
         public static string SetUnit
@@ -32,7 +32,7 @@ namespace CaeGlobals
         public StringPressureConverter()
         {
         }
-
+        
 
         // Methods                                                                                                                  
         public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
@@ -46,12 +46,26 @@ namespace CaeGlobals
             if (value is string valueString)
             {
                 double valueDouble;
+                // Replace commas with dots
+                valueString = valueString.Replace(',', '.');
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Pressure pressure = Pressure.Parse(valueString);
-                    if ((int)_pressureUnit != MyUnit.NoUnit) pressure = pressure.ToUnit(_pressureUnit);
-                    valueDouble = pressure.Value;
+                    NCalc.Expression e = new NCalc.Expression(valueString);
+                    if (e.HasErrors())
+                    {
+                        // Remove current abbreviations
+                        string abb = Pressure.GetAbbreviation(_pressureUnit);
+                        if (valueString.Contains(abb)) valueString = valueString.Replace(abb, "");
+                        e = new NCalc.Expression(valueString);
+                    }
+                    if (!e.HasErrors())
+                    {
+                        var result = e.Evaluate();
+                        if (result is int) valueDouble = (int)result;
+                        else if (result is double) valueDouble = (double)result;
+                    }
+                    else valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -79,6 +93,38 @@ namespace CaeGlobals
                 return base.ConvertTo(context, culture, value, destinationType);
             }
         }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Pressure pressure = Pressure.Parse(valueWithUnitString);
+                if ((int)_pressureUnit != MyUnit.NoUnit) pressure = pressure.ToUnit(_pressureUnit);
+                return pressure.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported pressure abbreviations: ";
+            var allUnits = Pressure.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Pressure.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
+        }
+
+
     }
 
 }

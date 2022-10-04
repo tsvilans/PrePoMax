@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.ComponentModel;
 using DynamicTypeDescriptor;
 using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace CaeGlobals
 {
@@ -189,7 +190,119 @@ namespace CaeGlobals
             }
             return true;
         }
-
+        public static string[] ReadAllLines(string fileName)
+        {
+            long count;
+            string[] lines = null;
+            //
+            if (!WaitForFileToUnlock(fileName, 5000)) return null;
+            //
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 16*4096))
+            {
+                count = CountLines(fileStream);
+                lines = new string[count];
+                //
+                count = 0;
+                fileStream.Position = 0;
+                while (!streamReader.EndOfStream) lines[count++] = streamReader.ReadLine();
+                //
+                streamReader.Close();
+                fileStream.Close();
+            }
+            //
+            return lines;
+        }
+        // Read number of lines        
+        //
+        [DebuggerStepThrough]
+        public static bool IsNullOrEmptyOrWhiteSpace(this string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
+        }
+        //
+        [DebuggerStepThrough]
+        public static T NotNull<T>(T value, string argName) where T : class
+        {
+            if (argName.IsNullOrEmptyOrWhiteSpace()) { argName = "Invalid"; }
+            //
+            if (value == null) throw new Exception(argName);
+            return value;
+        }
+        //
+        [DebuggerStepThrough]
+        public static long CountLines(this Stream stream, Encoding encoding = default)
+        {
+            const char CR = '\r';
+            const char LF = '\n';
+            const char NULL = (char)0;
+            //
+            NotNull(stream, nameof(stream));
+            //
+            var lineCount = 0L;
+            var byteBuffer = new byte[1024 * 1024];
+            var detectedEOL = NULL;
+            var currentChar = NULL;
+            int bytesRead;
+            //
+            if (encoding is null || Equals(encoding, Encoding.ASCII) || Equals(encoding, Encoding.UTF8))
+            {
+                while ((bytesRead = stream.Read(byteBuffer, 0, byteBuffer.Length)) > 0)
+                {
+                    for (var i = 0; i < bytesRead; i++)
+                    {
+                        currentChar = (char)byteBuffer[i];
+                        //
+                        if (detectedEOL != NULL)
+                        {
+                            if (currentChar == detectedEOL)
+                            {
+                                lineCount++;
+                            }
+                        }
+                        else if (currentChar == LF || currentChar == CR)
+                        {
+                            detectedEOL = currentChar;
+                            lineCount++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var charBuffer = new char[byteBuffer.Length];
+                //
+                while ((bytesRead = stream.Read(byteBuffer, 0, byteBuffer.Length)) > 0)
+                {
+                    var charCount = encoding.GetChars(byteBuffer, 0, bytesRead, charBuffer, 0);
+                    //
+                    for (var i = 0; i < charCount; i++)
+                    {
+                        currentChar = charBuffer[i];
+                        //
+                        if (detectedEOL != NULL)
+                        {
+                            if (currentChar == detectedEOL)
+                            {
+                                lineCount++;
+                            }
+                        }
+                        else if (currentChar == LF || currentChar == CR)
+                        {
+                            detectedEOL = currentChar;
+                            lineCount++;
+                        }
+                    }
+                }
+            }
+            //
+            if (currentChar != LF && currentChar != CR && currentChar != NULL)
+            {
+                lineCount++;
+            }
+            //
+            return lineCount;
+        }
         // String
         public static string GetRandomString(int len)
         {

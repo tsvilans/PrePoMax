@@ -127,6 +127,7 @@
     <Compile Include="Panels\BorderColoredPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ProperyGrid\MySite.cs" />
     <Compile Include="TextBoxes\AutoScrollTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -303,6 +304,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\Warning.ico" />
   </ItemGroup>
@@ -392,6 +394,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License-LGPL.txt" />
+    <None Include="Resources\Unactive2.ico" />
+    <None Include="Resources\Preview_load.ico" />
+    <None Include="Resources\Step.png" />
+    <None Include="Resources\Query.ico" />
     <None Include="Resources\NoResult.ico" />
     <None Include="Resources\OK1.ico" />
     <None Include="Resources\Part.png" />

@@ -6,32 +6,33 @@ using System.Threading.Tasks;
 using CaeGlobals;
 using CaeMesh;
 using CaeResults;
+using DynamicTypeDescriptor;
 
 namespace CaeModel
 {
     [Serializable]
     public enum ModelType
     {
-        [DynamicTypeDescriptor.StandardValue("General", DisplayName = "General model")]
+        [StandardValue("General", DisplayName = "General model")]
         GeneralModel,
-        [DynamicTypeDescriptor.StandardValue("Submodel", DisplayName = "Submodel")]
+        [StandardValue("Submodel", DisplayName = "Submodel")]
         Submodel,
-        [DynamicTypeDescriptor.StandardValue("SlipWear", DisplayName = "Slip wear model")]
+        [StandardValue("SlipWear", DisplayName = "Slip wear model")]
         SlipWearModel
     }
 
     [Serializable]
     public enum ModelSpaceEnum
     {
-        [DynamicTypeDescriptor.StandardValue("Undefined", Visible = false)]
+        [StandardValue("Undefined", Visible = false)]
         Undefined = 0,
-        [DynamicTypeDescriptor.StandardValue("ThreeD", DisplayName = "3D")]
+        [StandardValue("ThreeD", DisplayName = "3D")]
         ThreeD = 1,
-        [DynamicTypeDescriptor.StandardValue("PlaneStress", DisplayName = "2D plane stress")]
+        [StandardValue("PlaneStress", DisplayName = "2D plane stress")]
         PlaneStress = 2,
-        [DynamicTypeDescriptor.StandardValue("PlaneStrain", DisplayName = "2D plane strain")]
+        [StandardValue("PlaneStrain", DisplayName = "2D plane strain")]
         PlaneStrain = 3,
-        [DynamicTypeDescriptor.StandardValue("Axisymmetric", DisplayName = "2D axisymmetric")]
+        [StandardValue("Axisymmetric", DisplayName = "2D axisymmetric")]
         Axisymmetric = 4
     }    
     public static class ExtensionMethods
@@ -184,6 +185,10 @@ namespace CaeModel
 
 
         // Methods                                                                                                                  
+        public bool IsAbsoluteZeroDefined()
+        {
+            return AbsoluteZero != double.PositiveInfinity;
+        }
         public bool IsStefanBoltzmannDefined()
         {
             return StefanBoltzmann != double.PositiveInfinity;

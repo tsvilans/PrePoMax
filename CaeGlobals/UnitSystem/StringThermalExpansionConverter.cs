@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    CoefficientOfThermalExpansion thermalExpansion = CoefficientOfThermalExpansion.Parse(valueString);
-                    if ((int)_expansionUnit != MyUnit.NoUnit) thermalExpansion = thermalExpansion.ToUnit(_expansionUnit);
-                    valueDouble = thermalExpansion.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -79,6 +77,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                CoefficientOfThermalExpansion thermalExpansion = CoefficientOfThermalExpansion.Parse(valueWithUnitString);
+                if ((int)_expansionUnit != MyUnit.NoUnit) thermalExpansion = thermalExpansion.ToUnit(_expansionUnit);
+                return thermalExpansion.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported thermal expansion abbreviations: ";
+            var allUnits = CoefficientOfThermalExpansion.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = CoefficientOfThermalExpansion.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 }

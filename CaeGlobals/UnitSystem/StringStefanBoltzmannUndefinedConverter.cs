@@ -101,12 +101,10 @@ namespace CaeGlobals
         {
             values = new ArrayList(new double[] { double.PositiveInfinity, _initialValue });
         }
-        // Indicates this converter provides a list of standard values.
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
-        // Returns a StandardValuesCollection of standard value objects.
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             // Passes the local integer array.
@@ -128,7 +126,7 @@ namespace CaeGlobals
                 if (string.Equals(valueString, _undefined)) valueDouble = double.PositiveInfinity;
                 else if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 return valueDouble;
             }
@@ -160,39 +158,55 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
-        {            
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            //
-            string[] tmp = valueWithUnitString.Split('/');
-            if (tmp.Length != 2) throw new FormatException(error);
-            Mass mass = Mass.Parse(tmp[0]);
-            // NoUnit
-            if ((int)_massUnit == MyUnit.NoUnit || (int)_timeUnit == MyUnit.NoUnit ||  (int)_temperatureDeltaUnit == MyUnit.NoUnit)
-                return mass.Value;
-            else mass = mass.ToUnit(_massUnit);
-            //
-            if (tmp[1].StartsWith("(") && tmp[1].EndsWith(")"))
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
             {
-                tmp[1] = tmp[1].Replace("(", "").Replace(")", "");
-                tmp = tmp[1].Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                //
+                string[] tmp = valueWithUnitString.Split('/');
+                if (tmp.Length != 2) throw new FormatException(error);
+                Mass mass = Mass.Parse(tmp[0]);
+                // NoUnit
+                if ((int)_massUnit == MyUnit.NoUnit || (int)_timeUnit == MyUnit.NoUnit || (int)_temperatureDeltaUnit == MyUnit.NoUnit)
+                    return mass.Value;
+                else mass = mass.ToUnit(_massUnit);
+                //
+                if (tmp[1].StartsWith("(") && tmp[1].EndsWith(")"))
+                {
+                    tmp[1] = tmp[1].Replace("(", "").Replace(")", "");
+                    tmp = tmp[1].Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
+                }
+                else throw new FormatException(error);
+                if (tmp.Length != 2) throw new FormatException(error);
+                //
+                if (tmp[0].EndsWith("³") || tmp[0].EndsWith("^3")) tmp[0] = tmp[0].Replace("³", "").Replace("^3", "");
+                else throw new FormatException(error);
+                DurationUnit timeUnit = Duration.ParseUnit(tmp[0]);
+                Duration time = Duration.From(1, timeUnit).ToUnit(_timeUnit);
+                //
+                if (tmp[1].EndsWith("⁴") || tmp[1].EndsWith("^4")) tmp[1] = tmp[1].Replace("⁴", "").Replace("^4", "");
+                else throw new FormatException(error);
+                if (!tmp[1].Contains("∆")) tmp[1] = "∆" + tmp[1];
+                TemperatureDeltaUnit temperatureDeltaUnit = TemperatureDelta.ParseUnit(tmp[1]);
+                TemperatureDelta temperatureDelta = TemperatureDelta.From(1, temperatureDeltaUnit).ToUnit(_temperatureDeltaUnit);
+                //
+                double value = (double)mass.Value / (Math.Pow(time.Value, 3) * Math.Pow(temperatureDelta.Value, 4));
+                return value;
             }
-            else throw new FormatException(error);
-            if (tmp.Length != 2) throw new FormatException(error);
-            //
-            if (tmp[0].EndsWith("³") || tmp[0].EndsWith("^3")) tmp[0] = tmp[0].Replace("³", "").Replace("^3", "");
-            else throw new FormatException(error);
-            DurationUnit timeUnit = Duration.ParseUnit(tmp[0]);
-            Duration time = Duration.From(1, timeUnit).ToUnit(_timeUnit);
-            //
-            if (tmp[1].EndsWith("⁴") || tmp[1].EndsWith("^4")) tmp[1] = tmp[1].Replace("⁴", "").Replace("^4", "");
-            else throw new FormatException(error);
-            if (!tmp[1].Contains("∆")) tmp[1] = "∆" + tmp[1];
-            TemperatureDeltaUnit temperatureDeltaUnit = TemperatureDelta.ParseUnit(tmp[1]);
-            TemperatureDelta temperatureDelta = TemperatureDelta.From(1, temperatureDeltaUnit).ToUnit(_temperatureDeltaUnit);
-            //
-            double value = (double)mass.Value / (Math.Pow(time.Value, 3) * Math.Pow(temperatureDelta.Value, 4));
-            return value;
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message.Replace("∆", "") + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = StringMassConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringTimeConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringTemperatureConverter.SupportedDeltaUnitAbbreviations();
+            return supportedUnitAbbreviations;
         }
     }
 

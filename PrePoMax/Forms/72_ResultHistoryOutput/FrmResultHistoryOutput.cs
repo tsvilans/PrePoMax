@@ -161,7 +161,7 @@ namespace PrePoMax.Forms
             _historyOutputToEditName = historyOutputToEditName;
             string[] nodeSetNames = _controller.GetResultUserNodeSetNames();
             string[] surfaceNames = _controller.GetResultUserSurfaceNames();
-            Dictionary<string, string[]> filedNameComponentNames = _controller.Results.GetAllFiledNameComponentNames();
+            Dictionary<string, string[]> filedNameComponentNames = _controller.CurrentResult.GetAllFiledNameComponentNames();
             //
             if (_historyOutputSetNames == null)
                 throw new CaeException("The history output names must be defined first.");

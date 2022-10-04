@@ -42,6 +42,7 @@ namespace PrePoMax
             Vec3D nodeVec;
             Vec3D arrowVec;
             string fieldData = "";
+            string fieldDataValue = "";
             string numberFormat = Controller.Settings.Annotations.GetNumberFormat();
             //
             if (Controller.CurrentView == ViewGeometryModelResults.Geometry ||
@@ -63,8 +64,8 @@ namespace PrePoMax
                     string fieldUnit = Controller.GetCurrentResultsUnitAbbreviation();
                     if (fieldUnit == "/") fieldUnit = "";
                     //
-                    fieldData = string.Format("Value: {1} {2}", Environment.NewLine,
-                                              fieldValue.ToString(numberFormat), fieldUnit);
+                    fieldDataValue = string.Format("{0} {1}", fieldValue.ToString(numberFormat), fieldUnit);
+                    fieldData = string.Format("Value: {0}", fieldDataValue);
                 }
             }
             else throw new NotSupportedException();
@@ -74,7 +75,10 @@ namespace PrePoMax
             bool addNodeIdData = Controller.Settings.Annotations.ShowNodeId;
             bool addCoorData = Controller.Settings.Annotations.ShowCoordinates;
             bool addFieldData = fieldData.Length > 0;
+            bool onlyFieldData = false;
             if (!addCoorData && !addFieldData) addNodeIdData = true;
+            if (!addNodeIdData && !addCoorData) onlyFieldData = true;
+            
             // Item name
             string itemName = "Node id: ";
             if (Controller.CurrentView == ViewGeometryModelResults.Geometry) itemName = "Vertex id: ";
@@ -96,7 +100,8 @@ namespace PrePoMax
             if (addFieldData)
             {
                 if (text.Length > 0) text += Environment.NewLine;
-                text += fieldData;
+                if (onlyFieldData) text += fieldDataValue;
+                else text += fieldData;
             }
             //
             coor = arrowVec.Coor;

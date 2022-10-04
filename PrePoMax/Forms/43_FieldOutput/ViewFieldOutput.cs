@@ -34,7 +34,7 @@ namespace PrePoMax
         //
         [CategoryAttribute("Data")]
         [OrderedDisplayName(3, 10, "Contact elements")]
-        [DescriptionAttribute("Stores the contact elements in a file with the .cel extension.")]
+        [DescriptionAttribute("Turning contact elements on stores the contact elements in a file with the .cel extension.")]
         public abstract bool ContactElements { get; set; }
         //
         [Browsable(false)]

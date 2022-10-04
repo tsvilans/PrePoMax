@@ -48,9 +48,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    ForcePerLength forcePerLength = ForcePerLength.Parse(valueString);
-                    if ((int)_forcePerLengthUnit != MyUnit.NoUnit) forcePerLength = forcePerLength.ToUnit(_forcePerLengthUnit);
-                    valueDouble = forcePerLength.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -78,6 +76,35 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        private static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                ForcePerLength forcePerLength = ForcePerLength.Parse(valueWithUnitString);
+                if ((int)_forcePerLengthUnit != MyUnit.NoUnit) forcePerLength = forcePerLength.ToUnit(_forcePerLengthUnit);
+                return forcePerLength.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported force per length abbreviations: ";
+            var allUnits = ForcePerLength.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = ForcePerLength.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

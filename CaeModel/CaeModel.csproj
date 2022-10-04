@@ -107,6 +107,7 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalBodyFlux.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalDFlux.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalFilmHeatTransfer.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalImportedPressureLoad.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalRadiationHeatTransfer.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalShellEdgeLoad.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalHydrostaticPressureLoad.cs" />
@@ -181,6 +182,9 @@
     <Compile Include="FileInOut\Output\Stl\StlFileWriter.cs" />
     <Compile Include="GeometricRegionType.cs" />
     <Compile Include="Steps\CoupledTempDispStep.cs" />
+    <Compile Include="Steps\Loads\IPreviewLoad.cs" />
+    <Compile Include="Steps\Loads\VariablePressure.cs" />
+    <Compile Include="Steps\Loads\ImportedPressure.cs" />
     <Compile Include="Steps\Loads\HydrostaticPressure.cs" />
     <Compile Include="Steps\SlipWearStep.cs" />
     <Compile Include="Steps\BoundaryDisplacementStep.cs" />
@@ -240,6 +244,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>

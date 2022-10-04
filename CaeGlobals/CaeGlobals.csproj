@@ -50,6 +50,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
+      <HintPath>..\packages\ncalc.1.3.8\lib\NCalc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -91,7 +94,7 @@
     </Compile>
     <Compile Include="ExceptionTools.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="FrdFileNameEditor.cs" />
+    <Compile Include="Editors\FilteredFileNameEditor.cs" />
     <Compile Include="IMasterSlaveMultiRegion.cs" />
     <Compile Include="IMultiRegion.cs" />
     <Compile Include="KeyboardHook.cs" />
@@ -130,8 +133,9 @@
     <Compile Include="CommonClasses\Vec3D.cs" />
     <Compile Include="UnitSystem\MyUnit.cs" />
     <Compile Include="UnitSystem\StringAccelerationConverter.cs" />
-    <Compile Include="UnitSystem\StringHeatTransferCoefficientConverter - Copy.cs" />
+    <Compile Include="UnitSystem\StringHeatTransferCoefficientConverter.cs" />
     <Compile Include="UnitSystem\StringHeatTransferCoefficientFromConverter.cs" />
+    <Compile Include="UnitSystem\StringMassConverter.cs" />
     <Compile Include="UnitSystem\StringPowerConverter.cs" />
     <Compile Include="UnitSystem\StringNewtonGravityUndefinedConverter.cs" />
     <Compile Include="UnitSystem\StringPowerPerVolumeConverter.cs" />
@@ -180,6 +184,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

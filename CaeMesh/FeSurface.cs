@@ -45,7 +45,7 @@ namespace CaeMesh
         private FeSurfaceCreatedFrom _createdFrom;
         private string _nodeSetName;
         private string _createdFromNodeSetName;
-        private int[] _faceIds;
+        private int[] _faceIds;                                                         // renumber on renumber elements ids
         private double _area;
         private Dictionary<FeFaceName, string> _elementFaces;
         private Selection _creationData;
@@ -142,6 +142,6 @@ namespace CaeMesh
         {
             _elementFaces = null;
             _area = 0;
-        }
+        }        
     }
 }

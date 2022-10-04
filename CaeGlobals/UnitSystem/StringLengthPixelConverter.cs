@@ -39,11 +39,12 @@ namespace CaeGlobals
             // Convert from string
             if (value is string valueString)
             {
-                valueString = valueString.Replace(pixelAbbrevation, "");
                 int valueInt;
                 //
                 if (!int.TryParse(valueString, out valueInt))
-                    throw new FormatException(error);
+                {
+                    valueInt = ConvertToCurrentUnits(valueString);
+                }
                 //
                 return valueInt;
             }
@@ -67,6 +68,24 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static int ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                valueWithUnitString = valueWithUnitString.Replace(pixelAbbrevation, "");
+                return int.Parse(valueWithUnitString);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(error + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = "Supported pixel abbreviations: " + pixelAbbrevation + ".";
+            return supportedUnitAbbreviations;
         }
     }
 

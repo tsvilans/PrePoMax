@@ -15,11 +15,11 @@ namespace PrePoMax
     public abstract class ViewSpring : ViewConstraint
     {
         // Variables                                                                                                                
-        protected CaeModel.SpringConstraint _springConstraint;
+        protected CaeModel.SpringConstraint _spring;
 
 
         // Properties                                                                                                               
-        public override string Name { get { return _springConstraint.Name; } set { _springConstraint.Name = value; } }
+        public override string Name { get { return _spring.Name; } set { _spring.Name = value; } }
         //
         [CategoryAttribute("Region")]
         [OrderedDisplayName(0, 10, "Region type")]
@@ -32,41 +32,41 @@ namespace PrePoMax
         [DescriptionAttribute("Value of the stiffness per node in the direction of the first axis.")]
         [TypeConverter(typeof(StringForcePerLenghtConverter))]
         [Id(1, 3)]
-        public double K1 { get { return _springConstraint.K1; } set { _springConstraint.K1 = value; } }
+        public virtual double K1 { get { return _spring.K1; } set { _spring.K1 = value; } }
         //
         [CategoryAttribute("Stiffness")]
         [OrderedDisplayName(1, 10, "K2")]
         [DescriptionAttribute("Value of the stiffness per node in the direction of the second axis.")]
         [TypeConverter(typeof(StringForcePerLenghtConverter))]
         [Id(2, 3)]
-        public double K2 { get { return _springConstraint.K2; } set { _springConstraint.K2 = value; } }
+        public virtual double K2 { get { return _spring.K2; } set { _spring.K2 = value; } }
         //
         [CategoryAttribute("Stiffness")]
         [OrderedDisplayName(2, 10, "K3")]
         [DescriptionAttribute("Value of the stiffness per node in the direction of the third axis.")]
         [TypeConverter(typeof(StringForcePerLenghtConverter))]
         [Id(3, 3)]
-        public double K3 { get { return _springConstraint.K3; } set { _springConstraint.K3 = value; } }
+        public virtual double K3 { get { return _spring.K3; } set { _spring.K3 = value; } }
         //
         [Category("Appearance")]
         [DisplayName("Color")]
         [Description("Select the constraint color.")]
         [Editor(typeof(UserControls.ColorEditorEx), typeof(UITypeEditor))]
         [Id(1, 10)]
-        public Color Color { get { return _springConstraint.MasterColor; } set { _springConstraint.MasterColor = value; } }
+        public Color Color { get { return _spring.MasterColor; } set { _spring.MasterColor = value; } }
 
 
         // Constructors                                                                                                             
         public ViewSpring(CaeModel.SpringConstraint springConstraint)
         {
-            _springConstraint = springConstraint;
+            _spring = springConstraint;
         }
 
 
         // Methods                                                                                                                  
         public override CaeModel.Constraint GetBase()
         {
-            return _springConstraint;
+            return _spring;
         }
         
     }

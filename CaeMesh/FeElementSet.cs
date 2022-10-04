@@ -63,5 +63,14 @@ namespace CaeMesh
                 return selectedElements.ToArray();
             }
         }
+        public override int GetHashCode()
+        {
+            int hash = 0;
+            for (int i = 0; i < _labels.Length; i++)
+            {
+                hash ^= _labels[i].GetHashCode();
+            }
+            return hash;
+        }
     }
 }

@@ -33,6 +33,23 @@ namespace PrePoMax
 
 
         // Methods                                                                                                                  
+        public bool IsAnnotationVisible()
+        {
+            if (this.Visible)
+            {
+                if (_partId == -1) return true;
+                //
+                CaeMesh.FeMesh mesh = Controller.DisplayedMesh;
+                if (mesh != null)
+                {
+                    CaeMesh.BasePart part = mesh.GetPartById(_partId);
+                    if (part != null && part.Visible) return true;
+                }
+            }
+            //
+            return false;
+        }
+        //
         public abstract void GetAnnotationData(out string text, out double[] coor);
         public string GetAnnotationText()
         {
@@ -50,21 +67,17 @@ namespace PrePoMax
             //
             return text;
         }
-        public bool IsAnnotationVisible()
+        //
+        public void ApplyExplodedViewToPosition(Vec3D position)
         {
-            if (this.Visible)
+            if (Controller.IsExplodedViewActive())
             {
-                if (_partId == -1) return true;
-                //
-                CaeMesh.FeMesh mesh = Controller.DisplayedMesh;
-                if (mesh != null)
-                {
-                    CaeMesh.BasePart part = mesh.GetPartById(_partId);
-                    if (part != null && part.Visible) return true;
-                }
+                CaeMesh.BasePart part = Controller.AllResults.CurrentResult.Mesh.GetPartById(_partId);
+                position.X += part.Offset[0];
+                position.Y += part.Offset[1];
+                position.Z += part.Offset[2];
             }
-            //
-            return false;
         }
+
     }
 }

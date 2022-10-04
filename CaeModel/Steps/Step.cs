@@ -70,11 +70,11 @@ namespace CaeModel
         public Step(string name)
             : base(name) 
         {
-            _historyOutputs = new OrderedDictionary<string, HistoryOutput>();
-            _fieldOutputs = new OrderedDictionary<string, FieldOutput>();
-            _boundayConditions = new OrderedDictionary<string, BoundaryCondition>();
-            _loads = new OrderedDictionary<string, Load>();
-            _definedFields = new OrderedDictionary<string, DefinedField>();
+            _historyOutputs = new OrderedDictionary<string, HistoryOutput>("History outputs");
+            _fieldOutputs = new OrderedDictionary<string, FieldOutput>("Field outputs");
+            _boundayConditions = new OrderedDictionary<string, BoundaryCondition>("Boundary conditions");
+            _loads = new OrderedDictionary<string, Load>("Loads");
+            _definedFields = new OrderedDictionary<string, DefinedField>("Defined fields");
             _perturbation = false;
             _nlgeom = false;
             _maxIncrements = 100;
@@ -114,7 +114,7 @@ namespace CaeModel
                 }
             }
             // Compatibility for version v.1.0.0
-            if (_definedFields == null) _definedFields = new OrderedDictionary<string, DefinedField>(); 
+            if (_definedFields == null) _definedFields = new OrderedDictionary<string, DefinedField>("Defined fields"); 
         }
 
 

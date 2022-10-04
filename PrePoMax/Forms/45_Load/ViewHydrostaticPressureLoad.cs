@@ -30,7 +30,7 @@ namespace PrePoMax
         //                                                                                                                          
         [Category("First point coordinates")]
         [OrderedDisplayName(0, 10, "By selection")]
-        [DescriptionAttribute("Use selection for the defenition of the first point.")]
+        [DescriptionAttribute("Use selection for the definition of the first point.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 3)]
         public ItemSetData FirstPointItemSet
@@ -76,8 +76,8 @@ namespace PrePoMax
         }
         //                                                                                                              
         [Category("Second point coordinates")]
-        [OrderedDisplayName(0, 10, "By selection ")]    // must be a different name than for the first point !!!
-        [DescriptionAttribute("Use selection for the defenition of the second point.")]
+        [OrderedDisplayName(0, 10, "By selection ")]        // must be a different name than for the first point !!!
+        [DescriptionAttribute("Use selection for the definition of the second point.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 5)]
         public ItemSetData SecondPointItemSet
@@ -90,29 +90,29 @@ namespace PrePoMax
             }
         }
         //
-        [CategoryAttribute("Second point coordinates")]
-        [OrderedDisplayName(1, 10, "X")]
+        [CategoryAttribute("Second point coordinates")]    // must be a different name than for the first point !!!
+        [OrderedDisplayName(1, 10, "X ")]
         [DescriptionAttribute("X coordinate of the second point.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(2, 5)]
         public double X2 { get { return _hpLoad.SecondPointCoor[0]; } set { _hpLoad.SecondPointCoor[0] = value; } }
         //
-        [CategoryAttribute("Second point coordinates")]
-        [OrderedDisplayName(2, 10, "Y")]
+        [CategoryAttribute("Second point coordinates")]    // must be a different name than for the first point !!!
+        [OrderedDisplayName(2, 10, "Y ")]
         [DescriptionAttribute("Y coordinate of the second point.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(3, 5)]
         public double Y2 { get { return _hpLoad.SecondPointCoor[1]; } set { _hpLoad.SecondPointCoor[1] = value; } }
         //
-        [CategoryAttribute("Second point coordinates")]
-        [OrderedDisplayName(3, 10, "Z")]
+        [CategoryAttribute("Second point coordinates")]    // must be a different name than for the first point !!!
+        [OrderedDisplayName(3, 10, "Z ")]
         [DescriptionAttribute("Z coordinate of the second point.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(4, 5)]
         public double Z2 { get { return _hpLoad.SecondPointCoor[2]; } set { _hpLoad.SecondPointCoor[2] = value; } }
         //                                                                                                                          
-        [CategoryAttribute("Second point pressure")]
-        [OrderedDisplayName(0, 10, "Magnitude")]
+        [CategoryAttribute("Second point pressure")]        // must be a different name than for the first point !!!
+        [OrderedDisplayName(0, 10, "Magnitude ")]
         [DescriptionAttribute("Pressure magnitude at the second point.")]
         [TypeConverter(typeof(StringPressureConverter))]
         [Id(1, 6)]
@@ -124,7 +124,7 @@ namespace PrePoMax
         //                                                                                                                          
         [Category("Pressure direction")]
         [OrderedDisplayName(0, 10, "By selection  ")]    // must be a different name than for the first point !!!
-        [DescriptionAttribute("Use selection for the defenition of the pressure direction.")]
+        [DescriptionAttribute("Use selection for the definition of the pressure direction.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 7)]
         public ItemSetData PressureDirectionItemSet

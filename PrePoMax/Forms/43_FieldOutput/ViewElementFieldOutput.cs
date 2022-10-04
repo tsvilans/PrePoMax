@@ -114,6 +114,7 @@ namespace PrePoMax
             _dctd = ProviderInstaller.Install(this);
             //
             _dctd.RenameBooleanPropertyToOnOff(nameof(LastIterations));
+            _dctd.RenameBooleanPropertyToOnOff(nameof(ContactElements));
         }
 
 

@@ -24,6 +24,7 @@ namespace PrePoMax.Forms
 
         // Callbacks                                                                                                                
         public Action UpdateHighlightFromTree;
+        public Func<string[], MeshingParameters, FeMeshRefinement, Task> PreviewEdgeMeshesAsync;
 
 
         // Properties                                                                                                               
@@ -175,25 +176,22 @@ namespace PrePoMax.Forms
         {
             try
             {
-                btnPreview.Enabled = false;
+                Enabled = false;
                 MeshingParameters parameters = ((ViewMeshingParameters)(propertyGrid.SelectedObject)).GetBase();
+                //
                 if (_partNames != null && _partNames.Length > 0)
                 {
                     UpdateHighlightFromTree?.Invoke();
-                    foreach (var partName in _partNames)
-                    {
-                        await Task.Run(() => _controller.PreviewEdgeMesh(partName, parameters, null));
-                    }
+                    await PreviewEdgeMeshesAsync?.Invoke(_partNames, parameters, null);
                 }
             }
             catch (Exception ex)
             {
-                btnPreview.Enabled = true;
-                CaeGlobals.ExceptionTools.Show(this, ex);
+                ExceptionTools.Show(this, ex);
             }
             finally
             {
-                btnPreview.Enabled = true;
+                Enabled = true;
             }
         }
     }

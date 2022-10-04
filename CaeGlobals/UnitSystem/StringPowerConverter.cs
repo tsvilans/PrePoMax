@@ -58,7 +58,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -87,40 +87,64 @@ namespace CaeGlobals
                 return base.ConvertTo(context, culture, value, destinationType);
             }
         }
-        private static double ConvertToUnits(string valueString)
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
         {
-            // 1 inch = 0.0254 meters
-            // 1 pound force = 4.44822162 newtons
-            // 1 pound force inch = 0.112984829 joules
-            // 1 pound force inch per second = 0.112984829 watts
-            double conversion = 0.112984829;
-            double scale = 1;
-            valueString = valueString.Trim().Replace(" ", "");
-            // Check if it is given in unsupported units
-            if (valueString.Contains(MyUnit.PoundForceInchPerSecondAbbreviation))
+            try
             {
-                valueString = valueString.Replace(MyUnit.PoundForceInchPerSecondAbbreviation, "W");
-                scale = conversion;
+                // 1 inch = 0.0254 meters
+                // 1 pound force = 4.44822162 newtons
+                // 1 pound force inch = 0.112984829 joules
+                // 1 pound force inch per second = 0.112984829 watts
+                double conversion = 0.112984829;
+                double scale = 1;
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                // Check if it is given in unsupported units
+                if (valueWithUnitString.Contains(MyUnit.PoundForceInchPerSecondAbbreviation))
+                {
+                    valueWithUnitString = valueWithUnitString.Replace(MyUnit.PoundForceInchPerSecondAbbreviation, "W");
+                    scale = conversion;
+                }
+                // Check if it must be converted to unsupported units
+                double value;
+                if ((int)_powerUnit == MyUnit.NoUnit)
+                {
+                    Power power = Power.Parse(valueWithUnitString);
+                    value = (double)power.Value;
+                }
+                else if (_powerUnit == MyUnit.PoundForceInchPerSecond)
+                {
+                    Power power = Power.Parse(valueWithUnitString).ToUnit(PowerUnit.Watt);
+                    if (scale == conversion) value = (double)power.Value;
+                    else value = scale * (double)power.Value / conversion;
+                }
+                else
+                {
+                    Power power = Power.Parse(valueWithUnitString).ToUnit(_powerUnit);
+                    value = scale * (double)power.Value;
+                }
+                return value;
             }
-            // Check if it must be converted to unsupported units
-            double value;
-            if ((int)_powerUnit == MyUnit.NoUnit)
+            catch (Exception ex)
             {
-                Power power = Power.Parse(valueString);
-                value = (double)power.Value;
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
             }
-            else if (_powerUnit == MyUnit.PoundForceInchPerSecond)
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported power abbreviations: ";
+            var allUnits = Power.Units;
+            for (int i = 0; i < allUnits.Length; i++)
             {
-                Power power = Power.Parse(valueString).ToUnit(PowerUnit.Watt);
-                if (scale == conversion) value = (double)power.Value;
-                else value = scale * (double)power.Value / conversion;
+                abb = Power.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
             }
-            else
-            {
-                Power power = Power.Parse(valueString).ToUnit(_powerUnit);
-                value = scale * (double)power.Value;
-            }
-            return value;
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
 
     }

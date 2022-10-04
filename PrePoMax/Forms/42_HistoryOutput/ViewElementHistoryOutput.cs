@@ -32,10 +32,12 @@ namespace PrePoMax
         ENER = 32,
         [StandardValue("ELSE", Description = "Internal energy.")]
         ELSE = 64,
+        [StandardValue("ELKE", Description = "Kinetic energy.")]
+        ELKE = 128,
         [StandardValue("EVOL", Description = "Volume.")]
-        EVOL = 128,
+        EVOL = 256,
         [StandardValue("EBHE", Description = "Heating power.")]
-        EBHE = 256
+        EBHE = 512
     }
 
     [Serializable]

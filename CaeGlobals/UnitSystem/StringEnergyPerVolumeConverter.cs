@@ -80,7 +80,7 @@ namespace CaeGlobals
                 double valueDouble;
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 return valueDouble;
             }
@@ -108,23 +108,37 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
+        private static double ConvertToCurrentUnits(string valueWithUnitString)
         {
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            //
-            string[] tmp = valueWithUnitString.Split('/');
-            if (tmp.Length != 2) throw new FormatException(error);
-            //
-            StringEnergyConverter converter = new StringEnergyConverter();  // this includes conversion to NoUnit
-            double energyValue = (double)converter.ConvertFromString(tmp[0]);
-            // NoUnit
-            if ((int)_energyUnit == MyUnit.NoUnit || (int)_volumeUnit == MyUnit.NoUnit) return energyValue;
-            //
-            VolumeUnit volumeUnit = Volume.ParseUnit(tmp[1]);
-            Volume volume = Volume.From(1, volumeUnit).ToUnit(_volumeUnit);
-            double value = energyValue / volume.Value;
-            //
-            return value;
+            try
+            {
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                //
+                string[] tmp = valueWithUnitString.Split('/');
+                if (tmp.Length != 2) throw new FormatException(error);
+                //
+                StringEnergyConverter converter = new StringEnergyConverter();  // this includes conversion to NoUnit
+                double energyValue = (double)converter.ConvertFromString(tmp[0]);
+                // NoUnit
+                if ((int)_energyUnit == MyUnit.NoUnit || (int)_volumeUnit == MyUnit.NoUnit) return energyValue;
+                //
+                VolumeUnit volumeUnit = Volume.ParseUnit(tmp[1]);
+                Volume volume = Volume.From(1, volumeUnit).ToUnit(_volumeUnit);
+                double value = energyValue / volume.Value;
+                //
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = StringEnergyConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringVolumeConverter.SupportedUnitAbbreviations();
+            return supportedUnitAbbreviations;
         }
     }
 

@@ -20,6 +20,10 @@ namespace PrePoMax.Forms
         private System.ComponentModel.IContainer components;
         private ToolStripMenuItem tsmiResetAll;
         private double[][] _coorNodesToDraw;
+        
+        
+        // Callbacks                                                                                                                
+        public Func<string[], double[], double[], bool, Task> ScaleGeometryPartsAsync;
 
 
         // Properties                                                                                                               
@@ -110,12 +114,29 @@ namespace PrePoMax.Forms
         protected override void OnApply(bool onOkAddNew)
         {
             if (_controller.CurrentView == ViewGeometryModelResults.Geometry)
-                _controller.ScaleGeometryPartsCommand(_partNames, ScaleCenter, ScaleFactors, _scaleParameters.Copy);
+                ScaleGeometryParts();
             else if (_controller.CurrentView == ViewGeometryModelResults.Model)
                 _controller.ScaleModelPartsCommand(_partNames, ScaleCenter, ScaleFactors, _scaleParameters.Copy);
             else throw new NotSupportedException();
             //
             HighlightNodes();
+        }
+        async private void ScaleGeometryParts()
+        {
+            try
+            {
+                Enabled = false;
+                await ScaleGeometryPartsAsync?.Invoke(_partNames, ScaleCenter, ScaleFactors, _scaleParameters.Copy);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+            finally
+            {
+                Enabled = true;
+            }
+            
         }
         protected override bool OnPrepareForm(string stepName, string itemToEditName)
         {

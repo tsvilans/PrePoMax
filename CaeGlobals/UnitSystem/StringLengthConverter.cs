@@ -35,7 +35,7 @@ namespace CaeGlobals
 
 
         // Methods                                                                                                                  
-        public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
             else return base.CanConvertFrom(context, sourceType);
@@ -47,12 +47,10 @@ namespace CaeGlobals
             {
                 double valueDouble;
                 //
-                if (valueString.Trim().Length == 0) return 0;
+                if (valueString.Trim().Length == 0) return 0;   // empty string -> 0
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Length length = Length.Parse(valueString);
-                    if ((int)_lengthUnit != MyUnit.NoUnit) length = length.ToUnit(_lengthUnit);
-                    valueDouble = length.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -79,6 +77,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Length length = Length.Parse(valueWithUnitString);
+                if ((int)_lengthUnit != MyUnit.NoUnit) length = length.ToUnit(_lengthUnit);
+                return length.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported length abbreviations: ";
+            var allUnits = Length.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Length.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

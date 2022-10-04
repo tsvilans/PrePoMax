@@ -147,6 +147,7 @@ namespace CaeMesh
                 {
                     // Triangular
                     case "S3":
+                    case "S3R":
                         _linearTriaType = FeElementTypeLinearTria.S3; break;
                     case "M3D3":
                         _linearTriaType = FeElementTypeLinearTria.M3D3; break;

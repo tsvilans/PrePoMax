@@ -32,6 +32,7 @@ namespace PrePoMax.Forms
                 else if (clone is MomentLoad ml) _viewLoad = new ViewMomentLoad(ml);
                 else if (clone is DLoad dl) _viewLoad = new ViewDLoad(dl);
                 else if (clone is HydrostaticPressure hpl) _viewLoad = new ViewHydrostaticPressureLoad(hpl);
+                else if (clone is ImportedPressure ip) _viewLoad = new ViewImportedPressureLoad(ip);
                 else if (clone is STLoad stl) _viewLoad = new ViewSTLoad(stl);
                 else if (clone is ShellEdgeLoad sel) _viewLoad = new ViewShellEdgeLoad(sel);
                 else if (clone is GravityLoad gl) _viewLoad = new ViewGravityLoad(gl);
@@ -150,6 +151,14 @@ namespace PrePoMax.Forms
                     // 2D
                     if (vhpl.GetBase().TwoD) _controller.Selection.LimitSelectionToShellEdges = true;
                 }
+                else if (itemTag is ViewImportedPressureLoad vipl)
+                {
+                    _viewLoad = vipl;
+                    // Set a filter in order for S1, S2,... to include the same element types
+                    _controller.Selection.LimitSelectionToFirstGeometryType = true;
+                    // 2D
+                    if (vipl.GetBase().TwoD) _controller.Selection.LimitSelectionToShellEdges = true;
+                }
                 else if (itemTag is ViewSTLoad vstl)
                 {
                     _viewLoad = vstl;
@@ -229,7 +238,14 @@ namespace PrePoMax.Forms
             {
                 HighlightLoad();
             }
-            else if (_viewLoad is ViewHydrostaticPressureLoad vhpl && property == nameof(vhpl.SurfaceName))
+            else if (_viewLoad is ViewHydrostaticPressureLoad vhpl && 
+                (property == nameof(vhpl.SurfaceName) ||
+                 property == nameof(vhpl.X1) || property == nameof(vhpl.Y1) || property == nameof(vhpl.Z1) ||
+                 property == nameof(vhpl.X2) || property == nameof(vhpl.Y2) || property == nameof(vhpl.Z2)))
+            {
+                HighlightLoad();
+            }
+            else if (_viewLoad is ViewImportedPressureLoad vipl && property == nameof(vhpl.SurfaceName))
             {
                 HighlightLoad();
             }
@@ -247,7 +263,8 @@ namespace PrePoMax.Forms
                 HighlightLoad();
             }
             else if (_viewLoad is ViewCentrifLoad vcfl &&
-                     (property == nameof(vcfl.PartName) || property == nameof(vcfl.ElementSetName)))
+                     (property == nameof(vcfl.PartName) || property == nameof(vcfl.ElementSetName) ||
+                      property == nameof(vcfl.X) || property == nameof(vcfl.Y) || property == nameof(vcfl.Z)))
             {
                 HighlightLoad();
             }
@@ -315,6 +332,10 @@ namespace PrePoMax.Forms
             else if (FELoad is HydrostaticPressure hpl)
             {
                 if (!hpl.IsProperlyDefined(out string error)) throw new CaeException(error);
+            }
+            else if (FELoad is ImportedPressure ip)
+            {
+                if (!ip.IsProperlyDefined(out string error)) throw new CaeException(error);
             }
             else if (FELoad is STLoad stl)
             {
@@ -520,6 +541,21 @@ namespace PrePoMax.Forms
                     //
                     vhpl.PopulateDropDownLists(surfaceNames, amplitudeNames);
                 }
+                else if (_viewLoad is ViewImportedPressureLoad vipl)
+                {
+                    string[] surfaceNames;
+                    if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
+                    else surfaceNames = elementBasedSurfaceNames.ToArray();
+                    //
+                    selectedId = lvTypes.FindItemWithText("Imported pressure").Index;
+                    // Check for deleted regions
+                    if (vipl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
+                    else if (vipl.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
+                        CheckMissingValueRef(ref surfaceNames, vipl.SurfaceName, s => { vipl.SurfaceName = s; });
+                    else throw new NotSupportedException();
+                    //
+                    vipl.PopulateDropDownLists(surfaceNames, amplitudeNames);
+                }
                 else if (_viewLoad is ViewSTLoad vstl)
                 {
                     string[] surfaceNames;
@@ -720,7 +756,7 @@ namespace PrePoMax.Forms
                 item.Tag = vdl;
                 lvTypes.Items.Add(item);
             }
-            // Hydrostatic Pressure
+            // Hydrostatic pressure
             name = "Hydrostatic pressure";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
@@ -735,6 +771,23 @@ namespace PrePoMax.Forms
                 vhpl.PopulateDropDownLists(surfaceNames, amplitudeNames);
                 vhpl.Color = color;
                 item.Tag = vhpl;
+                lvTypes.Items.Add(item);
+            }
+            // Pressure
+            name = "Imported pressure";
+            loadName = GetLoadName(name);
+            item = new ListViewItem(name);
+            ImportedPressure ipLoad = new ImportedPressure(loadName, "", RegionTypeEnum.Selection, twoD);
+            if (step.IsLoadSupported(ipLoad))
+            {
+                string[] surfaceNames;
+                if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
+                else surfaceNames = noEdgeSurfaceNames.ToArray();
+                //
+                ViewImportedPressureLoad vipl = new ViewImportedPressureLoad(ipLoad);
+                vipl.PopulateDropDownLists(surfaceNames, amplitudeNames);
+                vipl.Color = color;
+                item.Tag = vipl;
                 lvTypes.Items.Add(item);
             }
             // Surface traction
@@ -905,6 +958,7 @@ namespace PrePoMax.Forms
                          FELoad is MomentLoad ||
                          FELoad is DLoad ||
                          FELoad is HydrostaticPressure ||
+                         FELoad is ImportedPressure ||
                          FELoad is STLoad ||
                          FELoad is ShellEdgeLoad ||
                          FELoad is GravityLoad ||
@@ -970,6 +1024,7 @@ namespace PrePoMax.Forms
                 else if (FELoad is MomentLoad) _controller.SetSelectItemToNode();
                 else if (FELoad is DLoad) _controller.SetSelectItemToSurface();
                 else if (FELoad is HydrostaticPressure) _controller.SetSelectItemToSurface();
+                else if (FELoad is ImportedPressure) _controller.SetSelectItemToSurface();
                 else if (FELoad is STLoad) _controller.SetSelectItemToSurface();
                 else if (FELoad is ShellEdgeLoad) _controller.SetSelectItemToSurface();
                 else if (FELoad is GravityLoad) _controller.SetSelectItemToPart();
@@ -1006,6 +1061,7 @@ namespace PrePoMax.Forms
                         FELoad is MomentLoad ||
                         FELoad is DLoad ||
                         FELoad is HydrostaticPressure ||
+                        FELoad is ImportedPressure ||
                         FELoad is STLoad ||
                         FELoad is ShellEdgeLoad ||
                         FELoad is GravityLoad ||

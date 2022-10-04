@@ -54,9 +54,14 @@ namespace PrePoMax.Forms
                     }
                     if (lvModelMaterials.Items.Count > 0) lvModelMaterials.Items[0].Selected = true;
                 }
-                //
+                // Load material libraries
                 string fileName = Path.Combine(Application.StartupPath, Globals.MaterialLibraryFileName);
                 LoadMaterialLibraryFromFile(fileName);
+                //
+                foreach (var materialLibraryFile in _controller.Settings.General.GetMaterialLibraryFiles())
+                {
+                    LoadMaterialLibraryFromFile(materialLibraryFile);
+                }
                 //
                 TreeNode materialNode;
                 GetNodeContainingFirstMaterial(cltvLibrary.Nodes[0], out materialNode);
@@ -116,6 +121,7 @@ namespace PrePoMax.Forms
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         LoadMaterialLibraryFromFile(openFileDialog.FileName);
+                        _controller.AddMaterialLibraryFile(openFileDialog.FileName);
                         SetControlStates();
                     }
                 }
@@ -129,6 +135,8 @@ namespace PrePoMax.Forms
         {
             if (lvLibraries.SelectedItems.Count == 1)
             {
+                _controller.RemoveMaterialLibraryFile(lvLibraries.SelectedItems[0].Text);
+                //
                 int selectedId = lvLibraries.SelectedIndices[0];
                 lvLibraries.SelectedIndices.Clear();
                 lvLibraries.Items.RemoveAt(selectedId);
@@ -196,6 +204,28 @@ namespace PrePoMax.Forms
         //
         private void cltvLibrary_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            //try
+            //{
+            //    if (cltvLibrary.SelectedNode != null)
+            //    {
+            //        cltvLibrary.SelectedNode.EnsureVisible();
+            //        tbCategoryName.Text = cltvLibrary.SelectedNode.Text;
+            //        //
+            //        if (cltvLibrary.SelectedNode.Tag != null)
+            //        {
+            //            if (_frmMaterial != null) _frmMaterial.Material = (Material)cltvLibrary.SelectedNode.Tag;
+            //        }
+            //    }
+            //}
+            //catch
+            //{ }
+        }
+        private void cltvLibrary_MouseDown(object sender, MouseEventArgs e)
+        {
+            
+        }
+        private void cltvLibrary_MouseUp(object sender, MouseEventArgs e)
+        {
             try
             {
                 if (cltvLibrary.SelectedNode != null)
@@ -205,24 +235,19 @@ namespace PrePoMax.Forms
                     //
                     if (cltvLibrary.SelectedNode.Tag != null)
                     {
-                        if (_frmMaterial != null) _frmMaterial.Material = (Material)cltvLibrary.SelectedNode.Tag;
+                        if (_frmMaterial != null)
+                        {
+                            // Convert material unit system
+                            Material previewMaterial = (Material)cltvLibrary.SelectedNode.Tag.DeepClone();
+                            previewMaterial.ConvertUnits(_controller.Model.UnitSystem, _libraryUnitSystem, _controller.Model.UnitSystem);
+                            _frmMaterial.Material = previewMaterial;
+                        }
+                        
                     }
                 }
             }
             catch
             { }
-        }
-        private void cltvLibrary_MouseDown(object sender, MouseEventArgs e)
-        {
-            //try
-            //{
-            //    if (cltvLibrary.HitTest(e.Location).Node == null)
-            //    {
-            //        //cltvLibrary.SelectedNode = null;
-            //    }
-            //}
-            //catch
-            //{ }
         }
         private void cltvLibrary_MouseDoubleClick(object sender, MouseEventArgs e)
         {

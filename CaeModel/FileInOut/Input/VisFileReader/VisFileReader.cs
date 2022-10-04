@@ -147,7 +147,7 @@ namespace FileInOut.Input
             string[] data = nodeData.Split(lineSplitter, StringSplitOptions.RemoveEmptyEntries);
             string[] tmp;
             FeNode node;
-
+            //
             for (int i = 1; i < data.Length; i++)   // skip first row: Number of nodes: 14
             {
                 tmp = data[i].Split(spaceSplitter, StringSplitOptions.RemoveEmptyEntries);
@@ -156,12 +156,12 @@ namespace FileInOut.Input
                 node.X = double.Parse(tmp[1]);
                 node.Y = double.Parse(tmp[2]);
                 node.Z = double.Parse(tmp[3]);
-
+                //
                 bBox.IncludeNode(node);
-
+                //
                 nodes.Add(node.Id, node);
             }
-
+            //
             return data.Length - 1; // return number of read nodes
         }
         private static int ReadTriangles(string elementData, bool reverse, int offsetNodeId, int offsetElementId,

@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Angle angle = Angle.Parse(valueString);
-                    if ((int)_angleUnit != MyUnit.NoUnit) angle = angle.ToUnit(_angleUnit);
-                    valueDouble = angle.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -78,6 +76,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Angle angle = Angle.Parse(valueWithUnitString);
+                if ((int)_angleUnit != MyUnit.NoUnit) angle = angle.ToUnit(_angleUnit);
+                return angle.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported angle abbreviations: ";
+            var allUnits = Angle.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Angle.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 }

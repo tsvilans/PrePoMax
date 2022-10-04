@@ -36,6 +36,8 @@ namespace CaeJob
         [NonSerialized] protected Stopwatch _watch;
         [NonSerialized] protected Stopwatch _updateWatch;   // timer does not tick - use update watch
         [NonSerialized] private Process _exe;
+        [NonSerialized] AutoResetEvent _outputWaitHandle;
+        [NonSerialized] AutoResetEvent _errorWaitHandle;
         [NonSerialized] private StringBuilder _sbOutput;
         [NonSerialized] private string _outputFileName;
         [NonSerialized] private string _errorFileName;
@@ -160,9 +162,10 @@ namespace CaeJob
             psi.FileName = _executable;
             psi.Arguments = _argument;
             psi.WorkingDirectory = _workDirectory;
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            psi.WindowStyle = ProcessWindowStyle.Normal;
             psi.UseShellExecute = false;
             psi.RedirectStandardOutput = true;
+            psi.RedirectStandardInput = true;   // sometimes needed
             psi.RedirectStandardError = true;
             //
             Debug.WriteLine(DateTime.Now + "   Start proces: " + tmpName + " in: " + _workDirectory);
@@ -170,57 +173,89 @@ namespace CaeJob
             _exe = new Process();
             _exe.StartInfo = psi;
             //
-            using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
-            using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+            //using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
+            //using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+            _outputWaitHandle = new AutoResetEvent(false);
+            _errorWaitHandle = new AutoResetEvent(false);
             {
-                _exe.OutputDataReceived += (sender, e) =>
-                {
-                    if (e.Data == null)
-                    {
-                        // the safe wait handle closes on kill
-                        if (!outputWaitHandle.SafeWaitHandle.IsClosed) outputWaitHandle.Set();
-                    }
-                    else
-                    {                        
-                        AddDataToOutput(e.Data);
-                    }
-                };
+                _exe.OutputDataReceived += _exe_OutputDataReceived;
+                //_exe.OutputDataReceived += (sender, e) =>
+                //{
+                //    if (e.Data == null)
+                //    {
+                //        // the safe wait handle closes on kill
+                //        if (!_outputWaitHandle.SafeWaitHandle.IsClosed) _outputWaitHandle.Set();
+                //    }
+                //    else
+                //    {
+                //        AddDataToOutput(e.Data);
+                //    }
+                //};
                 //
-                _exe.ErrorDataReceived += (sender, e) =>
-                {
-                    if (e.Data == null)
-                    {
-                        // the safe wait handle closes on kill
-                        if (!errorWaitHandle.SafeWaitHandle.IsClosed) errorWaitHandle.Set();
-                    }
-                    else
-                    {
-                        File.AppendAllText(_errorFileName, e.Data + Environment.NewLine);
-                        AddDataToOutput(e.Data);
-                    }
-                };
+                _exe.ErrorDataReceived += _exe_ErrorDataReceived;
+                //_exe.ErrorDataReceived += (sender, e) =>
+                //{
+                //    if (e.Data == null)
+                //    {
+                //        // the safe wait handle closes on kill
+                //        if (!errorWaitHandle.SafeWaitHandle.IsClosed) errorWaitHandle.Set();
+                //    }
+                //    else
+                //    {
+                //        File.AppendAllText(_errorFileName, e.Data + Environment.NewLine);
+                //        AddDataToOutput(e.Data);
+                //    }
+                //};
                 //
                 _exe.Start();
-                //
                 _exe.BeginOutputReadLine();
                 _exe.BeginErrorReadLine();
+                //
                 int ms = 1000 * 3600 * 24 * 7 * 3; // 3 weeks
                 //
-                if (_exe.WaitForExit(ms) && outputWaitHandle.WaitOne(ms) && errorWaitHandle.WaitOne(ms))
+                if (_exe.WaitForExit(ms) && _outputWaitHandle.WaitOne(ms) && _errorWaitHandle.WaitOne(ms))
                 {
                     // Process completed. Check process.ExitCode here.
                     // after Kill() _jobStatus is Killed
-                    if (_jobStatus == CaeJob.JobStatus.Running) _jobStatus = CaeJob.JobStatus.OK;
+                    if (_jobStatus == JobStatus.Running) _jobStatus = JobStatus.OK;
                 }
                 else
                 {
                     // Timed out.
                     Kill("Time out.");
-                    _jobStatus = CaeJob.JobStatus.TimedOut;
+                    _jobStatus = JobStatus.TimedOut;
                 }
                 _exe.Close();
             }
         }
+
+        private void _exe_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data == null)
+            {
+                // the safe wait handle closes on kill
+                if (!_errorWaitHandle.SafeWaitHandle.IsClosed) _errorWaitHandle.Set();
+            }
+            else
+            {
+                File.AppendAllText(_errorFileName, e.Data + Environment.NewLine);
+                AddDataToOutput(e.Data);
+            }
+        }
+
+        private void _exe_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data == null)
+            {
+                // the safe wait handle closes on kill
+                if (!_outputWaitHandle.SafeWaitHandle.IsClosed) _outputWaitHandle.Set();
+            }
+            else
+            {
+                AddDataToOutput(e.Data);
+            }
+        }
+
         void RunCompleted()
         {
             _watch.Stop();

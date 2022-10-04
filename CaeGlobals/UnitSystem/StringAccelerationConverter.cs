@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Acceleration acceleration = Acceleration.Parse(valueString);
-                    if ((int)_accelerationUnit != MyUnit.NoUnit) acceleration = acceleration.ToUnit(_accelerationUnit);
-                    valueDouble = acceleration.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -79,6 +77,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Acceleration acceleration = Acceleration.Parse(valueWithUnitString);
+                if ((int)_accelerationUnit != MyUnit.NoUnit) acceleration = acceleration.ToUnit(_accelerationUnit);
+                return acceleration.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported acceleration abbreviations: ";
+            var allUnits = Acceleration.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Acceleration.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

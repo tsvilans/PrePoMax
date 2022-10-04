@@ -67,13 +67,25 @@ namespace CaeModel
         // Methods                                                                                                                  
         private void SetDefaultValues()
         {
-            if (_pressureOverclosureType == PressureOverclosureEnum.Linear) C0 = double.NaN;
-            else C0 = 1E-3;
+            double E = StringPressureConverter.ConvertToCurrentUnits("200 GPa");
             //
-            P0 = 0.1;
-            K = 10000000;
-            Sinf = 1;
-            _pressureOverclosure = new double[][] { new double[] { 0, 0 }, new double[] { 1000000, 10 } };
+            if (_pressureOverclosureType == PressureOverclosureEnum.Linear) C0 = double.NaN;    // for a default value
+            else C0 = Tools.RoundToSignificantDigits(StringLengthConverter.ConvertToCurrentUnits("1 mm"), 3);
+            //
+            P0 = Tools.RoundToSignificantDigits(StringPressureConverter.ConvertToCurrentUnits("0.1 MPa"), 3);
+            //
+            K = Tools.RoundToSignificantDigits(E * 50, 3);
+            //
+            Sinf = Tools.RoundToSignificantDigits(E / 70000, 3);
+            _pressureOverclosure = new double[][]
+            {
+                new double[] { 0, 0 },
+                new double[]
+                {
+                    Tools.RoundToSignificantDigits(StringPressureConverter.ConvertToCurrentUnits("100000 MPa"), 3),
+                    Tools.RoundToSignificantDigits(StringLengthConverter.ConvertToCurrentUnits("1 mm"), 3)
+                }
+            };
         }
     }
 }

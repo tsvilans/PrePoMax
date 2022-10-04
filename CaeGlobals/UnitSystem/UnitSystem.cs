@@ -516,6 +516,7 @@ namespace CaeGlobals
             StringAngleConverter.SetUnit = AngleUnitAbbreviation;
             StringAngleDOFConverter.SetUnit = AngleUnitAbbreviation;
             StringAngleFixedDOFConverter.SetUnit = AngleUnitAbbreviation;
+            StringMassConverter.SetUnit = MassUnitAbbreviation;
             StringTimeConverter.SetUnit = TimeUnitAbbreviation;
             StringTemperatureConverter.SetUnit = TemperatureUnitAbbreviation;
             StringTemperatureUndefinedConverter.SetUnit = TemperatureUnitAbbreviation;

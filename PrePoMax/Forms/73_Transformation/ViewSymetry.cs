@@ -30,7 +30,7 @@ namespace PrePoMax.Forms
         //
         [Category("Symmetry point coordinates")]
         [OrderedDisplayName(0, 10, "By selection")]
-        [DescriptionAttribute("Use selection for the defenition of the symmetry point.")]
+        [DescriptionAttribute("Use selection for the definition of the symmetry point.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 2)]
         public ItemSetData SymmetryPointItemSet

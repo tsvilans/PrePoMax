@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Duration time = Duration.Parse(valueString);
-                    if ((int)_timeUnit != MyUnit.NoUnit) time = time.ToUnit(_timeUnit);
-                    valueDouble = time.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -78,6 +76,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Duration time = Duration.Parse(valueWithUnitString);
+                if ((int)_timeUnit != MyUnit.NoUnit) time = time.ToUnit(_timeUnit);
+                return time.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported time abbreviations: ";
+            var allUnits = Duration.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Duration.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

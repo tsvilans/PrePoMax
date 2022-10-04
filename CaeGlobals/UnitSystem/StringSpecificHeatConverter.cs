@@ -101,7 +101,7 @@ namespace CaeGlobals
                 double valueDouble;
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 return valueDouble;
             }
@@ -129,31 +129,47 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
-        {            
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            //
-            string[] tmp = valueWithUnitString.Split('/');
-            if (tmp.Length != 2) throw new FormatException(error);
-            //
-            StringEnergyConverter converter = new StringEnergyConverter();
-            double energyValue = (double)converter.ConvertFrom(tmp[0]);
-            // NoUnit
-            if ((int)_energyUnit == MyUnit.NoUnit || (int)_massUnit == MyUnit.NoUnit || (int)_temperatureDeltaUnit == MyUnit.NoUnit)
-                return energyValue;
-            //
-            tmp = tmp[1].Replace("(", "").Replace(")", "").Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
-            if (tmp.Length != 2) throw new FormatException(error);
-            //
-            MassUnit massUnit = Mass.ParseUnit(tmp[0]);
-            Mass mass = Mass.From(1, massUnit).ToUnit(_massUnit);
-            //
-            if (!tmp[1].Contains("∆")) tmp[1] = "∆" + tmp[1];
-            TemperatureDeltaUnit temperatureDeltaUnit = TemperatureDelta.ParseUnit(tmp[1]);
-            TemperatureDelta temperatureDelta = TemperatureDelta.From(1, temperatureDeltaUnit).ToUnit(_temperatureDeltaUnit);
-            //
-            double value = energyValue / (mass.Value * temperatureDelta.Value);
-            return value;
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                //
+                string[] tmp = valueWithUnitString.Split('/');
+                if (tmp.Length != 2) throw new FormatException(error);
+                //
+                StringEnergyConverter converter = new StringEnergyConverter();
+                double energyValue = (double)converter.ConvertFrom(tmp[0]);
+                // NoUnit
+                if ((int)_energyUnit == MyUnit.NoUnit || (int)_massUnit == MyUnit.NoUnit || (int)_temperatureDeltaUnit == MyUnit.NoUnit)
+                    return energyValue;
+                //
+                tmp = tmp[1].Replace("(", "").Replace(")", "").Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
+                if (tmp.Length != 2) throw new FormatException(error);
+                //
+                MassUnit massUnit = Mass.ParseUnit(tmp[0]);
+                Mass mass = Mass.From(1, massUnit).ToUnit(_massUnit);
+                //
+                if (!tmp[1].Contains("∆")) tmp[1] = "∆" + tmp[1];
+                TemperatureDeltaUnit temperatureDeltaUnit = TemperatureDelta.ParseUnit(tmp[1]);
+                TemperatureDelta temperatureDelta = TemperatureDelta.From(1, temperatureDeltaUnit).ToUnit(_temperatureDeltaUnit);
+                //
+                double value = energyValue / (mass.Value * temperatureDelta.Value);
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message.Replace("∆", "") + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = StringEnergyConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringMassConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringTemperatureConverter.SupportedDeltaUnitAbbreviations();
+            return supportedUnitAbbreviations;
         }
     }
 

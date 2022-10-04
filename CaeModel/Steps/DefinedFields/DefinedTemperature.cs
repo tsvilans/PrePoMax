@@ -7,6 +7,7 @@ using CaeMesh;
 using System.ComponentModel;
 using DynamicTypeDescriptor;
 using CaeGlobals;
+using CaeResults;
 
 namespace CaeModel
 {
@@ -21,7 +22,7 @@ namespace CaeModel
     //
     [Serializable]
                 
-    public class DefinedTemperature : DefinedField
+    public class DefinedTemperature : DefinedField, IPreviewable
     {
         // Variables                                                                                                                
         private DefinedTemperatureTypeEnum _definedTemperatureType;
@@ -57,5 +58,61 @@ namespace CaeModel
 
 
         // Methods                                                                                                                  
+        public FeResults GetPreview(FeMesh targetMesh, string resultName, UnitSystemType unitSystemType)
+        {
+            if (Type == DefinedTemperatureTypeEnum.ByValue)
+            {
+                PartExchangeData allData = new PartExchangeData();
+                targetMesh.GetAllNodesAndCells(out allData.Nodes.Ids, out allData.Nodes.Coor, out allData.Cells.Ids,
+                                               out allData.Cells.CellNodeIds, out allData.Cells.Types);
+                //
+                FeNodeSet nodeSet;
+                if (RegionType == RegionTypeEnum.NodeSetName)
+                {
+                    nodeSet = targetMesh.NodeSets[RegionName];
+                }
+                else if (RegionType == RegionTypeEnum.SurfaceName)
+                {
+                    FeSurface surface = targetMesh.Surfaces[RegionName];
+                    nodeSet = targetMesh.NodeSets[surface.NodeSetName];
+                }
+                else throw new NotSupportedException();
+                //
+                HashSet<int> nodeIds = new HashSet<int>(nodeSet.Labels);
+                //
+                float[] values = new float[allData.Nodes.Coor.Length];
+                //
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (nodeIds.Contains(allData.Nodes.Ids[i])) values[i] = (float)_temperature;
+                    else values[i] = float.NaN;
+                }
+                //
+                Dictionary<int, int> nodeIdsLookUp = new Dictionary<int, int>();
+                for (int i = 0; i < allData.Nodes.Coor.Length; i++) nodeIdsLookUp.Add(allData.Nodes.Ids[i], i);
+                FeResults results = new FeResults(resultName);
+                results.SetMesh(targetMesh, nodeIdsLookUp);
+                // Add distances
+                FieldData fieldData = new FieldData(FOFieldNames.NdTemp);
+                fieldData.GlobalIncrementId = 1;
+                fieldData.Type = StepType.Static;
+                fieldData.Time = 1;
+                fieldData.MethodId = 1;
+                fieldData.StepId = 1;
+                fieldData.StepIncrementId = 1;
+                // Add values
+                Field field = new Field(fieldData.Name);
+                field.AddComponent(FOComponentNames.T, values);
+                results.AddFiled(fieldData, field);
+                // Unit system
+                results.UnitSystem = new UnitSystem(unitSystemType);
+                //
+                return results;
+            }
+            else if (Type == DefinedTemperatureTypeEnum.FromFile)
+                throw new CaeException("It is not possible to preview this defined field type.");
+            else
+                throw new NotSupportedException();
+        }
     }
 }

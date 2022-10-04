@@ -100,13 +100,11 @@ namespace CaeGlobals
         {
             values = new ArrayList(new double[] { double.PositiveInfinity, _initialValue });
         }
-        // Indicates this converter provides a list of standard values.
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
-        // Returns a StandardValuesCollection of standard value objects.
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             // Passes the local integer array.
             StandardValuesCollection svc = new StandardValuesCollection(values);
@@ -127,7 +125,7 @@ namespace CaeGlobals
                 if (string.Equals(valueString, _undefined)) valueDouble = double.PositiveInfinity;
                 else if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 return valueDouble;
             }
@@ -159,36 +157,52 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
-        {            
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            //
-            string[] tmp = valueWithUnitString.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            if (tmp.Length != 2) throw new FormatException(error);
-            string denominator = tmp[1];
-            //
-            tmp = tmp[0].Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
-            if (tmp.Length != 2) throw new FormatException(error);
-            //
-            Force force = Force.Parse(tmp[0]);
-            // NoUnit
-            if ((int)_forceUnit == MyUnit.NoUnit || (int)_lengthUnit == MyUnit.NoUnit ||  (int)_massUnit == MyUnit.NoUnit)
-                return force.Value;
-            else force = force.ToUnit(_forceUnit);
-            //
-            if (tmp[1].EndsWith("²") || tmp[1].EndsWith("^2")) tmp[1] = tmp[1].Replace("²", "").Replace("^2", "");
-            else throw new FormatException(error);
-            LengthUnit lengthUnit = Length.ParseUnit(tmp[1]);
-            Length length = Length.From(1, lengthUnit).ToUnit(_lengthUnit);
-            //
-            if (denominator.EndsWith("²") || denominator.EndsWith("^2"))
-                denominator = denominator.Replace("²", "").Replace("^2", "");
-            else throw new FormatException(error);
-            MassUnit massUnit = Mass.ParseUnit(denominator);
-            Mass mass = Mass.From(1, massUnit).ToUnit(_massUnit);
-            //
-            double value = (double)force.Value * Math.Pow(length.Value, 2) / Math.Pow(mass.Value, 2);
-            return value;
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                //
+                string[] tmp = valueWithUnitString.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+                if (tmp.Length != 2) throw new FormatException(error);
+                string denominator = tmp[1];
+                //
+                tmp = tmp[0].Split(new string[] { "*", "·" }, StringSplitOptions.RemoveEmptyEntries);
+                if (tmp.Length != 2) throw new FormatException(error);
+                //
+                Force force = Force.Parse(tmp[0]);
+                // NoUnit
+                if ((int)_forceUnit == MyUnit.NoUnit || (int)_lengthUnit == MyUnit.NoUnit || (int)_massUnit == MyUnit.NoUnit)
+                    return force.Value;
+                else force = force.ToUnit(_forceUnit);
+                //
+                if (tmp[1].EndsWith("²") || tmp[1].EndsWith("^2")) tmp[1] = tmp[1].Replace("²", "").Replace("^2", "");
+                else throw new FormatException(error);
+                LengthUnit lengthUnit = Length.ParseUnit(tmp[1]);
+                Length length = Length.From(1, lengthUnit).ToUnit(_lengthUnit);
+                //
+                if (denominator.EndsWith("²") || denominator.EndsWith("^2"))
+                    denominator = denominator.Replace("²", "").Replace("^2", "");
+                else throw new FormatException(error);
+                MassUnit massUnit = Mass.ParseUnit(denominator);
+                Mass mass = Mass.From(1, massUnit).ToUnit(_massUnit);
+                //
+                double value = (double)force.Value * Math.Pow(length.Value, 2) / Math.Pow(mass.Value, 2);
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = StringForceConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringLengthConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringMassConverter.SupportedUnitAbbreviations();
+            return supportedUnitAbbreviations;
         }
     }
 

@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    UnitsNet.Density density = UnitsNet.Density.Parse(valueString);
-                    if ((int)_densityUnit != MyUnit.NoUnit) density = density.ToUnit(_densityUnit);
-                    valueDouble = density.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -78,6 +76,36 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                UnitsNet.Density density = UnitsNet.Density.Parse(valueWithUnitString);
+                if ((int)_densityUnit != MyUnit.NoUnit) density = density.ToUnit(_densityUnit);
+                return density.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported density abbreviations: ";
+            var allUnits = UnitsNet.Density.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = UnitsNet.Density.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

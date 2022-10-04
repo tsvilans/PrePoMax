@@ -27,5 +27,8 @@ namespace CaeGlobals
             NodesAnimation = null;
             ExtremeNodesAnimation = null;
         }
+
+        // Methods                                                                                                                  
+       
     }
 }

@@ -11,7 +11,7 @@ namespace PrePoMax
     {
         public static string HomePage = "https://prepomax.fs.um.si/";
         //
-        public static string ProgramName = "PrePoMax v1.3.3";
+        public static string ProgramName = "PrePoMax v1.3.5";
         //
         public static string ReadyText = "Ready";
         public static string OpeningText = "Opening...";
@@ -19,6 +19,8 @@ namespace PrePoMax
         public static string SavingText = "Saving...";
         public static string SavingAsText = "Saving As...";
         public static string ExportingText = "Exporting...";
+        public static string TransformingText = "Transforming...";
+        public static string PreviewText = "Preview...";
         public static string MeshingText = "Meshing...";
         public static string UndoingText = "Undoing...";
         public static string CreatingCompoundText = "Creating compound...";

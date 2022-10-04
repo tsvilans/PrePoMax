@@ -389,10 +389,10 @@ namespace PrePoMax.Forms
             {
                 if (_setSaveAsFolder)    // set the movie folder only the first time the saveFileDialog is shown
                 {
-                    saveFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(_controller.Results.FileName);
+                    saveFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(_controller.CurrentResult.FileName);
                     _setSaveAsFolder = false;
                 }
-                saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(_controller.Results.FileName) + ".avi";
+                saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(_controller.CurrentResult.FileName) + ".avi";
                 saveFileDialog1.Filter = "Avi files | *.avi";
                 if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -426,10 +426,10 @@ namespace PrePoMax.Forms
             {
                 if (_setSaveAsFolder)    // set the movie folder only the first time the saveFileDialog is shown
                 {
-                    saveFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(_controller.Results.FileName);
+                    saveFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(_controller.CurrentResult.FileName);
                     _setSaveAsFolder = false;
                 }
-                saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(_controller.Results.FileName) + ".png";
+                saveFileDialog1.FileName = System.IO.Path.GetFileNameWithoutExtension(_controller.CurrentResult.FileName) + ".png";
                 saveFileDialog1.Filter = "Png files | *.png";
                 if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {

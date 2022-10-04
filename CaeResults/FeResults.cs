@@ -181,7 +181,19 @@ namespace CaeResults
         // Mesh                                     
         public void SetMesh(FeMesh mesh, Dictionary<int, int> nodeIdsLookUp)
         {
-            _mesh = mesh;
+            _mesh = new FeMesh(mesh, mesh.Parts.Keys.ToArray());
+            //
+            List<BasePart> parts = new List<BasePart>();
+            foreach (var entry in _mesh.Parts)
+            {
+                if (!(entry.Value is ResultPart)) parts.Add(entry.Value);
+            }
+            //
+            foreach (var part in parts)
+            {
+                _mesh.Parts.Replace(part.Name, part.Name, new ResultPart(part));
+            }
+            //
             InitializeUndeformedNodes();
             //
             _nodeIdsLookUp = nodeIdsLookUp;
@@ -466,8 +478,9 @@ namespace CaeResults
                                 deformedNode = new FeNode(node.Id, node.X + offset[0], node.Y + offset[1], node.Z + offset[2]);
                             // Geometry parts
                             else deformedNode = node;
-                            //
-                            deformedNodes.Add(deformedNode.Id, deformedNode);
+                            // Check for merged nodes as in compound parts
+                            if (!deformedNodes.ContainsKey(deformedNode.Id))
+                                deformedNodes.Add(deformedNode.Id, deformedNode);
                         }
                     }
                 }
@@ -548,7 +561,7 @@ namespace CaeResults
         }
         public static OrderedDictionary<string, string> GetPossibleDeformationFieldOutputNamesMap()
         {
-            OrderedDictionary<string, string> names = new OrderedDictionary<string, string>();
+            OrderedDictionary<string, string> names = new OrderedDictionary<string, string>("Deformation names");
             names.Add("Displacements", FOFieldNames.Disp);
             names.Add("Forces", FOFieldNames.Forc);
             names.Add("Surface normals", FOFieldNames.SurfaceNormal);
@@ -637,11 +650,13 @@ namespace CaeResults
                         unitAbbreviation = "";
                         break;
                     case FOFieldNames.Disp:
+                    case FOFieldNames.Distance: // Imported pressure
                         unitConverter = new StringLengthConverter();
                         unitAbbreviation = _unitSystem.LengthUnitAbbreviation;
                         break;
                     case FOFieldNames.Stress:
                     case FOFieldNames.ZZStr:
+                    case FOFieldNames.Imported: // Imported pressure
                         unitConverter = new StringPressureConverter();
                         unitAbbreviation = _unitSystem.PressureUnitAbbreviation;
                         break;
@@ -684,7 +699,7 @@ namespace CaeResults
                             }
                         }
                         break;
-                    // WEAR
+                    // Wear
                     case FOFieldNames.SlidingDistance:
                     case FOFieldNames.SurfaceNormal:
                     case FOFieldNames.WearDepth:
@@ -720,10 +735,13 @@ namespace CaeResults
                         unitAbbreviation = "/";
                         break;
                     default:
-                        if (System.Diagnostics.Debugger.IsAttached) throw new NotSupportedException();
-                        //
                         unitConverter = new DoubleConverter();
                         unitAbbreviation = "?";
+                        // OpenFOAM
+                        if (componentName.ToUpper().StartsWith("VAL")) { }
+                        else if (_unitSystem.UnitSystemType == UnitSystemType.UNIT_LESS) unitAbbreviation = "";
+                        else if (System.Diagnostics.Debugger.IsAttached) throw new NotSupportedException();
+                        //
                         break;
                 }
             }
@@ -1436,23 +1454,25 @@ namespace CaeResults
                         int id;
                         float value;
                         BasePart basePart;
+                        bool firstNaN = true;
                         float[] values = fieldEntry.Value.GetComponentValues(fieldData.Component);
                         //
                         basePart = _mesh.Parts[partName];
-                        //
+                        // Initialize   
+                        nodesData.Values[0] = float.MaxValue;
+                        nodesData.Values[1] = -float.MaxValue;
+                        // Get first value
                         if (_nodeIdsLookUp.TryGetValue(basePart.NodeLabels[0], out id) && id < values.Length)
                         {
-                                value = values[id];
-                                //
+                            value = values[id];
+                            if (!float.IsNaN(value))
+                            {
+                                firstNaN = false;
                                 nodesData.Values[0] = value;
-                                minId = basePart.NodeLabels[0];
                                 nodesData.Values[1] = value;
-                                maxId = basePart.NodeLabels[0];
-                        }
-                        else
-                        {
-                            nodesData.Values[0] = float.MaxValue;
-                            nodesData.Values[1] = -float.MaxValue;
+                            }
+                            minId = basePart.NodeLabels[0];
+                            maxId = basePart.NodeLabels[0];
                         }
                         //
                         foreach (var nodeId in basePart.NodeLabels)
@@ -1460,15 +1480,18 @@ namespace CaeResults
                             if (_nodeIdsLookUp.TryGetValue(nodeId, out id) && id < values.Length)
                             {
                                 value = values[id];
-                                if (value < nodesData.Values[0])
+                                if (!float.IsNaN(value))
                                 {
-                                    nodesData.Values[0] = value;
-                                    minId = nodeId;
-                                }
-                                else if (value > nodesData.Values[1])
-                                {
-                                    nodesData.Values[1] = value;
-                                    maxId = nodeId;
+                                    if (value < nodesData.Values[0])
+                                    {
+                                        nodesData.Values[0] = value;
+                                        minId = nodeId;
+                                    }
+                                    else if (value > nodesData.Values[1])
+                                    {
+                                        nodesData.Values[1] = value;
+                                        maxId = nodeId;
+                                    }
                                 }
                             }
                         }
@@ -1482,15 +1505,23 @@ namespace CaeResults
                             nodesData.Values[0] = nodesData.Values[1];
                             nodesData.Values[1] = tmpD;
                         }
-                        //
+                        // Ids
                         nodesData.Ids[0] = minId;
                         nodesData.Ids[1] = maxId;
-                        //
+                        // Coordinates
                         nodesData.Coor[0] = _mesh.Nodes[minId].Coor;
                         nodesData.Coor[1] = _mesh.Nodes[maxId].Coor;
-                        //
-                        nodesData.Values[0] *= relativeScale;
-                        nodesData.Values[1] *= relativeScale;
+                        // Values
+                        if (firstNaN && minId == maxId) // all values are NaN
+                        {
+                            nodesData.Values[0] = 0;
+                            nodesData.Values[1] = 0;
+                        }
+                        else
+                        {
+                            nodesData.Values[0] *= relativeScale;
+                            nodesData.Values[1] *= relativeScale;
+                        }
                         //
                         break;
                     }
@@ -1798,10 +1829,19 @@ namespace CaeResults
             values = GetValues(fieldData, nodeIds);
         }
         //
-        public PartExchangeData GetAllNodesCellsAndValues(FeGroup elementSet, FieldData fData)
+        public PartExchangeData GetAllNodesCellsAndValues(FieldData fData)
         {
             PartExchangeData pData = new PartExchangeData();
-            _mesh.GetAllNodesAndCells(elementSet, out pData.Nodes.Ids, out pData.Nodes.Coor, out pData.Cells.Ids,
+            _mesh.GetAllNodesAndCells(out pData.Nodes.Ids, out pData.Nodes.Coor, out pData.Cells.Ids,
+                                      out pData.Cells.CellNodeIds, out pData.Cells.Types);
+            if (!fData.Valid) pData.Nodes.Values = null;
+            else pData.Nodes.Values = GetValues(fData, pData.Nodes.Ids);
+            return pData;
+        }
+        public PartExchangeData GetSetNodesCellsAndValues(FeGroup elementSet, FieldData fData)
+        {
+            PartExchangeData pData = new PartExchangeData();
+            _mesh.GetSetNodesAndCells(elementSet, out pData.Nodes.Ids, out pData.Nodes.Coor, out pData.Cells.Ids,
                                       out pData.Cells.CellNodeIds, out pData.Cells.Types);
             if (!fData.Valid) pData.Nodes.Values = null;
             else pData.Nodes.Values = GetValues(fData, pData.Nodes.Ids);
@@ -1869,7 +1909,7 @@ namespace CaeResults
             }
             // Locator
             locatorResultData = new PartExchangeData();
-            _mesh.GetAllNodesAndCells(part, out locatorResultData.Nodes.Ids, out locatorResultData.Nodes.Coor, 
+            _mesh.GetSetNodesAndCells(part, out locatorResultData.Nodes.Ids, out locatorResultData.Nodes.Coor, 
                                       out locatorResultData.Cells.Ids, out locatorResultData.Cells.CellNodeIds,
                                       out locatorResultData.Cells.Types);
             // Values
@@ -1939,7 +1979,7 @@ namespace CaeResults
             // Edges
             if (modelEdges) modelEdgesResultData = GetEdgesNodesAndCells(part, fData);
             // Locator
-            locatorResultData = GetAllNodesCellsAndValues(part, fData);
+            locatorResultData = GetSetNodesCellsAndValues(part, fData);
             // Get all existing increments
             Dictionary<int, int[]> existingStepIncrementIds = GetExistingIncrementIds(fData.Name, fData.Component);
             // Count all existing increments
@@ -1973,7 +2013,7 @@ namespace CaeResults
                         modelEdgesResultData.NodesAnimation[count] = data.Nodes;
                     }
                     // Locator
-                    data = GetAllNodesCellsAndValues(part, tmpFieldData);
+                    data = GetSetNodesCellsAndValues(part, tmpFieldData);
                     locatorResultData.NodesAnimation[count] = data.Nodes;
                     //
                     count++;
@@ -2758,7 +2798,7 @@ namespace CaeResults
             HashSet<int> slipStepIdsHash = new HashSet<int>(slipStepIds);
             //
             double sumTime = 0;
-            OrderedDictionary<int, double> stepIdStartTime = new OrderedDictionary<int, double>();
+            OrderedDictionary<int, double> stepIdStartTime = new OrderedDictionary<int, double>("Step id - step time");
             foreach (var entry in stepIdDuration)
             {
                 stepIdStartTime.Add(entry.Key, sumTime);

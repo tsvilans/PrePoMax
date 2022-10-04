@@ -90,11 +90,11 @@ namespace FileInOut.Input
         {
             WriteDataToOutputStatic = WriteDataToOutput;
             _errors = new List<string>();
-            indexedUserKeywords = new OrderedDictionary<int[], CalculixUserKeyword>();
+            indexedUserKeywords = new OrderedDictionary<int[], CalculixUserKeyword>("User calculix keywords");
             //
             if (fileName != null && File.Exists(fileName))
             {
-                string[] lines = File.ReadAllLines(fileName);
+                string[] lines = Tools.ReadAllLines(fileName);
                 lines = ReadIncludes(lines, 0, Path.GetDirectoryName(fileName));
                 //
                 string[] dataSet;
@@ -139,15 +139,15 @@ namespace FileInOut.Input
                 }
                 //
 
-                OrderedDictionary<string, FeReferencePoint> referencePoints = new OrderedDictionary<string, FeReferencePoint>();
-                OrderedDictionary<string, Material> materials = new OrderedDictionary<string, Material>();
-                OrderedDictionary<string, Section> sections = new OrderedDictionary<string, Section>();
-                OrderedDictionary<string, Constraint> constraints = new OrderedDictionary<string, Constraint>();
+                OrderedDictionary<string, FeReferencePoint> referencePoints = new OrderedDictionary<string, FeReferencePoint>("Reference points");
+                OrderedDictionary<string, Material> materials = new OrderedDictionary<string, Material>("Materials");
+                OrderedDictionary<string, Section> sections = new OrderedDictionary<string, Section>("Sections");
+                OrderedDictionary<string, Constraint> constraints = new OrderedDictionary<string, Constraint>("Constraints");
                 OrderedDictionary<string, SurfaceInteraction> surfaceInteractions = 
-                    new OrderedDictionary<string, SurfaceInteraction>();
-                OrderedDictionary<string, ContactPair> contactPairs = new OrderedDictionary<string, ContactPair>();
-                OrderedDictionary<string, Amplitude> amplitudes = new OrderedDictionary<string, Amplitude>();
-                OrderedDictionary<string, Step> steps = new OrderedDictionary<string, Step>();
+                    new OrderedDictionary<string, SurfaceInteraction>("Surface interactions");
+                OrderedDictionary<string, ContactPair> contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
+                OrderedDictionary<string, Amplitude> amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
+                OrderedDictionary<string, Step> steps = new OrderedDictionary<string, Step>("Steps");
                 List<CalculixUserKeyword> userKeywords = new List<CalculixUserKeyword>();
                 //
                 for (int i = 0; i < dataSets.Length; i++)
@@ -157,7 +157,19 @@ namespace FileInOut.Input
                     //
                     WriteDataToOutputStatic("Reading keyword line: " + dataSet[0]);
                     //
-                    if (keyword == "*NSET")
+                    if (keyword == "*PART")
+                    {
+                        // Files created in Gmesh containing only one part can have a name
+                        string newName = GetPartName(dataSet);
+                        if (newName != null && mesh.Parts.Count == 1)
+                        {
+                            string oldName = mesh.Parts.Keys.First();
+                            BasePart part = mesh.Parts[oldName];
+                            part.Name = newName;
+                            mesh.Parts.Replace(oldName, newName, part);
+                        }
+                    }
+                    else if (keyword == "*NSET")
                     {
                         GetNodeOrElementSet("NSET", dataSet, mesh, out name, out ids);
                         if (NamedClass.CheckNameError(name) != null) AddError(NamedClass.CheckNameError(name));
@@ -239,7 +251,7 @@ namespace FileInOut.Input
                 int[] indices;
                 Stack<int> indexStack = new Stack<int>();
                 List<CalculixKeyword> keywords = Output.CalculixFileWriter.GetModelKeywords(model);
-                indexedUserKeywords = new OrderedDictionary<int[], CalculixUserKeyword>();
+                indexedUserKeywords = new OrderedDictionary<int[], CalculixUserKeyword>("User Calculix keywords");
                 foreach (CalculixUserKeyword userKeyword in userKeywords)
                 {
                     indexStack.Clear();
@@ -262,8 +274,8 @@ namespace FileInOut.Input
             //
             if (fileName != null && File.Exists(fileName))
             {
-                string[] lines = File.ReadAllLines(fileName);
-                lines = ReadIncludes(lines, 0, Path.GetDirectoryName(fileName));
+                string[] lines = Tools.ReadAllLines(fileName);
+                //lines = ReadIncludes(lines, 0, Path.GetDirectoryName(fileName));
                 //
                 string[] dataSet;
                 string[][] dataSets = GetDataSets(lines);
@@ -355,7 +367,7 @@ namespace FileInOut.Input
                             if (File.Exists(fileName))
                             {
                                 includeRowNumber = i;
-                                includeLines = File.ReadAllLines(fileName);
+                                includeLines = Tools.ReadAllLines(fileName);
                                 break;
                             }
                             else _errors.Add("Line " + i + ": The include file does not exist.");
@@ -510,11 +522,12 @@ namespace FileInOut.Input
                         // LINEAR ELEMENTS                                                                                          
                         // Linear triangle element
                         case "S3":
+                        case "S3R":
                         case "M3D3":
                         case "CPS3":
                         case "CPE3":
                         case "CAX3":
-                            element = GetLinearTriangleElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetLinearTriangleElement(ref i, lines, _splitter);
                             break;
                         // Linear quadrilateral element
                         case "S4":
@@ -527,21 +540,21 @@ namespace FileInOut.Input
                         case "CPE4R":
                         case "CAX4":
                         case "CAX4R":
-                            element = GetLinearQuadrilateralElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetLinearQuadrilateralElement(ref i, lines, _splitter);
                             break;
                         // Linear tetrahedron element
                         case "C3D4":
-                            element = GetLinearTetraElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetLinearTetraElement(ref i, lines, _splitter);
                             break;
                         // Linear wedge element
                         case "C3D6":
-                            element = GetLinearWedgeElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetLinearWedgeElement(ref i, lines, _splitter);
                             break;
                         // Linear hexahedron element
                         case "C3D8":
                         case "C3D8R":
                         case "C3D8I":
-                            element = GetLinearHexaElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetLinearHexaElement(ref i, lines, _splitter);
                             break;
                         // PARABOLIC ELEMENTS                                                                                       
                         // Parabolic triangle element
@@ -550,7 +563,7 @@ namespace FileInOut.Input
                         case "CPS6":
                         case "CPE6":
                         case "CAX6":
-                            element = GetParabolicTriangleElement(lines[i].Split(_splitter, StringSplitOptions.RemoveEmptyEntries));
+                            element = GetParabolicTriangleElement(ref i, lines, _splitter);
                             break;
                         // Parabolic quadrilateral element
                         case "S8":
@@ -609,6 +622,23 @@ namespace FileInOut.Input
             {
                 AddError(ex.Message);
             }
+        }
+        // Part name
+        private static string GetPartName(string[] lines)
+        {
+            if (lines.Length > 0)
+            {
+                string[] tmp = lines[0].Split(_splitterComma, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var keyword in tmp)
+                {
+                    if (keyword.Trim().ToUpper().StartsWith("NAME="))
+                    {
+                        tmp = tmp[1].Split(_splitterEqual, StringSplitOptions.RemoveEmptyEntries);
+                        if (tmp.Length == 2) return tmp[1].Trim();
+                    }
+                }
+            }
+            return null;
         }
         // Node/Element set
         private static void GetNodeOrElementSet(string keywordName, string[] lines, FeMesh mesh, out string name, out int[] ids)
@@ -1283,7 +1313,8 @@ namespace FileInOut.Input
                 //
                 if (dataSet.Length == 2)
                 {
-                    double thickness = double.Parse(dataSet[1]);
+                    record1 = dataSet[1].Split(_splitterComma, StringSplitOptions.RemoveEmptyEntries);
+                    double thickness = double.Parse(record1[0]);
                     //
                     string name = sections.GetNextNumberedKey("Section");
                     ShellSection section = new ShellSection(name, materialName, regionName, RegionTypeEnum.ElementSetName,
@@ -1551,12 +1582,16 @@ namespace FileInOut.Input
                 // If the second line exists the incrementation is Direct or Automatic
                 if (!staticStep.Direct) staticStep.IncrementationType = IncrementationTypeEnum.Automatic;
                 //
-                record2 = dataSet[1].Split(_splitterComma, StringSplitOptions.RemoveEmptyEntries);
+                record2 = dataSet[1].Split(_splitterComma, StringSplitOptions.None); // must be none
                 //
-                if (record2.Length > 0) staticStep.InitialTimeIncrement = double.Parse(record2[0]);
-                if (record2.Length > 1) staticStep.TimePeriod = double.Parse(record2[1]);
-                if (record2.Length > 2) staticStep.MinTimeIncrement = double.Parse(record2[2]);
-                if (record2.Length > 3) staticStep.MaxTimeIncrement = double.Parse(record2[3]);
+                if (record2.Length > 0 && record2[0].Trim().Length > 0)
+                    staticStep.InitialTimeIncrement = double.Parse(record2[0]);
+                if (record2.Length > 1 && record2[1].Trim().Length > 0)
+                    staticStep.TimePeriod = double.Parse(record2[1]);
+                if (record2.Length > 2 && record2[2].Trim().Length > 0)
+                    staticStep.MinTimeIncrement = double.Parse(record2[2]);
+                if (record2.Length > 3 && record2[3].Trim().Length > 0)
+                    staticStep.MaxTimeIncrement = double.Parse(record2[3]);
             }
             //
             return staticStep;
@@ -2213,7 +2248,8 @@ namespace FileInOut.Input
                 _errors.Add("Failed to import element history output: " + lines.ToRows());
             }
         }
-        private static void AddStepContactHistoryOutput(Step step, string[] lines, OrderedDictionary<string, ContactPair> contactPairs)
+        private static void AddStepContactHistoryOutput(Step step, string[] lines,
+                                                        OrderedDictionary<string, ContactPair> contactPairs)
         {
             //*Contact print, Elset=Internal_Selection-7_Fz, Totals=Only, Totals=Yes
             // S, E, ME, PEEQ
@@ -2289,197 +2325,130 @@ namespace FileInOut.Input
             }
         }
 
-        //  LINEAR ELEMENTS                                                                                        
-        private static LinearTriangleElement GetLinearTriangleElement(string[] record)
+        //  LINEAR ELEMENTS                                                                                                         
+        private static LinearTriangleElement GetLinearTriangleElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 598, 1368, 1306
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[3];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new LinearTriangleElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(3, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new LinearTriangleElement(id, nodeIds);
         }
-        private static LinearQuadrilateralElement GetLinearQuadrilateralElement(string[] record)
+        private static LinearQuadrilateralElement GetLinearQuadrilateralElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 598, 1368, 1306, 16
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[4];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new LinearQuadrilateralElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(4, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new LinearQuadrilateralElement(id, nodeIds);
         }
-        private static LinearTetraElement GetLinearTetraElement(string[] record)
+        private static LinearTetraElement GetLinearTetraElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 598, 1368, 1306, 1291
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[4];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new LinearTetraElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(4, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new LinearTetraElement(id, nodeIds);
         }
-        private static LinearWedgeElement GetLinearWedgeElement(string[] record)
+        private static LinearWedgeElement GetLinearWedgeElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1,  132,  133,  495,  646,  647, 1009
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[6];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new LinearWedgeElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(6, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new LinearWedgeElement(id, nodeIds);
         }
-        private static LinearHexaElement GetLinearHexaElement(string[] record)
+        private static LinearHexaElement GetLinearHexaElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 598, 1368, 1306, 1291, 3, 4, 5, 6
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[8];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new LinearHexaElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(8, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new LinearHexaElement(id, nodeIds);
         }
 
 
-        //  PARABOLIC ELEMENTS                                                                                    
-        private static ParabolicTriangleElement GetParabolicTriangleElement(string[] record)
+        //  PARABOLIC ELEMENTS                                                                                                      
+        private static ParabolicTriangleElement GetParabolicTriangleElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 598, 1368, 1306, 1291, 15 ,16
-            int id = int.Parse(record[0]);
-            int[] nodes = new int[6];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                nodes[i] = int.Parse(record[i + 1]);
-            }
-            return new ParabolicTriangleElement(id, nodes);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(6, ref lineId, lines, splitter, out id, out nodeIds);
+            //
+            return new ParabolicTriangleElement(id, nodeIds);
         }
         private static ParabolicQuadrilateralElement GetParabolicQuadrilateralElement(ref int lineId, string[] lines,
                                                                                       string[] splitter)
         {
             // 1, 5518, 5519, 4794, 5898, 19815, 19819, 19817, 
             // 19816
-            int n = 8;
-            int[] nodes = new int[n];
-            // First row
-            string[] record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(8, ref lineId, lines, splitter, out id, out nodeIds);
             //
-            int id = int.Parse(record[0]);
-            //
-            int count = 0;
-            for (int i = 1; i < record.Length; i++)
-            {
-                nodes[count++] = int.Parse(record[i]);
-            }
-            // Second row
-            if (record.Length < n + 1)
-            {
-                lineId++;
-                record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-                //
-                for (int i = 0; i < record.Length; i++)
-                {
-                    nodes[count++] = int.Parse(record[i]);
-                }
-            }
-            //
-            return new ParabolicQuadrilateralElement(id, nodes);
+            return new ParabolicQuadrilateralElement(id, nodeIds);
         }
         private static ParabolicTetraElement GetParabolicTetraElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 5518, 5519, 4794, 5898, 19815, 19819, 19817, 
             // 19816, 19818, 19820
-            int n = 10;
-            int[] nodes = new int[n];
-            // First row
-            string[] record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(10, ref lineId, lines, splitter, out id, out nodeIds);
             //
-            int id = int.Parse(record[0]);
-            //
-            int count = 0;
-            for (int i = 1; i < record.Length; i++)
-            {
-                nodes[count++] = int.Parse(record[i]);
-            }
-            // Second row
-            if (record.Length < n + 1)
-            {
-                lineId++;
-                record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-                //
-                for (int i = 0; i < record.Length; i++)
-                {
-                    nodes[count++] = int.Parse(record[i]);
-                }
-            }
-            //
-            return new ParabolicTetraElement(id, nodes);
+            return new ParabolicTetraElement(id, nodeIds);
         }
         private static ParabolicWedgeElement GetParabolicWedgeElement(ref int lineId, string[] lines, string[] splitter)
         {
             // 1, 5518, 5519, 4794, 5898, 19815, 19819, 19817, 
             // 19816, 19818, 19820, 1, 2, 3, 4, 5
-            int n = 15;
-            int[] nodes = new int[n];
-            // First row
-            string[] record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(15, ref lineId, lines, splitter, out id, out nodeIds);
             //
-            int id = int.Parse(record[0]);
-            //
-            int count = 0;
-            for (int i = 1; i < record.Length; i++)
-            {
-                nodes[count++] = int.Parse(record[i]);
-            }
-            // Second row
-            if (record.Length < n + 1)
-            {
-                lineId++;
-                record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-                //
-                for (int i = 0; i < record.Length; i++)
-                {
-                    nodes[count++] = int.Parse(record[i]);
-                }
-            }
-            //
-            return new ParabolicWedgeElement(id, nodes);
+            return new ParabolicWedgeElement(id, nodeIds);
         }
         private static ParabolicHexaElement GetParabolicHexaElement(ref int lineId, string[] lines, string[] splitter)
         {
             // *ELEMENT, TYPE = C3D20R
             // 1,1,10,47,19,37,57,78,72,9,45,
             // 46,20,56,76,77,73,38,55,75,70
-            int n = 20;
-            int[] nodes = new int[n];
-            // First row
-            string[] record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+            int id;
+            int[] nodeIds;
+            GetElementIdAndNodeIds(20, ref lineId, lines, splitter, out id, out nodeIds);
             //
-            int id = int.Parse(record[0]);
+            return new ParabolicHexaElement(id, nodeIds);
+        }
+        private static void GetElementIdAndNodeIds(int numOfNodes, ref int lineId, string[] lines,
+                                                   string[] splitter, out int elementId, out int[] nodeIds)
+        {
+            int numOfRecords = numOfNodes + 1;
+            string[] splitStrings = new string[numOfRecords];
             //
             int count = 0;
-            for (int i = 1; i < record.Length; i++)
+            string[] record;
+            while (count < numOfRecords)
             {
-                nodes[count++] = int.Parse(record[i]);
-            }
-            // Second row
-            if (record.Length < n + 1)
-            {
-                lineId++;
                 record = lines[lineId].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
                 //
                 for (int i = 0; i < record.Length; i++)
                 {
-                    nodes[count++] = int.Parse(record[i]);
+                    splitStrings[count++] = record[i];
                 }
+                lineId++;
             }
-            //
-            return new ParabolicHexaElement(id, nodes);
+            lineId--;   // set the lineId to the last line
+            // Element id
+            elementId = int.Parse(splitStrings[0]);
+            // Node ids
+            nodeIds = new int[numOfNodes];
+            for (int i = 1; i < splitStrings.Length; i++) nodeIds[i - 1] = int.Parse(splitStrings[i]);
         }
         //
         private static void AddError(string error)

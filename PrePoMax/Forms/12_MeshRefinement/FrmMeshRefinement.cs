@@ -25,6 +25,10 @@ namespace PrePoMax.Forms
         private string _defaultName;
 
 
+        // Callbacks                                                                                                                
+        public Func<string[], MeshingParameters, FeMeshRefinement, Task> PreviewEdgeMeshesAsync;
+
+
         // Properties                                                                                                               
         public FeMeshRefinement MeshRefinement
         {
@@ -98,28 +102,28 @@ namespace PrePoMax.Forms
         {
             try
             {
-                btnPreview.Enabled = false;
+                Enabled = false;
+                ItemSetDataEditor.SelectionForm.Hide();
                 FeMeshRefinement meshRefinement = MeshRefinement.DeepClone();
                 string[] partNames = _controller.GetPartNamesFromMeshRefinement(meshRefinement);
+                //
                 if (partNames != null && partNames.Length > 0)
                 {
                     HighlightMeshRefinement();
                     //Set the name to the prev meshRefinement name
                     if (_meshRefinementToEditName != null) meshRefinement.Name = _meshRefinementToEditName;
                     //
-                    foreach (var partName in partNames)
-                    {
-                        await Task.Run(() => _controller.PreviewEdgeMesh(partName, null, meshRefinement));
-                    }
+                    await PreviewEdgeMeshesAsync?.Invoke(partNames, null, meshRefinement);
                 }
             }
             catch (Exception ex)
             {
-                CaeGlobals.ExceptionTools.Show(this, ex);
+                ExceptionTools.Show(this, ex);
             }
             finally
             {
-                btnPreview.Enabled = true;
+                Enabled = true;
+                ItemSetDataEditor.SelectionForm.ShowIfHidden(this.Owner);
             }
         }
 

@@ -57,6 +57,7 @@ namespace CaeModel
                 loadType == typeof(MomentLoad) ||
                 loadType == typeof(DLoad) ||
                 loadType == typeof(HydrostaticPressure) ||
+                loadType == typeof(ImportedPressure) ||
                 loadType == typeof(STLoad) ||
                 loadType == typeof(ShellEdgeLoad) ||
                 loadType == typeof(GravityLoad) ||

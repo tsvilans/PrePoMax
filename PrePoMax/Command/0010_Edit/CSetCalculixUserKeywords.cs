@@ -42,7 +42,7 @@ namespace PrePoMax.Commands
                         {
                             // Compatibility for version v.0.5.1
                             cukd.OnDeserialization(null);
-                            _userKeywords = new OrderedDictionary<int[], Calculix.CalculixUserKeyword>(cukd);
+                            _userKeywords = new OrderedDictionary<int[], Calculix.CalculixUserKeyword>("User CalculiX keywords", cukd);
                         }
                         else if (entry.Value is OrderedDictionary<int[], Calculix.CalculixUserKeyword> cukod)
                             _userKeywords = cukod;

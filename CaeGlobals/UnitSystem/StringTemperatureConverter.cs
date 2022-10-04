@@ -49,9 +49,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Temperature temperature = Temperature.Parse(valueString);
-                    if ((int)_temperatureUnit != MyUnit.NoUnit) temperature = temperature.ToUnit(_temperatureUnit);
-                    valueDouble = temperature.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -79,6 +77,53 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Temperature temperature = Temperature.Parse(valueWithUnitString);
+                if ((int)_temperatureUnit != MyUnit.NoUnit) temperature = temperature.ToUnit(_temperatureUnit);
+                return temperature.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported temperature abbreviations: ";
+            var allUnits = Temperature.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Temperature.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
+        }
+        public static string SupportedDeltaUnitAbbreviations()
+        {
+            string abb;
+            // Must be temperature and not temperature delta since ∆ is only internal
+            string supportedUnitAbbreviations = "Supported temperature abbreviations: ";
+            var allUnits = TemperatureDelta.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = TemperatureDelta.GetAbbreviation(allUnits[i]).Replace("∆", "");
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

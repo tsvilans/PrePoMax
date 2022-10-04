@@ -226,6 +226,8 @@ namespace FileInOut.Output
         static private void AppendMaterials(StringBuilder sb, FeModel model)
         {
             IDictionary<string, Material> materials = model.Materials;
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             foreach (var entry in materials)
             {
                 if (entry.Value.Active)
@@ -246,15 +248,27 @@ namespace FileInOut.Output
                             sb.AppendFormat("{0}, {1}", elastic.YoungsPoissonsTemp[0][0],
                                             elastic.YoungsPoissonsTemp[0][1]).AppendLine();
                         }
-                        else throw new NotImplementedException();
+                        else
+                        {
+                            unsupported.Add(property.GetType().Name);
+                        }
                     }
                 }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following material properties are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 
         static private void AppendSections(StringBuilder sb, FeModel model)
         {
             IDictionary<string, Section> sections = model.Sections;
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             foreach (var entry in sections)
             {
                 if (entry.Value.Active)
@@ -269,13 +283,25 @@ namespace FileInOut.Output
                         sb.AppendFormat("*Shell section, elset={0}, material={1}", shell.RegionName, shell.MaterialName).AppendLine();
                          sb.AppendLine(shell.Thickness.ToString());
                     }
-                    else throw new NotImplementedException();
+                    else
+                    {
+                        unsupported.Add(entry.Value.GetType().Name);
+                    }
                 }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following sections are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 
         static private void AppendSteps(StringBuilder sb, FeModel model)
         {
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             foreach (var step in model.StepCollection.StepsList)
             {
                 if (step is InitialStep) continue;
@@ -309,15 +335,27 @@ namespace FileInOut.Output
                         }
 
                     }
-                    else throw new NotImplementedException();
+                    else
+                    {
+                        unsupported.Add(step.GetType().Name);
+                    }
                     //
                     sb.AppendLine("*End step");
                 }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following steps are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 
         static private void AppendBoundaryCondition(StringBuilder sb, BoundaryCondition boundaryCondition)
         {
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             if (boundaryCondition.Active)
             {
                 if (boundaryCondition is DisplacementRotation dispRot)
@@ -344,12 +382,24 @@ namespace FileInOut.Output
                         sb.AppendLine();
                     }
                 }
-                else throw new NotImplementedException();
+                else
+                {
+                    unsupported.Add(boundaryCondition.GetType().Name);
+                }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following boundary conditions are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 
         static private void AppendLoad(StringBuilder sb, Load load, FeModel model)
         {
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             if (load.Active)
             {
                 if (load is DLoad)
@@ -389,12 +439,24 @@ namespace FileInOut.Output
                         sb.AppendLine();
                     }
                 }
-                else throw new NotImplementedException();
+                else
+                {
+                    unsupported.Add(load.GetType().Name);
+                }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following loads are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 
         static private void AppendFieldOutput(StringBuilder sb, FieldOutput fieldOutput)
         {
+            HashSet<string> unsupported = new HashSet<string>();
+            //
             if (fieldOutput.Active)
             {
                 if (fieldOutput is NodalFieldOutput)
@@ -409,7 +471,17 @@ namespace FileInOut.Output
                     sb.AppendLine("*El file");
                     sb.AppendLine(elementFieldOutput.Variables.ToString());
                 }
-                else throw new NotImplementedException();
+                else
+                {
+                    unsupported.Add(fieldOutput.GetType().Name);
+                }
+            }
+            //
+            if (unsupported.Count > 0)
+            {
+                string msg = "The following field outputs are not supported and will be skipped:" + Environment.NewLine;
+                foreach (var propertyName in unsupported) msg += Environment.NewLine + propertyName;
+                MessageBoxes.ShowWarning(msg);
             }
         }
 

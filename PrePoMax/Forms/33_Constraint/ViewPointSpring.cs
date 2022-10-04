@@ -22,7 +22,7 @@ namespace PrePoMax
         [OrderedDisplayName(1, 10, "Node set")]
         [DescriptionAttribute("Select the node set for the creation of the constraint definition.")]
         [Id(2, 2)]
-        public string NodeSetName { get { return _springConstraint.RegionName; } set { _springConstraint.RegionName = value; } }
+        public string NodeSetName { get { return _spring.RegionName; } set { _spring.RegionName = value; } }
         //
         [CategoryAttribute("Region")]
         [OrderedDisplayName(2, 10, "Reference point")]
@@ -30,8 +30,8 @@ namespace PrePoMax
         [Id(3, 2)]
         public string ReferencePointName
         {
-            get { return _springConstraint.RegionName; }
-            set { _springConstraint.RegionName = value; }
+            get { return _spring.RegionName; }
+            set { _spring.RegionName = value; }
         }
 
 
@@ -45,17 +45,17 @@ namespace PrePoMax
             regionTypePropertyNamePairs.Add(RegionTypeEnum.NodeSetName, nameof(NodeSetName));
             regionTypePropertyNamePairs.Add(RegionTypeEnum.ReferencePointName, nameof(ReferencePointName));
             //
-            SetBase(_springConstraint, regionTypePropertyNamePairs, null);
+            SetBase(_spring, regionTypePropertyNamePairs, null);
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             // 2D
-            DynamicCustomTypeDescriptor.GetProperty(nameof(K3)).SetIsBrowsable(!_springConstraint.TwoD);
+            DynamicCustomTypeDescriptor.GetProperty(nameof(K3)).SetIsBrowsable(!_spring.TwoD);
         }
 
 
         // Methods                                                                                                                  
         public override CaeModel.Constraint GetBase()
         {
-            return _springConstraint;
+            return _spring;
         }
         public void PopulateDropDownLists(string[] nodeSetNames, string[] referencePointNames)
         {

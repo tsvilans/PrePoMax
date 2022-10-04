@@ -50,7 +50,7 @@ namespace CaeGlobals
         public double Normalize()
         {
             double n = Math.Sqrt(X * X + Y * Y + Z * Z);
-            if (n > 0)
+            if (n > 0 && n != 1)
             {
                 X /= n;
                 Y /= n;

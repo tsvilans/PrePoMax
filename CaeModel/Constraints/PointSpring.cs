@@ -11,10 +11,10 @@ using System.Runtime.Serialization;
 namespace CaeModel
 {
     [Serializable]
-    public class PointSpring : SpringConstraint
+    public class PointSpring : SpringConstraint, ISerializable
     {
         // Variables                                                                                                                
-        private int _nodeId;
+        private int _nodeId;                  //ISerializable
 
 
         // Properties                                                                                                               

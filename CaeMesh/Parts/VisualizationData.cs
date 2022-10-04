@@ -810,6 +810,196 @@ namespace CaeMesh
         {
             return new VisualizationData(this);
         }
+        // Topology
+        public void CheckForErrorElementsInShellCADPart(out int[] errorEdgeCellIds, out int[] errorNodeIds)
+        {
+            // Shell parts
+            int edgeId;
+            int[] edgeCell;
+            List<int> vertexEdgeIds;
+            List<int> errorEdgeCellIdsList = new List<int>();
+            List<int> errorNodeIdsList = new List<int>();
+            HashSet<int> errorEdgeIds = new HashSet<int>();
+            HashSet<int> vertexNodeIds = new HashSet<int>(_vertexNodeIds);
+            // Build a map of all edges connected to a vertex
+            Dictionary<int, List<int>>[] faceVertexEdgeIds = new Dictionary<int, List<int>>[_faceEdgeIds.Length];
+            // For each surface
+            for (int i = 0; i < _faceEdgeIds.Length; i++)
+            {
+                faceVertexEdgeIds[i] = new Dictionary<int, List<int>>();
+                // For each surface edge
+                for (int j = 0; j < _faceEdgeIds[i].Length; j++)
+                {
+                    edgeId = _faceEdgeIds[i][j];
+                    // Skip edges that form a single edge loop
+                    if (IsEdgeAClosedLoop(edgeId)) continue;
+                    // For each edge cell
+                    for (int k = 0; k < _edgeCellIdsByEdge[edgeId].Length; k++)
+                    {
+                        edgeCell = _edgeCells[_edgeCellIdsByEdge[edgeId][k]];
+                        // For each node in edge cell
+                        for (int l = 0; l < edgeCell.Length; l++)
+                        {
+                            if (vertexNodeIds.Contains(edgeCell[l]))    // is this node a vertex
+                            {
+                                if (faceVertexEdgeIds[i].TryGetValue(edgeCell[l], out vertexEdgeIds))
+                                    vertexEdgeIds.Add(edgeId);
+                                else faceVertexEdgeIds[i].Add(edgeCell[l], new List<int>() { edgeId });
+                            }
+                        }
+                    }
+                }
+            }
+            // From the map extract all end/start vertices and their open edge loops
+            GeomFaceType faceType;
+            // For each face
+            Dictionary<int, List<int>> face_i_VertexEdgeIds;
+            for (int i = 0; i < faceVertexEdgeIds.Length; i++)
+            {
+                face_i_VertexEdgeIds = faceVertexEdgeIds[i];
+                //
+                if (_faceTypes != null) faceType = _faceTypes[i];
+                else faceType = GeomFaceType.Unknown;
+                //
+                RemoveEdgeLoops(face_i_VertexEdgeIds);
+                //
+                foreach (var entry in face_i_VertexEdgeIds)
+                {
+                    // Cylinder and toruses have a single edge along their axis which creates 3 edge vertices
+                    if (entry.Value.Count % 2 == 1 && (faceType == GeomFaceType.Cylinder || faceType == GeomFaceType.Torus)) continue;
+                    else
+                    {
+                        foreach (var remainingEdgeId in entry.Value)
+                            errorEdgeIds.Add(remainingEdgeId);
+                    }
+                }
+            }
+            
+            // Collect error edge cell ids
+            foreach (var errorEdgeId in errorEdgeIds) errorEdgeCellIdsList.AddRange(_edgeCellIdsByEdge[errorEdgeId]);
+            // Save
+            if (errorEdgeCellIdsList.Count > 0) errorEdgeCellIds = errorEdgeCellIdsList.ToArray();
+            else errorEdgeCellIds = null;
+            if (errorNodeIdsList.Count > 0) errorNodeIds = errorNodeIdsList.ToArray();
+            else errorNodeIds = null;
+        }
+        public bool IsEdgeAClosedLoop(int edgeId)
+        {
+            int[] edgeCellIds = _edgeCellIdsByEdge[edgeId];
+            if (edgeCellIds.Length > 0)
+            {
+                int count = 0;
+                int[] edgeCell;
+                HashSet<int> allNodeIds = new HashSet<int>();
+                //
+                for (int i = 0; i < edgeCellIds.Length; i++)
+                {
+                    edgeCell = _edgeCells[i];
+                    // Add only first and second node id
+                    count += 2;
+                    allNodeIds.Add(edgeCell[0]);
+                    allNodeIds.Add(edgeCell[1]);
+                }
+                //
+                return allNodeIds.Count() * 2 == count;
+            }
+            else return false;
+        }
+        private void RemoveEdgeLoops(Dictionary<int, List<int>> vertexIdEdgeIds)
+        {
+            List<int> edgeLoop;
+            List<int> verticesToRemove = new List<int>();
+            //
+            while (true)
+            {
+                edgeLoop = GetEdgeLoop(vertexIdEdgeIds);
+                if (edgeLoop.Count > 0)
+                {
+                    verticesToRemove.Clear();
+                    //
+                    foreach (var entry in vertexIdEdgeIds)
+                    {
+                        foreach (var edgeId in edgeLoop)
+                        {
+                            entry.Value.Remove(edgeId);
+                            if (entry.Value.Count == 0) verticesToRemove.Add(entry.Key);
+                        }
+                    }
+                    //
+                    foreach (var vertexId in verticesToRemove) vertexIdEdgeIds.Remove(vertexId);
+                }
+                else break;
+            }
+            return;
+        }
+        private List<int> GetEdgeLoop(Dictionary<int, List<int>> vertexIdEdgeIds)
+        {
+            List<int> loopEdgeIds = new List<int>();
+            List<int> loopVertexIds = new List<int>();
+            //
+            int[] vertexIds;
+            Dictionary<int, int[]> edgeIdVertexIds = new Dictionary<int, int[]>();
+            foreach (var entry in vertexIdEdgeIds)
+            {
+                foreach (var edgeId in entry.Value)
+                {
+                    if (edgeIdVertexIds.TryGetValue(edgeId, out vertexIds)) vertexIds[1] = entry.Key;
+                    else edgeIdVertexIds.Add(edgeId, new int[] { entry.Key, 0 });
+                }
+            }
+            // First vertex must not be an end point
+            foreach (var entry in vertexIdEdgeIds)
+            {
+                if (entry.Value.Count % 2 == 0)
+                {
+                    loopEdgeIds.Clear();
+                    loopVertexIds.Clear();
+                    AddNextEdgeToLoop(entry.Key, vertexIdEdgeIds, edgeIdVertexIds, loopVertexIds, loopEdgeIds);
+                    if (loopEdgeIds.Count > 0) return loopEdgeIds;
+                }
+            }
+            //
+            return loopEdgeIds;
+        }
+        private bool AddNextEdgeToLoop(int vertexId, Dictionary<int, List<int>> vertexIdEdgeIds,
+                                       Dictionary<int, int[]> edgeIdVertexIds, List<int> loopVertexIds, List<int> loopEdgeIds)
+        {
+            // Check if there is a loop of vertices before there is a loop of edges
+            loopVertexIds.Add(vertexId);
+            //
+            bool closed = false;
+            int newVertexId;
+            int[] vertexIds;
+            List<int> edgeIds = vertexIdEdgeIds[vertexId];
+            //
+            foreach (var edgeId in edgeIds)
+            {
+                if (loopEdgeIds.Count > 1 && loopEdgeIds[0] == edgeId &&
+                    loopVertexIds.Count > 1 && loopVertexIds[0] == vertexId) return true;
+                else
+                {
+                    if (loopEdgeIds.Count == 0 || !loopEdgeIds.Contains(edgeId))
+                    {
+                        // Add
+                        loopEdgeIds.Add(edgeId);
+                        //
+                        vertexIds = edgeIdVertexIds[edgeId];
+                        if (vertexId == vertexIds[0]) newVertexId = vertexIds[1];
+                        else newVertexId = vertexIds[0];
+                        //
+
+                        closed = AddNextEdgeToLoop(newVertexId, vertexIdEdgeIds, edgeIdVertexIds, loopVertexIds, loopEdgeIds);
+                        // Finish
+                        if (closed) return true;
+                        // Remove
+                        else loopEdgeIds.Remove(edgeId);
+                    }
+                }
+            }
+            //
+            loopVertexIds.Remove(vertexId);
+            return false;
+        }
 
         // Flip normals
         public void FlipTriangleNormals()

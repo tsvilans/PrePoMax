@@ -22,8 +22,9 @@ namespace CaeModel
         // Whole element
         ENER = 32,
         ELSE = 64,
-        EVOL = 128,
-        EBHE = 256
+        ELKE = 128,
+        EVOL = 256,
+        EBHE = 512
     }
 
     [Serializable]

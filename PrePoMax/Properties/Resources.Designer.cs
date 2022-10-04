@@ -83,9 +83,29 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Back {
+            get {
+                object obj = ResourceManager.GetObject("Back", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Bc {
             get {
                 object obj = ResourceManager.GetObject("Bc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Bottom {
+            get {
+                object obj = ResourceManager.GetObject("Bottom", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +203,49 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Element_set {
+            get {
+                object obj = ResourceManager.GetObject("Element_set", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ElementEdges {
+            get {
+                object obj = ResourceManager.GetObject("ElementEdges", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Explode {
             get {
                 object obj = ResourceManager.GetObject("Explode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Export {
+            get {
+                object obj = ResourceManager.GetObject("Export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Field_output {
+            get {
+                object obj = ResourceManager.GetObject("Field_output", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +263,39 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Front {
+            get {
+                object obj = ResourceManager.GetObject("Front", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Hide {
             get {
                 object obj = ResourceManager.GetObject("Hide", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap History_output {
+            get {
+                object obj = ResourceManager.GetObject("History_output", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Import {
+            get {
+                object obj = ResourceManager.GetObject("Import", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -223,9 +313,29 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Isometric {
+            get {
+                object obj = ResourceManager.GetObject("Isometric", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Last {
             get {
                 object obj = ResourceManager.GetObject("Last", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Left {
+            get {
+                object obj = ResourceManager.GetObject("Left", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -263,9 +373,39 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Material {
+            get {
+                object obj = ResourceManager.GetObject("Material", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Mesh_refinement {
             get {
                 object obj = ResourceManager.GetObject("Mesh_refinement", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ModelEdges {
+            get {
+                object obj = ResourceManager.GetObject("ModelEdges", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap New {
+            get {
+                object obj = ResourceManager.GetObject("New", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -283,9 +423,39 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Node_set {
+            get {
+                object obj = ResourceManager.GetObject("Node_set", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap NoEdges {
+            get {
+                object obj = ResourceManager.GetObject("NoEdges", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap NoResult {
             get {
                 object obj = ResourceManager.GetObject("NoResult", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Normal {
+            get {
+                object obj = ResourceManager.GetObject("Normal", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -333,6 +503,36 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Preview_defined_field {
+            get {
+                object obj = ResourceManager.GetObject("Preview_defined_field", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Preview_initial_condition {
+            get {
+                object obj = ResourceManager.GetObject("Preview_initial_condition", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Preview_load {
+            get {
+                object obj = ResourceManager.GetObject("Preview_load", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Previous {
             get {
                 object obj = ResourceManager.GetObject("Previous", resourceCulture);
@@ -343,9 +543,49 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Query {
+            get {
+                object obj = ResourceManager.GetObject("Query", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Reference_point {
+            get {
+                object obj = ResourceManager.GetObject("Reference_point", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Remove {
             get {
                 object obj = ResourceManager.GetObject("Remove", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Remove_annotations {
+            get {
+                object obj = ResourceManager.GetObject("Remove_annotations", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Right {
+            get {
+                object obj = ResourceManager.GetObject("Right", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -373,6 +613,26 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Save {
+            get {
+                object obj = ResourceManager.GetObject("Save", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Section {
+            get {
+                object obj = ResourceManager.GetObject("Section", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap SectionView {
             get {
                 object obj = ResourceManager.GetObject("SectionView", resourceCulture);
@@ -393,9 +653,29 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Step {
+            get {
+                object obj = ResourceManager.GetObject("Step", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Stop {
             get {
                 object obj = ResourceManager.GetObject("Stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Surface {
+            get {
+                object obj = ResourceManager.GetObject("Surface", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -433,6 +713,16 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Top {
+            get {
+                object obj = ResourceManager.GetObject("Top", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Transformations {
             get {
                 object obj = ResourceManager.GetObject("Transformations", resourceCulture);
@@ -453,6 +743,26 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Undeformed_Solid {
+            get {
+                object obj = ResourceManager.GetObject("Undeformed_Solid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Undeformed_Wireframe {
+            get {
+                object obj = ResourceManager.GetObject("Undeformed_Wireframe", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Up_arrow {
             get {
                 object obj = ResourceManager.GetObject("Up_arrow", resourceCulture);
@@ -463,9 +773,39 @@ namespace PrePoMax.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Vertical {
+            get {
+                object obj = ResourceManager.GetObject("Vertical", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Warning {
             get {
                 object obj = ResourceManager.GetObject("Warning", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Wireframe {
+            get {
+                object obj = ResourceManager.GetObject("Wireframe", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ZoomToFit {
+            get {
+                object obj = ResourceManager.GetObject("ZoomToFit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

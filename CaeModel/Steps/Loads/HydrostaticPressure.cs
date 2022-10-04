@@ -5,15 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using CaeMesh;
 using CaeGlobals;
+using CaeResults;
 
 namespace CaeModel
 {
     [Serializable]
-    public class HydrostaticPressure : Load
+    public class HydrostaticPressure : VariablePressure, IPreviewable
     {
         // Variables                                                                                                                
-        private string _surfaceName;
-        private RegionTypeEnum _regionType;
         private double[] _firstPointCoor;
         private double[] _secondPointCoor;
         private double _n1; // in coordinate form to compute the normal if value changes
@@ -25,9 +24,6 @@ namespace CaeModel
 
 
         // Properties                                                                                                               
-        public override string RegionName { get { return _surfaceName; } set { _surfaceName = value; } }
-        public override RegionTypeEnum RegionType { get { return _regionType; } set { _regionType = value; } }
-        public string SurfaceName { get { return _surfaceName; } set { _surfaceName = value; } }
         public double[] FirstPointCoor
         {
             get { return _firstPointCoor; }
@@ -86,11 +82,8 @@ namespace CaeModel
         public HydrostaticPressure(string name, string regionName, RegionTypeEnum regionType, double[] firstPointCoor,
                                    double[] secondPointCoor, double nx, double ny, double nz, double firstPointPressure,
                                    double secondPointPressure, bool twoD)
-            : base(name, twoD)
+            : base(name, regionName, regionType, twoD)
         {
-            _surfaceName = regionName;
-            RegionType = regionType;
-            //
             FirstPointCoor = firstPointCoor;           // account for 2D
             SecondPointCoor = secondPointCoor;         // account for 2D
             _n1 = nx;
@@ -135,7 +128,53 @@ namespace CaeModel
             //
             return true;
         }
-        public double GetPressureForPoint(double[] point)
+        public FeResults GetPreview(FeMesh targetMesh, string resultName, UnitSystemType unitSystemType)
+        {
+            //
+            PartExchangeData allData = new PartExchangeData();
+            targetMesh.GetAllNodesAndCells(out allData.Nodes.Ids, out allData.Nodes.Coor, out allData.Cells.Ids,
+                                           out allData.Cells.CellNodeIds, out allData.Cells.Types);
+            //
+            FeSurface surface = targetMesh.Surfaces[_surfaceName];
+            FeNodeSet nodeSet = targetMesh.NodeSets[surface.NodeSetName];
+            HashSet<int> nodeIds = new HashSet<int>(nodeSet.Labels);
+            //
+            float[] values = new float[allData.Nodes.Coor.Length];
+            //
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (nodeIds.Contains(allData.Nodes.Ids[i]))
+                {
+                    values[i] = (float)GetPressureForPoint(allData.Nodes.Coor[i]);
+                }
+                else
+                {
+                    values[i] = float.NaN;
+                }
+            }
+            //
+            Dictionary<int, int> nodeIdsLookUp = new Dictionary<int, int>();
+            for (int i = 0; i < allData.Nodes.Coor.Length; i++) nodeIdsLookUp.Add(allData.Nodes.Ids[i], i);
+            FeResults results = new FeResults(resultName);
+            results.SetMesh(targetMesh, nodeIdsLookUp);
+            // Add distances
+            FieldData fieldData = new FieldData(FOFieldNames.Imported);
+            fieldData.GlobalIncrementId = 1;
+            fieldData.Type = StepType.Static;
+            fieldData.Time = 1;
+            fieldData.MethodId = 1;
+            fieldData.StepId = 1;
+            fieldData.StepIncrementId = 1;
+            // Add values
+            Field field = new Field(fieldData.Name);
+            field.AddComponent(FOComponentNames.PRESS, values);
+            results.AddFiled(fieldData, field);
+            // Unit system
+            results.UnitSystem = new UnitSystem(unitSystemType);
+            //
+            return results;
+        }
+        public override double GetPressureForPoint(double[] point)
         {
             double d1 = -(_firstPointCoor[0] * _nDirection[0] + _firstPointCoor[1] * _nDirection[1] +
                 _firstPointCoor[2] * _nDirection[2]);

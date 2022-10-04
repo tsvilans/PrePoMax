@@ -16,6 +16,7 @@ namespace PrePoMax.Forms
         // Variables                                                                                                                
         private string _geometryAndModelOrResults;
         private ViewUnitSystem _viewUnitSystem;
+        private ModelSpaceEnum _modelSpace;
         private GroupBox gbModelSpace;
         private RadioButton rb2DPlaneStress;
         private RadioButton rb3D;
@@ -24,6 +25,7 @@ namespace PrePoMax.Forms
         private RadioButton rb2DAxisymmetric;
         private RadioButton rb2DPlaneStrain;
         private bool _focusOK;
+        private bool _cancelPossible;
 
 
         // Properties                                                                                                               
@@ -38,6 +40,7 @@ namespace PrePoMax.Forms
                 else throw new NotImplementedException();
             }
         }
+        public ModelSpaceEnum ModelSpace { get { return _modelSpace; } set { _modelSpace = value; } }
 
 
         // Constructors                                                                                                             
@@ -53,9 +56,7 @@ namespace PrePoMax.Forms
             _controller = controller;
             _viewUnitSystem = null;
             //
-            btnOkAddNew.Visible = false;
-            btnCancel.Visible = false;
-            btnOK.Location = btnCancel.Location;
+            btnOkAddNew.Visible = false;           
             //
             MethodInfo m = typeof(RadioButton).GetMethod("SetStyle", BindingFlags.Instance | BindingFlags.NonPublic);
             if (m != null)
@@ -250,33 +251,20 @@ namespace PrePoMax.Forms
         {
             try
             {
-                ModelSpaceEnum modelSpace = ModelSpaceEnum.Undefined;
-                if (rb3D.Checked) modelSpace = ModelSpaceEnum.ThreeD;
-                else if (rb2DPlaneStress.Checked) modelSpace = ModelSpaceEnum.PlaneStress;
-                else if (rb2DPlaneStrain.Checked) modelSpace = ModelSpaceEnum.PlaneStrain;
-                else if (rb2DAxisymmetric.Checked) modelSpace = ModelSpaceEnum.Axisymmetric;
+                _modelSpace = ModelSpaceEnum.Undefined;
+                if (rb3D.Checked) _modelSpace = ModelSpaceEnum.ThreeD;
+                else if (rb2DPlaneStress.Checked) _modelSpace = ModelSpaceEnum.PlaneStress;
+                else if (rb2DPlaneStrain.Checked) _modelSpace = ModelSpaceEnum.PlaneStrain;
+                else if (rb2DAxisymmetric.Checked) _modelSpace = ModelSpaceEnum.Axisymmetric;
                 else throw new NotSupportedException();
                 //
                 _viewUnitSystem = (ViewUnitSystem)propertyGrid.SelectedObject;
                 if (_viewUnitSystem == null) throw new CaeException("No unit system selected.");
                 UnitSystem = _viewUnitSystem.GetBase();
-                // Replace
-                if (_geometryAndModelOrResults == "New Model")
-                {
-                    if (modelSpace.IsTwoD())
-                    {
-                        if ((_controller.Model.Geometry != null && !_controller.Model.Geometry.BoundingBox.Is2D())
-                            || (_controller.Model.Mesh != null && !_controller.Model.Mesh.BoundingBox.Is2D()))
-                            throw new CaeException("Use of the 2D model space is not possible. The geometry or the mesh " +
-                                                   "do not contain 2D geometry in x-y plane.");
-                    }
-                    _controller.SetNewModelPropertiesCommand(modelSpace, UnitSystem.UnitSystemType);
-                }
-                else if (_geometryAndModelOrResults == "Results")
-                    _controller.SetResultsUnitSystem(UnitSystem.UnitSystemType);
-                else throw new NotSupportedException();
                 //
                 Hide();
+                //
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
@@ -285,11 +273,12 @@ namespace PrePoMax.Forms
         }
         protected override void OnHideOrClose()
         {
-            // This prevents hiding of the form by closing it using X
+            if (_cancelPossible) base.OnHideOrClose();
         }
         protected override bool OnPrepareForm(string stepName, string geometryAndModelOrResults)
         {
             propertyGrid.SelectedObject = null;
+            SetCancelPossible(false);
             //
             if (geometryAndModelOrResults == "New Model" || geometryAndModelOrResults == "Results")
                 _geometryAndModelOrResults = geometryAndModelOrResults;
@@ -343,6 +332,23 @@ namespace PrePoMax.Forms
 
 
         // Methods                                                                                                                  
+        public void SetCancelPossible(bool cancelPossible)
+        {
+            _cancelPossible = cancelPossible;
+            //
+            if (_cancelPossible)
+            {
+                // Show Cancel button
+                btnCancel.Visible = true;
+                btnOK.Left = (btnOkAddNew.Left + btnCancel.Left) / 2;
+            }
+            else
+            {
+                // Hide Cancel button
+                btnCancel.Visible = false;
+                btnOK.Left = btnCancel.Left;
+            }
+        }
 
     }
 }

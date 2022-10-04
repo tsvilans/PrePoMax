@@ -118,8 +118,152 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ModelEdges" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\ModelEdges.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Preview_load" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Preview_load.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Paste" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Paste.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SurfaceInteraction" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Contact\SurfaceInteraction.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Stop.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\Save.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Normal.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Front" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Front.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Defined_field" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Defined_field.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Contact" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Contact\Contact.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Bottom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Bottom.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Cut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Cut.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Top" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Top.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Right.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SectionView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\SectionView.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Explode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\View\Explode.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Bc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Bc.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Down_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Down_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Material" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Material\Material.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SymbolsOn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\SymbolsOn.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Left.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Undeformed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Undeformed.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Up_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Up_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vertical" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Vertical.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Animate_backwards" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Animate_backwards.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Transformations" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Transformations.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Reference_point" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Reference_point.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="New" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\New.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Next" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Next.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Last" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Last.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NoEdges" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\NoEdges.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ZoomToFit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\ZoomToFit.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Element_set" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Element_set.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Left_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Left_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Copy.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Load" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Load.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Previous" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Previous.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Wireframe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Wireframe.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Step" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Step.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Isometric" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Isometric.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Open" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\Open.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hide" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Hide.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Remove_annotations" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Tools\Remove_annotations.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Constraints" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Constraints\Constraints.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Color_contours" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Color_contours.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Surface" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Surface.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Section" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Section\Section.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Undeformed_Wireframe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Undeformed_Wireframe.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SymbolsOff" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\SymbolsOff.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Deformed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Results\Deformed.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -127,118 +271,76 @@
   <data name="Animate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Results\Animate.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Stop.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Down_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Down_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Show" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Show.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="NoResult" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Analysis\NoResult.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ContactPair" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Contact\ContactPair.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Defined_field" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Step\Defined_field.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Load" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Step\Load.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Animate_backwards" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Animate_backwards.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Up_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Up_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="OK" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Analysis\OK.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="First" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\First.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Previous" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Previous.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Library" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Material\Library.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SectionView" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\View\SectionView.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Paste" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Paste.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Cut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Cut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Left_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Left_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="InvertHideShow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\InvertHideShow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SymbolsOff" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\View\SymbolsOff.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Hide" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Hide.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Last" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Last.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SymbolsOn" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\View\SymbolsOn.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Mesh_refinement" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Geometry\Mesh_refinement.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Next" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Next.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Bc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Step\Bc.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Right_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Common\Right_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Warning" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Analysis\Warning.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Undeformed" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Undeformed.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Back" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\Back.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Running" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Analysis\Running.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Constraints" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Constraints\Constraints.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Library" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Material\Library.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SurfaceInteraction" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Contact\SurfaceInteraction.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OK" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Analysis\OK.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Contact" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Contact\Contact.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Query" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Tools\Query.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Transformations" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Transformations.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Right_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Right_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\File\Open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="History_output" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\History_output.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NoResult" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Analysis\NoResult.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Preview_initial_condition" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Initial conditions\Preview_initial_condition.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Warning" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Analysis\Warning.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Part" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Part.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Material\Remove.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Color_contours" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Results\Color_contours.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Import" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\Import.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Part" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Mesh\Part.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mesh_refinement" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Geometry\Mesh_refinement.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Undeformed_Solid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\Undeformed_Solid.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Field_output" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Field_output.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="InvertHideShow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\InvertHideShow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Node_set" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Node_set.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Show" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Show.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ContactPair" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Contact\ContactPair.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="First" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Results\First.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\Export.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ElementEdges" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\View\ElementEdges.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Preview_defined_field" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Preview_defined_field.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

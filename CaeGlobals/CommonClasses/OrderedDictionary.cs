@@ -23,7 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Runtime.Serialization;
 using System.Linq;
 
 namespace CaeGlobals
@@ -42,18 +42,23 @@ namespace CaeGlobals
     /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
     /// 
     [Serializable]
-    public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {
-        private List<TKey> list;
-        private Dictionary<TKey, TValue> dictionary;
+        // Variables                                                                                                                
+        private string _name;                               //ISerializable
+        private List<TKey> _list;                           //ISerializable
+        private Dictionary<TKey, TValue> _dictionary;       //ISerializable
 
+
+        // Constructors                                                                                                             
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderedDictionary{TKey, TValue}"/> class.
         /// </summary>
-        public OrderedDictionary()
+        public OrderedDictionary(string name)
         {
-            this.dictionary = new Dictionary<TKey, TValue>();
-            this.list = new List<TKey>();
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>();
+            _list = new List<TKey>();
         }
 
         /// <summary>
@@ -62,10 +67,11 @@ namespace CaeGlobals
         /// 
         /// <param name="capacity">The initial number of elements that the <see cref="OrderedDictionary{TKey, TValue}"/> can contain.</param>
         /// 
-        public OrderedDictionary(int capacity)
+        public OrderedDictionary(string name, int capacity)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(capacity);
-            this.list = new List<TKey>(capacity);
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>(capacity);
+            _list = new List<TKey>(capacity);
         }
 
         /// <summary>
@@ -75,10 +81,11 @@ namespace CaeGlobals
         /// <param name="comparer">The IEqualityComparer implementation to use when comparing keys, or null to use 
         ///     the default EqualityComparer for the type of the key.</param>
         /// 
-        public OrderedDictionary(IEqualityComparer<TKey> comparer)
+        public OrderedDictionary(string name, IEqualityComparer<TKey> comparer)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(comparer);
-            this.list = new List<TKey>();
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>(comparer);
+            _list = new List<TKey>();
         }
 
         /// <summary>
@@ -89,10 +96,11 @@ namespace CaeGlobals
         /// <param name="comparer">The IEqualityComparer implementation to use when comparing keys, or null to use 
         ///     the default EqualityComparer for the type of the key.</param>
         /// 
-        public OrderedDictionary(int capacity, IEqualityComparer<TKey> comparer)
+        public OrderedDictionary(string name, int capacity, IEqualityComparer<TKey> comparer)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(capacity, comparer);
-            this.list = new List<TKey>();
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>(capacity, comparer);
+            _list = new List<TKey>();
         }
 
         /// <summary>
@@ -102,10 +110,11 @@ namespace CaeGlobals
         /// <param name="dictionary">The System.Collections.Generic.IDictionary`2 whose elements are copied to the
         ///     new <see cref="OrderedDictionary{TKey, TValue}"/>.</param>
         /// 
-        public OrderedDictionary(IDictionary<TKey, TValue> dictionary)
+        public OrderedDictionary(string name, IDictionary<TKey, TValue> dictionary)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
-            this.list = new List<TKey>(this.dictionary.Keys);
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>(dictionary);
+            _list = new List<TKey>(_dictionary.Keys);
         }
 
         /// <summary>
@@ -117,12 +126,36 @@ namespace CaeGlobals
         /// <param name="comparer">The IEqualityComparer implementation to use when comparing keys, or null to use 
         ///     the default EqualityComparer for the type of the key.</param>
         /// 
-        public OrderedDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+        public OrderedDictionary(string name, IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
-            this.list = new List<TKey>(this.dictionary.Keys);
+            _name = name;
+            _dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
+            _list = new List<TKey>(_dictionary.Keys);
+        }
+        //ISerializable
+        public OrderedDictionary(SerializationInfo info, StreamingContext context)
+        {
+            int count = 0;
+            foreach (SerializationEntry entry in info)
+            {
+                switch (entry.Name)
+                {
+                    case "_name":
+                        _name = (string)entry.Value; count++; break;
+                    case "list":        // Compatibility v1.3.4
+                    case "_list":
+                        _list = (List<TKey>)entry.Value; count++; break;
+                    case "dictionary":  // Compatibility v1.3.4
+                    case "_dictionary":
+                        _dictionary = (Dictionary<TKey, TValue>)entry.Value; count++; break;
+                }
+                // Compatibility v1.3.4
+                if (_name == null || _name == "") _name = "Ordered dictionary";
+            }
         }
 
+
+        // Methods                                                                                                                  
         /// <summary>
         ///   Gets the <typeparam ref="TValue"/> at the specified index.
         /// </summary>
@@ -131,7 +164,7 @@ namespace CaeGlobals
         /// 
         public TKey GetKeyByIndex(int index)
         {
-            return list[index];
+            return _list[index];
         }
 
         /// <summary>
@@ -156,14 +189,14 @@ namespace CaeGlobals
             get
             {
                 TValue value;
-                if (dictionary.TryGetValue(key, out value)) return value;
+                if (_dictionary.TryGetValue(key, out value)) return value;
                 else throw new CaeException("The given key '" + key.ToString() + "' was not present in the dictionary.");
             }
             set
             {
-                dictionary[key] = value;
-                if (!list.Contains(key))
-                    list.Add(key);
+                _dictionary[key] = value;
+                if (!_list.Contains(key))
+                    _list.Add(key);
             }
         }
 
@@ -175,17 +208,17 @@ namespace CaeGlobals
         /// 
         public ICollection<TKey> Keys
         {
-            get { return this.list; }
+            get { return _list; }
         }
 
         public void SortKeysAs(ICollection<TKey> keys)
         {
             foreach (var key in keys)
             {
-                if (this.list.IndexOf(key) < 0) throw new NotSupportedException();
+                if (_list.IndexOf(key) < 0) throw new NotSupportedException();
             }
-            this.list.Clear();
-            this.list.AddRange(keys);
+            _list.Clear();
+            _list.AddRange(keys);
         }
 
         /// <summary>
@@ -194,7 +227,7 @@ namespace CaeGlobals
         /// 
         public ICollection<TValue> Values
         {
-            get { return list.Select(x => dictionary[x]).ToList(); }
+            get { return _list.Select(x => _dictionary[x]).ToList(); }
         }
 
         /// <summary>
@@ -203,7 +236,7 @@ namespace CaeGlobals
         /// 
         public int Count
         {
-            get { return dictionary.Count; }
+            get { return _dictionary.Count; }
         }
 
         /// <summary>
@@ -214,7 +247,7 @@ namespace CaeGlobals
         /// 
         public bool IsReadOnly
         {
-            get { return ((IDictionary<TKey, TValue>)dictionary).IsReadOnly; }
+            get { return ((IDictionary<TKey, TValue>)_dictionary).IsReadOnly; }
         }
 
         /// <summary>
@@ -226,9 +259,19 @@ namespace CaeGlobals
         /// 
         public void Add(TKey key, TValue value)
         {
-            dictionary.Add(key, value);
-            if (!list.Contains(key))
-                list.Add(key);
+            try
+            {
+                _dictionary.Add(key, value);
+                if (!_list.Contains(key)) _list.Add(key);
+            }
+            catch (Exception ex)
+            {
+                string name = _name;
+                if (name != null && name.Length > 0) name += " ";
+                throw new Exception("The dictionary " + name + "already contains the key " + key.ToString() + "." +
+                                    Environment.NewLine + ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -239,11 +282,11 @@ namespace CaeGlobals
         /// 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            ((IDictionary<TKey, TValue>)dictionary).Add(item);
-            if (!list.Contains(item.Key))
-                list.Add(item.Key);
+            ((IDictionary<TKey, TValue>)_dictionary).Add(item);
+            if (!_list.Contains(item.Key))
+                _list.Add(item.Key);
         }
-        
+
         /// <summary>
         /// Adds another dictionary to the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
@@ -265,13 +308,13 @@ namespace CaeGlobals
         /// 
         public bool Replace(TKey oldKey, TKey newKey, TValue value)
         {
-            if (this.dictionary.Remove(oldKey))
+            if (_dictionary.Remove(oldKey))
             {
-                this.dictionary.Add(newKey, value);
+                _dictionary.Add(newKey, value);
                 //
-                int index = this.list.IndexOf(oldKey);
-                this.list.RemoveAt(index);
-                this.list.Insert(index, newKey);
+                int index = _list.IndexOf(oldKey);
+                _list.RemoveAt(index);
+                _list.Insert(index, newKey);
                 return true;
             }
             //
@@ -284,8 +327,8 @@ namespace CaeGlobals
         /// 
         public void Clear()
         {
-            dictionary.Clear();
-            list.Clear();
+            _dictionary.Clear();
+            _list.Clear();
         }
 
         /// <summary>
@@ -298,7 +341,7 @@ namespace CaeGlobals
         /// 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            return ((IDictionary<TKey, TValue>)dictionary).Contains(item);
+            return ((IDictionary<TKey, TValue>)_dictionary).Contains(item);
         }
 
         /// <summary>
@@ -311,7 +354,7 @@ namespace CaeGlobals
         /// 
         public bool ContainsKey(TKey key)
         {
-            return dictionary.ContainsKey(key);
+            return _dictionary.ContainsKey(key);
         }
 
         /// <summary>
@@ -335,8 +378,8 @@ namespace CaeGlobals
         /// 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (TKey key in list)
-                yield return new KeyValuePair<TKey, TValue>(key, dictionary[key]);
+            foreach (TKey key in _list)
+                yield return new KeyValuePair<TKey, TValue>(key, _dictionary[key]);
         }
 
         /// <summary>
@@ -349,9 +392,9 @@ namespace CaeGlobals
         /// 
         public bool Remove(TKey key)
         {
-            if (dictionary.Remove(key))
+            if (_dictionary.Remove(key))
             {
-                list.Remove(key);
+                _list.Remove(key);
                 return true;
             }
 
@@ -360,10 +403,10 @@ namespace CaeGlobals
 
         public bool TryRemove(TKey key, out TValue value)
         {
-            if (dictionary.TryGetValue(key, out value))
+            if (_dictionary.TryGetValue(key, out value))
             {
-                dictionary.Remove(key);
-                list.Remove(key);
+                _dictionary.Remove(key);
+                _list.Remove(key);
                 return true;
             }
             //
@@ -380,15 +423,15 @@ namespace CaeGlobals
         /// 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            if (((IDictionary<TKey, TValue>)dictionary).Remove(item))
+            if (((IDictionary<TKey, TValue>)_dictionary).Remove(item))
             {
-                list.Remove(item.Key);
+                _list.Remove(item.Key);
                 return true;
             }
 
             return false;
         }
-       
+
 
         /// <summary>
         /// Gets the value associated with the specified key.
@@ -403,7 +446,7 @@ namespace CaeGlobals
         {
             value = default(TValue);
             if (key == null) return false;
-            else return ((IDictionary<TKey, TValue>)dictionary).TryGetValue(key, out value);
+            else return ((IDictionary<TKey, TValue>)_dictionary).TryGetValue(key, out value);
         }
 
         /// <summary>
@@ -415,6 +458,15 @@ namespace CaeGlobals
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        
+        // ISerialization
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            // Using typeof() works also for null fields
+            info.AddValue("_name", _name, typeof(string));
+            info.AddValue("_list", _list, typeof(List<TKey>));
+            info.AddValue("_dictionary", _dictionary, typeof(Dictionary<TKey, TValue>));
         }
     }
 }

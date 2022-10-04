@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelTree));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Solid-Part-1");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Solid-Part-2");
@@ -96,11 +95,13 @@
             System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("Results", new System.Windows.Forms.TreeNode[] {
             treeNode34,
             treeNode35});
-            this.cmsTree = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmsTree = new System.Windows.Forms.ContextMenuStrip();
             this.tsmiCreate = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiQuery = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDuplicate = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiPropagate = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiPreview = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSpaceCompoundPart = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiCompoundPart = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSwapPartGeometries = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,8 +145,8 @@
             this.tsmiCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSpaceDelete = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.ilIcons = new System.Windows.Forms.ImageList(this.components);
-            this.ilStatusIcons = new System.Windows.Forms.ImageList(this.components);
+            this.ilIcons = new System.Windows.Forms.ImageList();
+            this.ilStatusIcons = new System.Windows.Forms.ImageList();
             this.tcGeometryModelResults = new System.Windows.Forms.TabControl();
             this.tpGeometry = new System.Windows.Forms.TabPage();
             this.stbGeometry = new UserControls.SearchTextBox();
@@ -168,8 +169,10 @@
             this.cmsTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiCreate,
             this.tsmiEdit,
+            this.tsmiQuery,
             this.tsmiDuplicate,
             this.tsmiPropagate,
+            this.tsmiPreview,
             this.tsmiSpaceCompoundPart,
             this.tsmiCompoundPart,
             this.tsmiSwapPartGeometries,
@@ -214,7 +217,7 @@
             this.tsmiSpaceDelete,
             this.tsmiDelete});
             this.cmsTree.Name = "cmsTree";
-            this.cmsTree.Size = new System.Drawing.Size(212, 798);
+            this.cmsTree.Size = new System.Drawing.Size(212, 864);
             // 
             // tsmiCreate
             // 
@@ -230,6 +233,14 @@
             this.tsmiEdit.Text = "Edit";
             this.tsmiEdit.Click += new System.EventHandler(this.tsmiEdit_Click);
             // 
+            // tsmiQuery
+            // 
+            this.tsmiQuery.Image = global::UserControls.Properties.Resources.Query;
+            this.tsmiQuery.Name = "tsmiQuery";
+            this.tsmiQuery.Size = new System.Drawing.Size(211, 22);
+            this.tsmiQuery.Text = "Query";
+            this.tsmiQuery.Click += new System.EventHandler(this.tsmiQuery_Click);
+            // 
             // tsmiDuplicate
             // 
             this.tsmiDuplicate.Name = "tsmiDuplicate";
@@ -239,10 +250,19 @@
             // 
             // tsmiPropagate
             // 
+            this.tsmiPropagate.Image = global::UserControls.Properties.Resources.Step;
             this.tsmiPropagate.Name = "tsmiPropagate";
             this.tsmiPropagate.Size = new System.Drawing.Size(211, 22);
             this.tsmiPropagate.Text = "Propagate";
             this.tsmiPropagate.Click += new System.EventHandler(this.tsmiPropagate_Click);
+            // 
+            // tsmiPreview
+            // 
+            this.tsmiPreview.Image = global::UserControls.Properties.Resources.Preview_load;
+            this.tsmiPreview.Name = "tsmiPreview";
+            this.tsmiPreview.Size = new System.Drawing.Size(211, 22);
+            this.tsmiPreview.Text = "Preview";
+            this.tsmiPreview.Click += new System.EventHandler(this.tsmiPreview_Click);
             // 
             // tsmiSpaceCompoundPart
             // 
@@ -486,7 +506,7 @@
             // 
             // tsmiDeactivate
             // 
-            this.tsmiDeactivate.Image = ((System.Drawing.Image)(resources.GetObject("tsmiDeactivate.Image")));
+            this.tsmiDeactivate.Image = global::UserControls.Properties.Resources.Unactive;
             this.tsmiDeactivate.Name = "tsmiDeactivate";
             this.tsmiDeactivate.Size = new System.Drawing.Size(211, 22);
             this.tsmiDeactivate.Text = "Deactivate";
@@ -1015,5 +1035,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiMergeByMasterSlave;
         private System.Windows.Forms.ToolStripSeparator tsmiSpaceSearchContactPairs;
         private System.Windows.Forms.ToolStripMenuItem tsmiSearchContactPairs;
+        private System.Windows.Forms.ToolStripMenuItem tsmiQuery;
+        private System.Windows.Forms.ToolStripMenuItem tsmiPreview;
     }
 }

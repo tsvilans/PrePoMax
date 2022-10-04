@@ -193,7 +193,7 @@ namespace PrePoMax.Forms
         //
         private void btnOK_Click(object sender, EventArgs e)
         {
-            _userKeywords = new OrderedDictionary<int[], CalculixUserKeyword>();
+            _userKeywords = new OrderedDictionary<int[], CalculixUserKeyword>("User CalculiX keywords");
             //
             FindUserKeywords(cltvKeywordsTree.Nodes[0], _userKeywords);
             //

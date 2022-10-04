@@ -79,6 +79,8 @@ namespace PrePoMax.Forms
                 // Suppress symbols
                 _drawSymbolsForStep = _controller.GetDrawSymbolsForStep();
                 _controller.DrawSymbolsForStep("None", false);
+                // Suppress annotations
+                _controller.Annotations.SuppressCurrentAnnotations();
                 // Set exploded view
                 if (_cancelParam.ScaleFactor == -1)
                 {
@@ -102,9 +104,10 @@ namespace PrePoMax.Forms
                 else if (DialogResult == DialogResult.Cancel) Cancel(_cancelParam.ScaleFactor == -1);
                 // the form was closed from frmMain.CloseAllForms
                 else if (DialogResult == DialogResult.None) Cancel(_cancelParam.ScaleFactor == -1);
-                //
                 // Resume symbols
                 _controller.DrawSymbolsForStep(_drawSymbolsForStep, false);
+                // Resume annotations
+                _controller.Annotations.ResumeCurrentAnnotations();
                 // Resume section view
                 if (_sectionViewPlane != null) _controller.ApplySectionView(_sectionViewPlane.Point.Coor,
                                                                             _sectionViewPlane.Normal.Coor);

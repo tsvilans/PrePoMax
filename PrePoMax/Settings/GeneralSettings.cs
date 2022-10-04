@@ -18,15 +18,18 @@ namespace PrePoMax
         private bool _openLastFile;
         private string _lastFileName;
         private bool _saveResultsInPmx;
-        private LinkedList<string> _recentFiles;
         private UnitSystemType _unitSystemType;
         private double _edgeAngle;
+        //
+        private LinkedList<string> _recentFiles;
+        private List<string> _materialLibraryFiles;
 
         // Form size and position
         private FormWindowState _formWindowState;
         private Size _formSize;
         private double _formRelativeXLocation;
         private double _formRelativeYLocation;
+
 
         // Properties                                                                                                               
         public bool OpenLastFile { get { return _openLastFile; } set { _openLastFile = value; } }
@@ -60,42 +63,34 @@ namespace PrePoMax
             _openLastFile = false;
             _lastFileName = null;
             _saveResultsInPmx = true;
-            _recentFiles = null;
             _unitSystemType = UnitSystemType.MM_TON_S_C;
             _edgeAngle = 30;
             //
             ResetFormSize();
         }
-        //
-        private void ResetFormSize()
-        {
-            _formWindowState = FormWindowState.Normal;
-            _formSize = new Size(1280, 720);
-            _formRelativeXLocation = 0.5;
-            _formRelativeYLocation = 0.5;
-        }
+        // Recent files
         public string[] GetRecentFiles()
         {
             if (_recentFiles != null) return _recentFiles.ToArray();
             else return null;
         }
-        public void AddRecentFile(string fileNameWithpPath)
+        public void AddRecentFile(string fileNameWithPath)
         {
             if (_recentFiles == null) _recentFiles = new LinkedList<string>();
             //
-            if (_recentFiles.Count == 0) _recentFiles.AddFirst(fileNameWithpPath);
+            if (_recentFiles.Count == 0) _recentFiles.AddFirst(fileNameWithPath);
             else
             {
-                if (!_recentFiles.Contains(fileNameWithpPath))
+                if (!_recentFiles.Contains(fileNameWithPath))
                 {
                     int _maxRecentFiles = 15;
                     while (_recentFiles.Count >= _maxRecentFiles) _recentFiles.RemoveLast();
-                    _recentFiles.AddFirst(fileNameWithpPath);
+                    _recentFiles.AddFirst(fileNameWithPath);
                 }
                 else
                 {
-                    _recentFiles.Remove(fileNameWithpPath);
-                    _recentFiles.AddFirst(fileNameWithpPath);
+                    _recentFiles.Remove(fileNameWithPath);
+                    _recentFiles.AddFirst(fileNameWithPath);
                 }
             }
         }
@@ -103,7 +98,34 @@ namespace PrePoMax
         {
             _recentFiles.Clear();
         }
-        //
+        // Material library files
+        public string[] GetMaterialLibraryFiles()
+        {
+            if (_materialLibraryFiles != null) return _materialLibraryFiles.ToArray();
+            else return new string[0];
+        }
+        public void AddMaterialLibraryFile(string fileNameWithPath)
+        {
+            if (_materialLibraryFiles == null) _materialLibraryFiles = new List<string>();
+            if (!_materialLibraryFiles.Contains(fileNameWithPath)) _materialLibraryFiles.Add(fileNameWithPath);
+        }
+        public void RemoveMaterialLibraryFile(string fileNameWithPath)
+        {
+            if (_materialLibraryFiles != null && _materialLibraryFiles.Contains(fileNameWithPath))
+                _materialLibraryFiles.Remove(fileNameWithPath);
+        }
+        public void ClearMaterialLibraryFiles()
+        {
+            _materialLibraryFiles = null;
+        }
+        // Form size
+        private void ResetFormSize()
+        {
+            _formWindowState = FormWindowState.Normal;
+            _formSize = new Size(1280, 720);
+            _formRelativeXLocation = 0.5;
+            _formRelativeYLocation = 0.5;
+        }
         public void SaveFormSize(Form form)
         {
             Size size;
@@ -151,6 +173,7 @@ namespace PrePoMax
             // Prevent minimized window at startup
             if (form.WindowState == FormWindowState.Minimized) form.WindowState = FormWindowState.Normal;
         }
+
 
 
     }

@@ -108,6 +108,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ExplodedViewsCollection.cs" />
+    <Compile Include="Collections\EdgesVisibilitiesCollection.cs" />
+    <Compile Include="Collections\TransformationsCollection.cs" />
     <Compile Include="Command\0000_File\CSaveToPmx.cs" />
     <Compile Include="Command\0000_File\CImportFile.cs" />
     <Compile Include="Command\0010_Edit\CSetCalculixUserKeywords.cs" />
@@ -365,6 +368,7 @@
     <Compile Include="Forms\33_Constraint\ViewPointSpring.cs" />
     <Compile Include="Forms\44_BoundaryConditions\ViewTemperatureBC.cs" />
     <Compile Include="Forms\44_BoundaryConditions\ViewFixedBC.cs" />
+    <Compile Include="Forms\45_Load\ViewImportedPressureLoad.cs" />
     <Compile Include="Forms\45_Load\ViewHydrostaticPressureLoad.cs" />
     <Compile Include="Forms\45_Load\ViewCFlux.cs" />
     <Compile Include="Forms\45_Load\ViewFilmHeatTransfer.cs" />
@@ -580,6 +584,12 @@
     <Compile Include="Globals.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Collections\SectionViewsCollection.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Selection\ItemSet\ItemSetData.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -753,14 +763,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Forms\00_Common\FrmSelectItemSet.resx">
       <DependentUpon>FrmSelectItemSet.cs</DependentUpon>
     </EmbeddedResource>
@@ -809,8 +814,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SectionView1.ico" />
-    <None Include="Resources\SectionView.bmp" />
     <None Include="Icons\Common\Hide.ico" />
     <None Include="Icons\Common\Show.ico" />
     <None Include="Icons\Common\Up_arrow.ico" />
@@ -834,10 +837,10 @@
     <None Include="Icons\View\SectionCut.ico" />
     <None Include="Icons\View\SectionView.ico" />
     <None Include="Icons\Geometry\Mesh_refinement.ico" />
-    <None Include="Icons\Constraints\Constraints.png" />
+    <None Include="Icons\Constraints\Constraints.ico" />
     <None Include="Icons\Contact\ContactInteraction.ico" />
     <None Include="Icons\Contact\SurfaceInteraction.ico" />
-    <None Include="Icons\Material\Remove.png" />
+    <None Include="Icons\Material\Remove.ico" />
     <None Include="Icons\Contact\ContactPair.ico" />
     <None Include="Icons\File\Open.png" />
     <None Include="Icons\Common\Cut.png" />
@@ -855,6 +858,42 @@
     <None Include="Icons\Step\Defined_field.ico" />
     <None Include="Icons\Material\Remove.ico" />
     <None Include="Icons\Mesh\Part.png" />
+    <None Include="Icons\Tools\Query.ico" />
+    <None Include="Icons\Tools\Clear_query.ico" />
+    <None Include="Icons\Tools\Remove_annotations.ico" />
+    <None Include="Icons\Results\Undeformed_Wireframe.ico" />
+    <None Include="Icons\Results\Undeformed_Solid.ico" />
+    <None Include="Icons\Step\Field_output.ico" />
+    <None Include="Icons\Step\History_output.ico" />
+    <None Include="Icons\Step\Step.png" />
+    <None Include="Icons\Step\Preview_load.ico" />
+    <None Include="Icons\File\New.ico" />
+    <None Include="Icons\File\Open.ico" />
+    <None Include="Icons\File\Import.ico" />
+    <None Include="Icons\File\Save.ico" />
+    <None Include="Icons\File\Export.ico" />
+    <None Include="Icons\View\ZoomToFit.ico" />
+    <None Include="Icons\View\Front.ico" />
+    <None Include="Icons\View\Back.ico" />
+    <None Include="Icons\View\Top.ico" />
+    <None Include="Icons\View\Bottom.ico" />
+    <None Include="Icons\View\Left.ico" />
+    <None Include="Icons\View\Right.ico" />
+    <None Include="Icons\View\Normal.ico" />
+    <None Include="Icons\View\Vertical.ico" />
+    <None Include="Icons\View\Isometric.ico" />
+    <None Include="Icons\View\Wireframe.ico" />
+    <None Include="Icons\View\ElementEdges.ico" />
+    <None Include="Icons\View\ModelEdges.ico" />
+    <None Include="Icons\View\NoEdges.ico" />
+    <None Include="Icons\Mesh\Node_set.ico" />
+    <None Include="Icons\Mesh\Element_set.ico" />
+    <None Include="Icons\Mesh\Surface.ico" />
+    <None Include="Icons\Mesh\Reference_point.ico" />
+    <None Include="Icons\Material\Material.ico" />
+    <None Include="Icons\Section\Section.ico" />
+    <None Include="Icons\Initial conditions\Preview_initial_condition.ico" />
+    <None Include="Icons\Step\Preview_defined_field.ico" />
     <Content Include="main.ico" />
   </ItemGroup>
   <ItemGroup>

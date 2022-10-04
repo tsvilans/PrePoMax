@@ -42,7 +42,7 @@ namespace FileInOut.Input
                 int possibleNodeId;
                 string[] splitter = new string[] { " " };
                 string[] tmp;
-                string[] lines = File.ReadAllLines(fileName);
+                string[] lines = CaeGlobals.Tools.ReadAllLines(fileName);
                 int surfaceId;
                 int edgeId;
                 //

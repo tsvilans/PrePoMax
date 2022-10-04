@@ -291,6 +291,26 @@ namespace UserControls.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Preview_load {
+            get {
+                object obj = ResourceManager.GetObject("Preview_load", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Query {
+            get {
+                object obj = ResourceManager.GetObject("Query", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon Reference_point {
@@ -351,12 +371,12 @@ namespace UserControls.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon Step {
+        internal static System.Drawing.Bitmap Step {
             get {
                 object obj = ResourceManager.GetObject("Step", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -371,12 +391,12 @@ namespace UserControls.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon Unactive {
+        internal static System.Drawing.Bitmap Unactive {
             get {
                 object obj = ResourceManager.GetObject("Unactive", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

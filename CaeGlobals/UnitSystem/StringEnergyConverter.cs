@@ -44,7 +44,7 @@ namespace CaeGlobals
 
 
         // Methods                                                                                                                  
-        public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
             else return base.CanConvertFrom(context, sourceType);
@@ -58,7 +58,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -88,39 +88,61 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
         {
-            // 1 inch = 1/12 foot
-            double conversion = 1.0 / 12.0;
-            double scale = 1;
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            // Check if it is given in unsupported units
-            if (valueWithUnitString.Contains(MyUnit.PoundForceInchAbbreviation))
+            try
             {
-                valueWithUnitString = valueWithUnitString.Replace(MyUnit.PoundForceInchAbbreviation, "ft·lb");
-                scale = conversion;
+                // 1 inch = 1/12 foot
+                double conversion = 1.0 / 12.0;
+                double scale = 1;
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                // Check if it is given in unsupported units
+                if (valueWithUnitString.Contains(MyUnit.PoundForceInchAbbreviation))
+                {
+                    valueWithUnitString = valueWithUnitString.Replace(MyUnit.PoundForceInchAbbreviation, "ft·lb");
+                    scale = conversion;
+                }
+                // Check if it must be converted to unsupported units
+                double value;
+                if ((int)_energyUnit == MyUnit.NoUnit)
+                {
+                    Energy energy = Energy.Parse(valueWithUnitString);
+                    value = energy.Value;
+                }
+                else if (_energyUnit == MyUnit.PoundForceInch)
+                {
+                    Energy energy = Energy.Parse(valueWithUnitString).ToUnit(EnergyUnit.FootPound);
+                    if (scale == conversion) value = energy.Value;
+                    else value = scale * energy.Value / conversion;
+                }
+                else
+                {
+                    Energy energy = Energy.Parse(valueWithUnitString).ToUnit(_energyUnit);
+                    value = scale * energy.Value;
+                }
+                return value;
             }
-            // Check if it must be converted to unsupported units
-            double value;
-            if ((int)_energyUnit == MyUnit.NoUnit)
+            catch (Exception ex)
             {
-                Energy energy = Energy.Parse(valueWithUnitString);
-                value = energy.Value;
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
             }
-            else if (_energyUnit == MyUnit.PoundForceInch)
-            {
-                Energy energy = Energy.Parse(valueWithUnitString).ToUnit(EnergyUnit.FootPound);
-                if (scale == conversion) value = energy.Value;
-                else value = scale * energy.Value / conversion;
-            }
-            else
-            {
-                Energy energy = Energy.Parse(valueWithUnitString).ToUnit(_energyUnit);
-                value = scale * energy.Value;
-            }
-            return value;
         }
-
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported energy abbreviations: ";
+            var allUnits = Energy.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Energy.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
+        }
     }
 
 }

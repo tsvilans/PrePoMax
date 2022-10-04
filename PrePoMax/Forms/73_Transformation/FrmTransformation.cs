@@ -135,7 +135,7 @@ namespace PrePoMax.Forms
             }
             catch (Exception ex)
             {
-                CaeGlobals.ExceptionTools.Show(this, ex);
+                ExceptionTools.Show(this, ex);
             }
         }
         private void btnClear_Click(object sender, EventArgs e)
@@ -144,7 +144,7 @@ namespace PrePoMax.Forms
             {
                 _propertyItemChanged = false;   // disable transformation on OK
                 //
-                _controller.SetTransformations(null);
+                _controller.RemoveCurrentTransformations(true);
             }
             catch (Exception ex)
             {

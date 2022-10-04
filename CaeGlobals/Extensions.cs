@@ -107,6 +107,14 @@ namespace CaeGlobals
         {
             foreach (var item in dicToAdd) dic.Add(item.Key, item.Value);
         }
+        public static void AddUniqueItemsFromRange<TKey, TValue>(this Dictionary<TKey, TValue> dic, Dictionary<TKey, TValue> dicToAdd)
+        {
+            foreach (var item in dicToAdd)
+            {
+                if (!dic.ContainsKey(item.Key)) dic.Add(item.Key, item.Value);
+            }
+                
+        }
         public static string GetNextNumberedKey<T>(this IDictionary<string, T> dictionary, string key, string postFix = "")
         {
             int n = 0;

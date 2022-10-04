@@ -35,7 +35,7 @@ namespace PrePoMax
         //
         [Category("Rotation center coordinates")]
         [OrderedDisplayName(0, 10, "By selection")]
-        [DescriptionAttribute("Use selection for the defenition of the rotation center.")]
+        [DescriptionAttribute("Use selection for the definition of the rotation center.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 3)]
         public ItemSetData CenterPointItemSet

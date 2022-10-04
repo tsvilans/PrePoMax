@@ -288,9 +288,124 @@ namespace CaeMesh
             return intersection;
         }
         //
+        public double MaxOutsideAxialDistance(double[] coor)
+        {
+            double distX = 0;
+            double distY = 0;
+            double distZ = 0;
+            if (coor[0] < MinX) distX = MinX - coor[0];
+            else if (coor[0] > MaxX) distX = coor[0] - MaxX;
+            //
+            if (coor[1] < MinY) distY = MinY - coor[1];
+            else if (coor[1] > MaxY) distY = coor[1] - MaxY;
+            //
+            if (coor[2] < MinZ) distZ = MinZ - coor[2];
+            else if (coor[2] > MaxZ) distZ = coor[2] - MaxZ;
+            //
+            return Math.Max(Math.Max(distX, distY), distZ);
+        }
+        public double MaxOutsideDistance2(double[] coor)
+        {
+            double d;
+            double dist = 0;
+            //
+            if (coor[0] < MinX)
+            {
+                d = MinX - coor[0];
+                dist = d * d;
+            }
+            else if (coor[0] > MaxX)
+            {
+                d = coor[0] - MaxX;
+                dist = d * d;
+            }
+            //
+            if (coor[1] < MinY)
+            {
+                d = MinY - coor[1];
+                dist += d * d;
+            }
+            else if (coor[1] > MaxY)
+            {
+                d = coor[1] - MaxY;
+                dist += d * d;
+            }
+            //
+            if (coor[2] < MinZ)
+            {
+                d = MinZ - coor[2];
+                dist += d * d;
+            }
+            else if (coor[2] > MaxZ)
+            {
+                d = coor[2] - MaxZ;
+                dist += d * d;
+            }
+            //
+            return dist;
+        }
+        public bool IsMaxOutsideDistance2SmallerThan(double[] coor, double limit)
+        {
+            double d;
+            double dist = 0;
+            //
+            if (coor[0] < MinX)
+            {
+                d = MinX - coor[0];
+                dist = d * d;
+                if (dist >= limit) return false;
+            }
+            else if (coor[0] > MaxX)
+            {
+                d = coor[0] - MaxX;
+                dist = d * d;
+                if (dist >= limit) return false;
+            }
+            //
+            if (coor[1] < MinY)
+            {
+                d = MinY - coor[1];
+                dist += d * d;
+                if (dist >= limit) return false;
+            }
+            else if (coor[1] > MaxY)
+            {
+                d = coor[1] - MaxY;
+                dist += d * d;
+                if (dist >= limit) return false;
+            }
+            //
+            if (coor[2] < MinZ)
+            {
+                d = MinZ - coor[2];
+                dist += d * d;
+                if (dist >= limit) return false;
+            }
+            else if (coor[2] > MaxZ)
+            {
+                d = coor[2] - MaxZ;
+                dist += d * d;
+                if (dist >= limit) return false;
+            }
+            //
+            return true;
+        }
+        //
         public double[] GetCenter()
         {
             return new double[] { (MinX + MaxX) / 2, (MinY + MaxY) / 2, (MinZ + MaxZ) / 2 };
+        }
+        public double GetXSize()
+        {
+            return MaxX - MinX;
+        }
+        public double GetYSize()
+        {
+            return MaxY - MinY;
+        }
+        public double GetZSize()
+        {
+            return MaxZ - MinZ;
         }
         public double GetDiagonal()
         {

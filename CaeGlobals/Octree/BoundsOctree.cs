@@ -213,7 +213,6 @@ namespace Octree
         {
             _rootNode.GetColliding(ref plane, collidingWith);
         }
-
         public void GetUncollided(Plane plane, bool positiveSide, List<T> uncollided)
         {
             _rootNode.GetUncollided(ref plane, positiveSide, uncollided);

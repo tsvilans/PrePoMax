@@ -352,6 +352,36 @@ namespace CaeJob
             PostRun = null;
             LastRunCompleted = null;
         }
+        private void Run_Test()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = @"C:\Temp\test.bat";
+            ////psi.Arguments = _argument;
+            //psi.WorkingDirectory = _workDirectory;
+            //psi.UseShellExecute = false;
+            ////
+            ////SetEnvironmentVariables(psi);
+            ////
+            _exe = new Process();
+            _exe.StartInfo = psi;
+            _exe.Start();
+            ////
+            int ms = 1000 * 3600 * 24 * 7 * 3; // 3 weeks
+            if (_exe.WaitForInputIdle(ms))
+            {
+                // Process completed. Check process.ExitCode here.
+                // after Kill() _jobStatus is Killed
+                _jobStatus = JobStatus.OK;
+            }
+            else
+            {
+                // Timed out.
+                Kill("Time out.");
+                //Debug.WriteLine(DateTime.Now + "   Timeout proces: " + Name + " in: " + _workDirectory);
+                _jobStatus = JobStatus.TimedOut;
+            }
+            _exe.Close();
+        }
         private void Run_OldWin()
         {
             ProcessStartInfo psi = new ProcessStartInfo();
@@ -360,7 +390,7 @@ namespace CaeJob
             psi.WorkingDirectory = _workDirectory;
             psi.UseShellExecute = false;
             //
-            SetEnvironmentVariables(psi);
+            //SetEnvironmentVariables(psi);
             //
             _exe = new Process();
             _exe.StartInfo = psi;
@@ -372,14 +402,14 @@ namespace CaeJob
                 // Process completed. Check process.ExitCode here.
 
                 // after Kill() _jobStatus is Killed
-                _jobStatus = CaeJob.JobStatus.OK;
+                _jobStatus = JobStatus.OK;
             }
             else
             {
                 // Timed out.
                 Kill("Time out.");
                 //Debug.WriteLine(DateTime.Now + "   Timeout proces: " + Name + " in: " + _workDirectory);
-                _jobStatus = CaeJob.JobStatus.TimedOut;
+                _jobStatus = JobStatus.TimedOut;
             }
             _exe.Close();
         }
@@ -446,7 +476,7 @@ namespace CaeJob
                     // Timed out.
                     Kill("Time out.");
                     //Debug.WriteLine(DateTime.Now + "   Timeout proces: " + Name + " in: " + _workDirectory);
-                    _jobStatus = CaeJob.JobStatus.TimedOut;
+                    _jobStatus = JobStatus.TimedOut;
                 }               
                 _exe.Close();
             }            
@@ -586,15 +616,19 @@ namespace CaeJob
         }
         private void SetNumberOfProcessors(ProcessStartInfo psi)
         {
-            SetEnvironmentVariable(psi, new EnvironmentVariable() { Name = "OMP_NUM_THREADS", Value = _numCPUs.ToString() });
+            EnvironmentVariable numberOfProcessors = new EnvironmentVariable("OMP_NUM_THREADS", _numCPUs.ToString());
+            SetEnvironmentVariable(psi, numberOfProcessors);
         }
         private void SetEnvironmentVariable(ProcessStartInfo psi, EnvironmentVariable environmentVariable)
         {
             try
             {
-                if (psi.EnvironmentVariables.ContainsKey(environmentVariable.Name)) psi.EnvironmentVariables.Remove(environmentVariable.Name);
-                psi.EnvironmentVariables.Add(environmentVariable.Name, environmentVariable.Value);
-                if (!psi.EnvironmentVariables.ContainsKey(environmentVariable.Name)) throw new Exception();
+                if (environmentVariable.Active)
+                {
+                    if (psi.EnvironmentVariables.ContainsKey(environmentVariable.Name)) psi.EnvironmentVariables.Remove(environmentVariable.Name);
+                    psi.EnvironmentVariables.Add(environmentVariable.Name, environmentVariable.Value);
+                    if (!psi.EnvironmentVariables.ContainsKey(environmentVariable.Name)) throw new Exception();
+                }
             }
             catch
             {

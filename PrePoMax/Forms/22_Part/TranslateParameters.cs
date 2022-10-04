@@ -34,7 +34,7 @@ namespace PrePoMax.Forms
         //
         [Category("Start point coordinates")]
         [OrderedDisplayName(0, 10, "By selection")]
-        [DescriptionAttribute("Use selection for the defenition of the start point.")]
+        [DescriptionAttribute("Use selection for the definition of the start point.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 2)]
         public ItemSetData StartPointItemSet
@@ -78,7 +78,7 @@ namespace PrePoMax.Forms
         //
         [Category("End point coordinates")]
         [OrderedDisplayName(0, 10, "By selection ")]    // must be a different name than for the first point !!!
-        [DescriptionAttribute("Use selection for the defenition of the end point.")]
+        [DescriptionAttribute("Use selection for the definition of the end point.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
         [Id(1, 3)]
         public ItemSetData EndPointItemSet

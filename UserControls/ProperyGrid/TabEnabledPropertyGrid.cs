@@ -26,6 +26,8 @@ namespace UserControls
             this.DisabledItemForeColor = System.Drawing.Color.FromArgb(80, 80, 80);
             //
             _readOnly = false;
+            //
+            Site = new MySite(this);
         }
         //
         public void SetParent(Form form)

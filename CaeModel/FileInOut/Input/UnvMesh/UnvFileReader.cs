@@ -22,7 +22,7 @@ namespace FileInOut.Input
         {
             if (fileName != null && File.Exists(fileName))
             {
-                string[] lines = File.ReadAllLines(fileName);
+                string[] lines = CaeGlobals.Tools.ReadAllLines(fileName);
                 //
                 List<List<string>> dataSets = GetDataSets(lines);
                 //
@@ -47,7 +47,7 @@ namespace FileInOut.Input
                     {
                         elements = GetElements(dataSet.ToArray());
                     }
-                    else if (setID == 2467) // Groups
+                    else if (setID == 2467 || setID == 2477) // Groups
                     {
                         GetGroups(dataSet.ToArray(), ref nodeGroups, ref elementGroups);
                     }
@@ -269,6 +269,9 @@ namespace FileInOut.Input
         static private void GetGroups(string[] lines, ref Dictionary<int, FeNodeSet> nodeGroups,
                                       ref Dictionary<int, FeElementSet> elementGroups)
         {
+            //
+            // http://www2.me.rochester.edu/courses/ME204/nx_help/index.html#uid:id973882
+            //
             int id;
             int n;
             string name;
@@ -282,7 +285,8 @@ namespace FileInOut.Input
             for (int i = 1; i < lines.Length; i++)
             {
                 record1 = lines[i].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-                record2 = lines[i + 1].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+                //record2 = lines[i + 1].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+                record2 = new string[] { lines[i + 1].Replace(' ', '_') };  // group name fix
                 //
                 id = int.Parse(record1[0]);
                 n = int.Parse(record1[7]);  // number of elements in record

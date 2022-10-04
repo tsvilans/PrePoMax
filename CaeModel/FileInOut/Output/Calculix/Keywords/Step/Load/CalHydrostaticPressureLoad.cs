@@ -23,8 +23,9 @@ namespace FileInOut.Output.Calculix
         // Constructor                                                                                                              
         public CalHydrostaticPressureLoad(FeModel model, HydrostaticPressure load)
         {
-            _cLoads = model.GetNodalLoadsFromHydrostaticPressure(load);
             _load = load;
+            //
+            _cLoads = model.GetNodalLoadsFromVariablePressureLoad(_load);
         }
 
 

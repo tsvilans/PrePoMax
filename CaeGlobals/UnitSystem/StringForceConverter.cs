@@ -48,9 +48,7 @@ namespace CaeGlobals
                 //
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Force force = Force.Parse(valueString);
-                    if ((int)_forceUnit != MyUnit.NoUnit) force = force.ToUnit(_forceUnit);
-                    valueDouble = force.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -77,6 +75,35 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Force force = Force.Parse(valueWithUnitString);
+                if ((int)_forceUnit != MyUnit.NoUnit) force = force.ToUnit(_forceUnit);
+                return force.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string abb;
+            string supportedUnitAbbreviations = "Supported force abbreviations: ";
+            var allUnits = Force.Units;
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                abb = Force.GetAbbreviation(allUnits[i]);
+                if (abb != null) abb.Trim();
+                if (abb.Length > 0) supportedUnitAbbreviations += abb;
+                if (i != allUnits.Length - 1) supportedUnitAbbreviations += ", ";
+            }
+            supportedUnitAbbreviations += ".";
+            //
+            return supportedUnitAbbreviations;
         }
     }
 

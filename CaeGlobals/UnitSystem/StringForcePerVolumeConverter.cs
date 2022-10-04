@@ -67,7 +67,7 @@ namespace CaeGlobals
                 double valueDouble;
                 if (!double.TryParse(valueString, out valueDouble))
                 {
-                    valueDouble = ConvertToUnits(valueString);
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 return valueDouble;
             }
@@ -96,21 +96,36 @@ namespace CaeGlobals
             }
         }
         //
-        private static double ConvertToUnits(string valueWithUnitString)
-        {            
-            valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
-            //
-            string[] tmp = valueWithUnitString.Split('/');
-            if (tmp.Length != 2) throw new FormatException(error);
-            Force force = Force.Parse(tmp[0]);
-            // NoUnit
-            if ((int)_forceUnit == MyUnit.NoUnit || (int)_volumeUnit == MyUnit.NoUnit) return force.Value;
-            else force = force.ToUnit(_forceUnit);
-            //
-            VolumeUnit volumeUnit = Volume.ParseUnit(tmp[1]);
-            Volume volume = Volume.From(1, volumeUnit).ToUnit(_volumeUnit);
-            double value = force.Value / volume.Value;
-            return value;
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                valueWithUnitString = valueWithUnitString.Trim().Replace(" ", "");
+                //
+                string[] tmp = valueWithUnitString.Split('/');
+                if (tmp.Length != 2) throw new FormatException(error);
+                Force force = Force.Parse(tmp[0]);
+                // NoUnit
+                if ((int)_forceUnit == MyUnit.NoUnit || (int)_volumeUnit == MyUnit.NoUnit) return force.Value;
+                else force = force.ToUnit(_forceUnit);
+                //
+                tmp[1] = tmp[1].Replace("(", " ("); // fix space before (U.S.) anf (imp.)
+                VolumeUnit volumeUnit = Volume.ParseUnit(tmp[1]);
+                Volume volume = Volume.From(1, volumeUnit).ToUnit(_volumeUnit);
+                double value = force.Value / volume.Value;
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            string supportedUnitAbbreviations = StringForceConverter.SupportedUnitAbbreviations();
+            supportedUnitAbbreviations += Environment.NewLine + Environment.NewLine;
+            supportedUnitAbbreviations += StringVolumeConverter.SupportedUnitAbbreviations();
+            return supportedUnitAbbreviations;
         }
     }
 

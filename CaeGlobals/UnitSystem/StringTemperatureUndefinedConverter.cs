@@ -52,19 +52,17 @@ namespace CaeGlobals
         {
             values = new ArrayList(new double[] { double.PositiveInfinity, _initialValue });
         }
-        // Indicates this converter provides a list of standard values.
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
-        // Returns a StandardValuesCollection of standard value objects.
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             // Passes the local integer array.
             StandardValuesCollection svc = new StandardValuesCollection(values);
             return svc;
         }
-        public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
             else return base.CanConvertFrom(context, sourceType);
@@ -79,9 +77,7 @@ namespace CaeGlobals
                 if (string.Equals(valueString, _undefined)) valueDouble = double.PositiveInfinity;
                 else if (!double.TryParse(valueString, out valueDouble))
                 {
-                    Temperature temperature = Temperature.Parse(valueString);
-                    if ((int)_temperatureUnit != MyUnit.NoUnit) temperature = temperature.ToUnit(_temperatureUnit);
-                    valueDouble = temperature.Value;
+                    valueDouble = ConvertToCurrentUnits(valueString);
                 }
                 //
                 return valueDouble;
@@ -113,6 +109,24 @@ namespace CaeGlobals
             {
                 return base.ConvertTo(context, culture, value, destinationType);
             }
+        }
+        //
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
+        {
+            try
+            {
+                Temperature temperature = Temperature.Parse(valueWithUnitString);
+                if ((int)_temperatureUnit != MyUnit.NoUnit) temperature = temperature.ToUnit(_temperatureUnit);
+                return temperature.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + Environment.NewLine + Environment.NewLine + SupportedUnitAbbreviations());
+            }
+        }
+        public static string SupportedUnitAbbreviations()
+        {
+            return StringTemperatureConverter.SupportedUnitAbbreviations();
         }
     }
 

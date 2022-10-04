@@ -217,6 +217,26 @@ Dependency nglib - added following files for c++ redistriburable compatibility:
 
 Done
 
+
+Version 1.3.5
+Added partial support for opening OpenFOAM results
+Added support to import a pressure load from OpenFOAM
+Added support to define a stiffness of a surface spring constraint as stiffness per area
+Added icons for different result visualizations
+Added support for opening multiple results at the same time
+Bug fixes
+
+Version 1.3.4
+A bug fix in hydrostatic load when using shell elements
+
+Version 1.3.3
+Added toolbar buttons for Query and remove annotations
+Added support for a hydrostatic pressure load
+Added a new toolbar for selection the deformation of results
+Added Boudary displacement step for wear analysis
+Added support for mouse selecion of the centrifugal load rotation point
+Bug fixes
+
 Version 1.3.2
 Added support for annotation editing
 Added support for multiple annotations at the same time
