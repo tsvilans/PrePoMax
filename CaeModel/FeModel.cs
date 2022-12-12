@@ -44,15 +44,15 @@ namespace CaeModel
         public OrderedDictionary<string, Amplitude> Amplitudes { get { return _amplitudes; } }
         public OrderedDictionary<string, InitialCondition> InitialConditions { get { return _initialConditions; } }
         public StepCollection StepCollection { get { return _stepCollection; } }
-        public OrderedDictionary<int[], Calculix.CalculixUserKeyword> CalculixUserKeywords 
-        { 
-            get { return _calculixUserKeywords; } 
-            set 
+        public OrderedDictionary<int[], Calculix.CalculixUserKeyword> CalculixUserKeywords
+        {
+            get { return _calculixUserKeywords; }
+            set
             {
                 _calculixUserKeywords = value;
-            } 
+            }
         }
-        public ModelProperties Properties  { get { return _properties; } set { _properties = value; } }
+        public ModelProperties Properties { get { return _properties; } set { _properties = value; } }
         public UnitSystem UnitSystem
         {
             get { return _unitSystem; }
@@ -78,7 +78,7 @@ namespace CaeModel
             _properties = new ModelProperties();
             _unitSystem = new UnitSystem();
         }
-        
+
         // ISerialization
         public FeModel(SerializationInfo info, StreamingContext context)
         {
@@ -128,7 +128,7 @@ namespace CaeModel
                         else throw new NotSupportedException();
                         break;
                     case "_constraints":
-                        if (entry.Value is Dictionary<string, Constraint> cd)   
+                        if (entry.Value is Dictionary<string, Constraint> cd)
                         {
                             // Compatibility for version v.0.5.1
                             cd.OnDeserialization(null);
@@ -231,7 +231,7 @@ namespace CaeModel
                 {
                     valid = _materials.ContainsValidKey(section.MaterialName)
                         && ((ss.RegionType == RegionTypeEnum.PartName && _mesh.Parts.ContainsValidKey(section.RegionName))
-                        || (ss.RegionType == RegionTypeEnum.ElementSetName 
+                        || (ss.RegionType == RegionTypeEnum.ElementSetName
                             && _mesh.ElementSets.ContainsValidKey(section.RegionName)));
                 }
                 else if (section is ShellSection shs)
@@ -332,7 +332,7 @@ namespace CaeModel
                     }
                     else if (historyOutput is ElementHistoryOutput eho)
                     {
-                        valid = _mesh.ElementSets.ContainsValidKey(eho.RegionName);                        
+                        valid = _mesh.ElementSets.ContainsValidKey(eho.RegionName);
                     }
                     else if (historyOutput is ContactHistoryOutput cho)
                     {
@@ -363,7 +363,7 @@ namespace CaeModel
                     // Region
                     valid = IsLoadRegionValid(load);
                     // Amplitude
-                    if (load.AmplitudeName != BoundaryCondition.DefaultAmplitudeName && 
+                    if (load.AmplitudeName != BoundaryCondition.DefaultAmplitudeName &&
                         !_amplitudes.ContainsValidKey(load.AmplitudeName)) valid = false;
                     //
                     SetItemValidity(step.Name, load, valid, items);
@@ -747,7 +747,7 @@ namespace CaeModel
                 SetNumberOfUserKeywords?.Invoke(_calculixUserKeywords.Count);
             }
             catch { }
-        }        
+        }
         // Import
         public string[] ImportGeometryFromStlFile(string fileName)
         {
@@ -756,7 +756,7 @@ namespace CaeModel
             string[] addedPartNames = ImportGeometry(mesh, GetReservedPartNames());
             //
             return addedPartNames;
-        }        
+        }
         public string[] ImportGeometryFromBrepFile(string visFileName, string brepFileName)
         {
             FeMesh mesh = FileInOut.Input.VisFileReader.Read(visFileName);
@@ -779,7 +779,7 @@ namespace CaeModel
             string[] addedPartNames = ImportGeometry(mesh, GetReservedPartNames());
             //
             return addedPartNames;
-        }        
+        }
         public void ImportMeshFromVolFile(string fileName)
         {
             FeMesh mesh = FileInOut.Input.VolFileReader.Read(fileName, FileInOut.Input.ElementsToImport.Shell |
@@ -991,7 +991,7 @@ namespace CaeModel
         {
             OrderedDictionary<int[], Calculix.CalculixUserKeyword> indexedUserKeywords;
             FileInOut.Input.InpFileReader.Read(fileName,
-                                               FileInOut.Input.ElementsToImport.Solid | FileInOut.Input.ElementsToImport.Shell, 
+                                               FileInOut.Input.ElementsToImport.Solid | FileInOut.Input.ElementsToImport.Shell,
                                                this,
                                                WriteDataToOutput,
                                                out indexedUserKeywords);
@@ -1010,7 +1010,7 @@ namespace CaeModel
                                                FileInOut.Input.ElementsToImport.Solid | FileInOut.Input.ElementsToImport.Shell,
                                                model,
                                                WriteDataToOutput,
-                                               out OrderedDictionary<int[], Calculix.CalculixUserKeyword>  indexedUserKeywords);
+                                               out OrderedDictionary<int[], Calculix.CalculixUserKeyword> indexedUserKeywords);
             //
             string name;
             foreach (var entry in model.Materials)
@@ -1043,7 +1043,7 @@ namespace CaeModel
             Check2D(mesh);
             //
             if (_geometry == null)
-            {                
+            {
                 _geometry = new FeMesh(MeshRepresentation.Geometry);
                 mesh.ResetPartsColor();
             }
@@ -1249,7 +1249,7 @@ namespace CaeModel
                     for (int i = 0; i < nodeIds.Length; i++)
                     {
                         nodeId = nodeIds[i];
-                        if (!nodeIdPressure.TryGetValue(nodeId, out pressure)) 
+                        if (!nodeIdPressure.TryGetValue(nodeId, out pressure))
                         {
                             pressure = load.GetPressureForPoint(_mesh.Nodes[nodeId].Coor);
                             nodeIdPressure.Add(nodeId, pressure);
@@ -1401,5 +1401,21 @@ namespace CaeModel
             info.AddValue("_hashName", _hashName, typeof(string));
         }
 
+
+        public FeSurface TestCreateSurface(int partId = 1, int surfaceId = 1, string name = "UserSurface")
+        {
+            int surfaceType = (int)GeometryType.SolidSurface;
+            int geometryId = surfaceId * 100000 + surfaceType * 10000 + partId;
+            int[] faceIds = this.Mesh.GetIdsFromGeometryIds(new int[] { geometryId }, vtkSelectItem.Surface);
+            //
+            FeSurface surface = new FeSurface(this.Mesh.Surfaces.GetNextNumberedKey(name));
+            surface.CreatedFrom = FeSurfaceCreatedFrom.Faces;
+            surface.FaceIds = faceIds;
+
+            this.Mesh.CreateSurfaceItems(surface);
+            this.Mesh.Surfaces.Add(surface.Name, surface);
+
+            return surface;
+        }
     }
 }

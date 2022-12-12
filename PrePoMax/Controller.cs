@@ -13736,15 +13736,13 @@ namespace PrePoMax
             }
         }
         //
-        public void TestCreateSurface()
+        public void TestCreateSurface(int partId = 1, int surfaceId = 1, string name = "UserSurface")
         {
-            int surfaceId = 1;
             int surfaceType = (int)GeometryType.SolidSurface;
-            int partId = 1;
             int geometryId = surfaceId * 100000 + surfaceType * 10000 + partId;
             int[] faceIds = _model.Mesh.GetIdsFromGeometryIds(new int[] { geometryId }, vtkSelectItem.Surface);
             //
-            FeSurface surface = new FeSurface(_model.Mesh.Surfaces.GetNextNumberedKey("UserSurface"));
+            FeSurface surface = new FeSurface(_model.Mesh.Surfaces.GetNextNumberedKey(name));
             surface.CreatedFrom = FeSurfaceCreatedFrom.Faces;
             surface.FaceIds = faceIds;
             AddSurface(surface);
