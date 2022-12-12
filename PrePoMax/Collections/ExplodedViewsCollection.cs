@@ -48,6 +48,12 @@ namespace PrePoMax
             _allResultsExplodedViewParameters.TryGetValue(name, out parameters);
             return parameters != null;
         }
+        public ExplodedViewParameters GetResultExplodedViewParameters(string name)
+        {
+            ExplodedViewParameters parameters;
+            _allResultsExplodedViewParameters.TryGetValue(name, out parameters);
+            return parameters;
+        }
         public ExplodedViewParameters GetCurrentExplodedViewParameters()
         {
             ExplodedViewParameters parameters = GetCurrentExplodedViewParametersNull();

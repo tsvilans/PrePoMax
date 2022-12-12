@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace CaeMesh
 {
@@ -764,9 +765,97 @@ namespace CaeMesh
             //
             return allEdges;
         }
+        public Dictionary<int[], CellEdgeData> GetCellEdgeData1(Func<int[], ElementFaceType, int[][]> GetVisualizationEdgeCells)
+        {
+            int[][] cells = _cells;
+            CompareIntArray comparer = new CompareIntArray();
+            ConcurrentDictionary<int[], CellEdgeData> allEdges = new ConcurrentDictionary<int[], CellEdgeData>(comparer);
+            //
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            // Get all edges
+            Parallel.For(0, cells.Length, i =>
+            {
+                int[][] cellEdges = GetVisualizationEdgeCells(cells[i], ElementFaceType.Face);
+                int[] key;
+                CellEdgeData data;
+                //
+                foreach (var cellEdge in cellEdges)
+                {
+                    key = cellEdge.ToArray();
+                    Array.Sort(key);
+                    //
+                    if (key[0] == key[1] || (key.Length == 3 && key[1] == key[2]))
+                    {
+                        //manifoldGeometry
+                        continue;
+                    }
+                    //
+                    if (allEdges.TryGetValue(key, out data)) data.CellIds.Add(i);
+                    else allEdges.TryAdd(key, new CellEdgeData() { NodeIds = cellEdge, CellIds = new List<int>() { i } });
+                }
+            }
+            );
+            // Copy dictionary
+            Dictionary<int[], CellEdgeData> edges = new Dictionary<int[], CellEdgeData>(comparer);
+            foreach (var entry in allEdges) edges.Add(entry.Key, entry.Value);
+            //
+            watch.Stop();
+            //
+            return edges;
+        }
+        public Dictionary<int[], CellEdgeData> GetCellEdgeData3(Func<int[], ElementFaceType, int[][]> GetVisualizationEdgeCells)
+        {
+            CellEdgeData[][] cellEdgeData = new CellEdgeData[_cells.Length][];
+            //
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            // Get all edges
+            Parallel.For(0, _cells.Length, i =>
+            {
+                int[][] cellEdges = GetVisualizationEdgeCells(_cells[i], ElementFaceType.Face);
+                int[] key;
+                cellEdgeData[i] = new CellEdgeData[cellEdges.Length];
+                //
+                for (int j = 0; j < cellEdges.Length; j++)
+                {
+                    key = cellEdges[j].ToArray();
+                    Array.Sort(key);
+                    //
+                    if (key[0] == key[1] || (key.Length == 3 && key[1] == key[2]))
+                    {
+                        //manifoldGeometry
+                        continue;
+                    }
+                    //
+                    cellEdgeData[i][j] = new CellEdgeData() // 8 % time
+                    {
+                        Key = key,
+                        NodeIds = cellEdges[j],
+                        CellIds = new List<int>() { i }     // 18 % time
+                    };
+                }
+            }
+            );
+            //
+            CellEdgeData data;
+            CompareIntArray comparer = new CompareIntArray();
+            Dictionary<int[], CellEdgeData> allEdges = new Dictionary<int[], CellEdgeData>(comparer);
+            for (int i = 0; i < cellEdgeData.Length; i++)
+            {
+                for (int j = 0; j < cellEdgeData[i].Length; j++)
+                {
+                    if (allEdges.TryGetValue(cellEdgeData[i][j].Key, out data)) data.CellIds.Add(i);
+                    else allEdges.Add(cellEdgeData[i][j].Key, cellEdgeData[i][j]);
+                }
+            }
+            watch.Stop();
+            //
+            return allEdges;
+        }
         public int[] GetFreeEdgeCellIds(Func<int[], ElementFaceType, int[][]> GetVisualizationEdgeCells)
         {
-            Dictionary<int[], CellEdgeData> allEdges = GetCellEdgeData(GetVisualizationEdgeCells);
+            Dictionary<int[], CellEdgeData> allEdges = GetCellEdgeData3(GetVisualizationEdgeCells);
             //
             int[] key;
             int edgeCellId = 0;

@@ -73,13 +73,13 @@ namespace PrePoMax
         [DescriptionAttribute("The value from which the maximum clearance is calculated for which a spring contact " +
                               "element is generated. The default for c₀ is 0.001 (dimensionless). " + 
                               "Not needed for surface-to-surface contact.")]
-        [TypeConverter(typeof(StringDefaultDoubleConverter))]
+        [TypeConverter(typeof(StringDoubleDefaultConverter))]
         public double C0_lin
         {
             get
             {
                 CaeModel.SurfaceBehavior surfaceBehavior = new CaeModel.SurfaceBehavior();
-                StringDefaultDoubleConverter.InitialValue = surfaceBehavior.C0;
+                StringDoubleDefaultConverter.InitialValue = surfaceBehavior.C0;
                 //
                 return _surfaceBehavior.C0;
             }

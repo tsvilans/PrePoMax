@@ -790,7 +790,7 @@ namespace UserControls
         {
             CodersLabTreeView tree = GetActiveTree();
             //
-            if (tree.Focused)
+            //if (tree.Focused)
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -1672,7 +1672,7 @@ namespace UserControls
                 //
                 CodersLabTreeView tree = GetActiveTree();
                 TreeNode baseNode = tree.Nodes[0];
-                TreeNode[] tmp = baseNode.Nodes.Find(part.Name, true);
+                TreeNode[] tmp = baseNode.Nodes.Find(part.Name, true, true);
                 //
                 if (tmp.Length > 1)
                 {
@@ -1727,6 +1727,10 @@ namespace UserControls
             }
             catch { return -1; }
             finally { _disableSelectionsChanged = false; }
+        }
+        public void EditSelectedPart()
+        {
+            tsmiEdit_Click(null, null);
         }
 
         // Regenerate tree                                                                                                          
@@ -2009,10 +2013,10 @@ namespace UserControls
             }
             else if (item is HistoryOutput && parentName != null)
             {
-                tmp = _steps.Nodes.Find(parentName, true);
+                tmp = _steps.Nodes.Find(parentName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. More than one step named: " + parentName);
                 //
-                tmp = tmp[0].Nodes.Find(_historyOutputsName, true);
+                tmp = tmp[0].Nodes.Find(_historyOutputsName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. There is no history output node to add to.");
                 //
                 node = tmp[0].Nodes.Add(item.Name);
@@ -2022,10 +2026,10 @@ namespace UserControls
             }
             else if (item is FieldOutput && parentName != null)
             {
-                tmp = _steps.Nodes.Find(parentName, true);
+                tmp = _steps.Nodes.Find(parentName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. More than one step named: " + parentName);
                 //
-                tmp = tmp[0].Nodes.Find(_fieldOutputsName, true);
+                tmp = tmp[0].Nodes.Find(_fieldOutputsName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. There is no field output node to add to.");
                 //
                 node = tmp[0].Nodes.Add(item.Name);
@@ -2035,10 +2039,10 @@ namespace UserControls
             }
             else if (item is BoundaryCondition && parentName != null)
             {
-                tmp = _steps.Nodes.Find(parentName, true);
+                tmp = _steps.Nodes.Find(parentName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. More than one step named: " + parentName);
                 //
-                tmp = tmp[0].Nodes.Find(_boundaryConditionsName, true);
+                tmp = tmp[0].Nodes.Find(_boundaryConditionsName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. There is no bounday condition node to add to.");
                 //
                 node = tmp[0].Nodes.Add(item.Name);
@@ -2048,10 +2052,10 @@ namespace UserControls
             }
             else if (item is Load && parentName != null)
             {
-                tmp = _steps.Nodes.Find(parentName, true);
+                tmp = _steps.Nodes.Find(parentName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. More than one step named: " + parentName);
                 //
-                tmp = tmp[0].Nodes.Find(_loadsName, true);
+                tmp = tmp[0].Nodes.Find(_loadsName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. There is no load node to add to.");
                 //
                 node = tmp[0].Nodes.Add(item.Name);
@@ -2061,10 +2065,10 @@ namespace UserControls
             }
             else if (item is DefinedField && parentName != null)
             {
-                tmp = _steps.Nodes.Find(parentName, true);
+                tmp = _steps.Nodes.Find(parentName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. More than one step named: " + parentName);
                 //
-                tmp = tmp[0].Nodes.Find(_definedFieldsName, true);
+                tmp = tmp[0].Nodes.Find(_definedFieldsName, true, true);
                 if (tmp.Length > 1) throw new Exception("Adding operation failed. There is no defined field node to add to.");
                 //
                 node = tmp[0].Nodes.Add(item.Name);
@@ -2220,18 +2224,19 @@ namespace UserControls
             TreeNode[] tmp;
             if (parentName != null)
             {
-                if (view == ViewType.Model) tmp = _steps.Nodes.Find(parentName, true);
+                if (view == ViewType.Model) tmp = _steps.Nodes.Find(parentName, true, true);
                 else if (view == ViewType.Results)
                 {
-                    if (typeof(T) == typeof(FieldData)) tmp = _resultFieldOutputs.Nodes.Find(parentName, true);
-                    else if (typeof(T) == typeof(HistoryResultField)) tmp = _resultHistoryOutputs.Nodes.Find(parentName, true);
+                    if (typeof(T) == typeof(FieldData)) tmp = _resultFieldOutputs.Nodes.Find(parentName, true, true);
+                    else if (typeof(T) == typeof(HistoryResultField))
+                        tmp = _resultHistoryOutputs.Nodes.Find(parentName, true, true);
                     else if (typeof(T) == typeof(HistoryResultData))
                     {
                         string[] split = parentName.Split(new string[] { "@@@" }, StringSplitOptions.None);
                         if (split.Length == 2)
                         {
-                            tmp = _resultHistoryOutputs.Nodes.Find(split[0], true);
-                            if (tmp.Length == 1) tmp = tmp[0].Nodes.Find(split[1], true);
+                            tmp = _resultHistoryOutputs.Nodes.Find(split[0], true, true);
+                            if (tmp.Length == 1) tmp = tmp[0].Nodes.Find(split[1], true, true);
                             else throw new NotSupportedException();
                         }
                         else throw new NotSupportedException();
@@ -2244,7 +2249,7 @@ namespace UserControls
                 baseNode = tmp[0];
             }
             //
-            tmp = baseNode.Nodes.Find(nodeName, true);
+            tmp = baseNode.Nodes.Find(nodeName, true, true);
             int count = 0;
             //
             for (int i = 0; i < tmp.Length; i++)

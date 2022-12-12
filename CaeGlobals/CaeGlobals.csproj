@@ -131,10 +131,14 @@
     <Compile Include="Comparers\CompareObjects.cs" />
     <Compile Include="CommonClasses\UniqueQueue.cs" />
     <Compile Include="CommonClasses\Vec3D.cs" />
+    <Compile Include="UnitSystem\MyNCalc.cs" />
     <Compile Include="UnitSystem\MyUnit.cs" />
     <Compile Include="UnitSystem\StringAccelerationConverter.cs" />
+    <Compile Include="UnitSystem\StringDoubleDefaultConverter.cs" />
+    <Compile Include="UnitSystem\StringStringDefaultConverter.cs" />
     <Compile Include="UnitSystem\StringHeatTransferCoefficientConverter.cs" />
     <Compile Include="UnitSystem\StringHeatTransferCoefficientFromConverter.cs" />
+    <Compile Include="UnitSystem\StringDoubleConverter.cs" />
     <Compile Include="UnitSystem\StringMassConverter.cs" />
     <Compile Include="UnitSystem\StringPowerConverter.cs" />
     <Compile Include="UnitSystem\StringNewtonGravityUndefinedConverter.cs" />

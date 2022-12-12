@@ -40,7 +40,7 @@ namespace CaeResults
         public Dictionary<int, FeNode> UndeformedNodes { get { return _undeformedNodes; } }
         public string HashName { get { return _hashName; } set { _hashName = value; } }
         public string FileName { get { return _fileName; } set { _fileName = value; } }
-        public FeMesh Mesh { get { return _mesh; } set { _mesh = value; } }        
+        public FeMesh Mesh { get { return _mesh; } set { _mesh = value; } }
         public DateTime DateTime { get { return _dateTime; } set { _dateTime = value; } }
         public UnitSystem UnitSystem { get { return _unitSystem; } set { _unitSystem = value; } }
         public string DeformationFieldOutputName
@@ -56,11 +56,16 @@ namespace CaeResults
             }
             set
             {
+                string newDeformationFieldOutputName;
                 OrderedDictionary<string, string> possibleNames = GetPossibleDeformationFieldOutputNamesMap();
-                if (possibleNames.TryGetValue(value, out _deformationFieldOutputName)) { }
-                else _deformationFieldOutputName = possibleNames.Values.First();
-                // Reset global mesh deformation settings
-                ResetScaleStepIncrement();
+                if (possibleNames.TryGetValue(value, out newDeformationFieldOutputName)) { }
+                else newDeformationFieldOutputName = possibleNames.Values.First();
+                // Reset global mesh deformation settings if needed
+                if (newDeformationFieldOutputName != _deformationFieldOutputName)
+                {
+                    _deformationFieldOutputName = newDeformationFieldOutputName;
+                    ResetScaleStepIncrement();
+                }
             }
         }
 
@@ -215,7 +220,7 @@ namespace CaeResults
         }
         private void InitializeUndeformedNodes()
         {
-            _undeformedNodes = new Dictionary<int, FeNode>();
+            _undeformedNodes = new Dictionary<int, FeNode>(_mesh.Nodes.Count());
             foreach (var entry in _mesh.Nodes) _undeformedNodes.Add(entry.Key, new FeNode(entry.Value));
             ResetScaleStepIncrement();
         }
@@ -442,6 +447,7 @@ namespace CaeResults
                         foreach (var entry in _mesh.Parts)
                         {
                             offset = entry.Value.Offset;
+                            if (offset == null) offset = new double[3];
                             //
                             foreach (var nodeId in entry.Value.NodeLabels)
                             {
@@ -455,7 +461,17 @@ namespace CaeResults
                                                               node.Z + offset[2] + _scale * deformations[2][resultNodeId]);
                                 }
                                 // Geometry parts
-                                else deformedNode = node;
+                                else
+                                {
+                                    if (offset[0] != 0 || offset[1] != 0 || offset[2] != 0)
+                                    {
+                                        deformedNode = new FeNode(node.Id,
+                                                                  node.X + offset[0],
+                                                                  node.Y + offset[1],
+                                                                  node.Z + offset[2]);
+                                    }
+                                    else deformedNode = node;
+                                }
                                 // Check for merged nodes as in compound parts
                                 if (!deformedNodes.ContainsKey(deformedNode.Id))
                                     deformedNodes.Add(deformedNode.Id, deformedNode);
@@ -473,11 +489,23 @@ namespace CaeResults
                         foreach (var nodeId in entry.Value.NodeLabels)
                         {
                             node = _undeformedNodes[nodeId];
-                            // Result parts
-                            if (_nodeIdsLookUp.TryGetValue(node.Id, out resultNodeId))
-                                deformedNode = new FeNode(node.Id, node.X + offset[0], node.Y + offset[1], node.Z + offset[2]);
-                            // Geometry parts
+
+                            if (offset[0] != 0 || offset[1] != 0 || offset[2] != 0)
+                            {
+                                deformedNode = new FeNode(node.Id,
+                                                          node.X + offset[0],
+                                                          node.Y + offset[1],
+                                                          node.Z + offset[2]);
+                            }
                             else deformedNode = node;
+
+                            // Result parts
+                            //if (_nodeIdsLookUp.TryGetValue(node.Id, out resultNodeId))
+                            //    deformedNode = new FeNode(node.Id, node.X + offset[0], node.Y + offset[1], node.Z + offset[2]);
+                            // Geometry parts
+                            //else deformedNode = node;
+
+
                             // Check for merged nodes as in compound parts
                             if (!deformedNodes.ContainsKey(deformedNode.Id))
                                 deformedNodes.Add(deformedNode.Id, deformedNode);
@@ -650,23 +678,29 @@ namespace CaeResults
                         unitAbbreviation = "";
                         break;
                     case FOFieldNames.Disp:
+                    case FOFieldNames.Dispi:
                     case FOFieldNames.Distance: // Imported pressure
                         unitConverter = new StringLengthConverter();
                         unitAbbreviation = _unitSystem.LengthUnitAbbreviation;
                         break;
                     case FOFieldNames.Stress:
+                    case FOFieldNames.Stressi:
                     case FOFieldNames.ZZStr:
+                    case FOFieldNames.ZZStri:
                     case FOFieldNames.Imported: // Imported pressure
                         unitConverter = new StringPressureConverter();
                         unitAbbreviation = _unitSystem.PressureUnitAbbreviation;
                         break;
-                    case FOFieldNames.ToStrain: 
+                    case FOFieldNames.ToStrain:
+                    case FOFieldNames.ToStraii:
                     case FOFieldNames.MeStrain:
+                    case FOFieldNames.MeStraii:
                     case FOFieldNames.Pe:
                         unitConverter = new DoubleConverter();
                         unitAbbreviation = "/";
                         break;
                     case FOFieldNames.Forc:
+                    case FOFieldNames.Forci:
                         unitConverter = new StringForceConverter();
                         unitAbbreviation = _unitSystem.ForceUnitAbbreviation;
                         break;
@@ -675,6 +709,7 @@ namespace CaeResults
                         unitAbbreviation = _unitSystem.EnergyPerVolumeUnitAbbreviation;
                         break;
                     case FOFieldNames.Error:
+                    case FOFieldNames.Errori:
                         unitConverter = new DoubleConverter();
                         unitAbbreviation = "%";
                         break;
@@ -722,6 +757,7 @@ namespace CaeResults
                         unitAbbreviation = _unitSystem.PowerUnitAbbreviation;
                         break;
                     case FOFieldNames.HError:
+                    case FOFieldNames.HErrori:
                         unitConverter = new DoubleConverter();
                         unitAbbreviation = "%";
                         break;
@@ -738,7 +774,7 @@ namespace CaeResults
                         unitConverter = new DoubleConverter();
                         unitAbbreviation = "?";
                         // OpenFOAM
-                        if (componentName.ToUpper().StartsWith("VAL")) { }
+                        if (componentName.ToUpper() == "ALL" || componentName.ToUpper().StartsWith("VAL")) { }
                         else if (_unitSystem.UnitSystemType == UnitSystemType.UNIT_LESS) unitAbbreviation = "";
                         else if (System.Diagnostics.Debugger.IsAttached) throw new NotSupportedException();
                         //
@@ -2050,11 +2086,14 @@ namespace CaeResults
                 {
                     for (int i = 0; i < nodes.Length; i++)
                     {
-                        int resultId = _nodeIdsLookUp[globalNodeIds[i]];
-                        //
-                        for (int j = 0; j < 3; j++)
+                        int resultNodeId;
+                        // Scale only result parts
+                        if (_nodeIdsLookUp.TryGetValue(globalNodeIds[i], out resultNodeId))
                         {
-                            nodes[i][j] += scale * deformations[j][resultId];
+                            for (int j = 0; j < 3; j++)
+                            {
+                                nodes[i][j] += scale * deformations[j][resultNodeId];
+                            }
                         }
                     }
                 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using DynamicTypeDescriptor;
+using CaeGlobals;
 
 namespace PrePoMax
 {
@@ -18,10 +19,11 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         [DisplayName("Yield stress\n[?]")]
-        [TypeConverter(typeof(CaeGlobals.StringPressureFromConverter))]
+        [TypeConverter(typeof(StringPressureFromConverter))]
         public double Stress { get { return _stress; } set { _stress = value; } }
         //
         [DisplayName("Plastic strain\n[?]")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Strain { get { return _strain; } set { _strain = value; } }
 
 

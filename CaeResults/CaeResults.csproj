@@ -112,6 +112,10 @@
       <Project>{69d01fc1-1bc1-4470-b371-84d22282be98}</Project>
       <Name>CaeMesh</Name>
     </ProjectReference>
+    <ProjectReference Include="..\vtkControl\vtkControl.csproj">
+      <Project>{125eefac-7731-4640-b731-1a32372fa76d}</Project>
+      <Name>vtkControl</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

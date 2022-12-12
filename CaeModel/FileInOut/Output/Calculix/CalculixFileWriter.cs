@@ -803,6 +803,12 @@ namespace FileInOut.Output
                         CalStaticStep calStaticStep = new CalStaticStep(staticStep);
                         calStep.AddKeyword(calStaticStep);
                     }
+                    else if (step.GetType() == typeof(DynamicStep))
+                    {
+                        DynamicStep dynamicStep = step as DynamicStep;
+                        CalDynamicStep calDynamicStep = new CalDynamicStep(dynamicStep);
+                        calStep.AddKeyword(calDynamicStep);
+                    }
                     else if (step is FrequencyStep frequencyStep)
                     {
                         CalFrequencyStep calFrequencyStep = new CalFrequencyStep(frequencyStep);

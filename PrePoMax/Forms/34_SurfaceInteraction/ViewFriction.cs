@@ -26,6 +26,7 @@ namespace PrePoMax.PropertyViews
         [CategoryAttribute("Data")]
         [OrderedDisplayName(0, 10, "Friction coefficient")]
         [DescriptionAttribute("The friction coefficient (µ > 0).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Coefficient { get { return _friction.Coefficient; } set { _friction.Coefficient = value; } }
         //
         [CategoryAttribute("Data")]

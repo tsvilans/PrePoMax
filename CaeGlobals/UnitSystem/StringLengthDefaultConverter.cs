@@ -70,13 +70,8 @@ namespace CaeGlobals
             // Convert from string
             if (value is string valueString)
             {
-                double valueDouble;
-                if (String.Equals(value, _default)) valueDouble = double.NaN;
-                else if (!double.TryParse(valueString, out valueDouble))
-                {
-                    valueDouble = ConvertToCurrentUnits(valueString);
-                }
-                return valueDouble;
+                if (String.Equals(value, _default)) return double.NaN;
+                else return MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
             }
             else return base.ConvertFrom(context, culture, value);
         }

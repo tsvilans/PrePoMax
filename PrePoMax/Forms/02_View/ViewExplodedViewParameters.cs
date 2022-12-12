@@ -40,6 +40,7 @@ namespace PrePoMax.Forms
         [Category("Data")]
         [OrderedDisplayName(1, 10, "Magnification")]
         [DescriptionAttribute("Select the exploded view magnification (larger than 1).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(2, 1)]
         public double Magnification
         {
@@ -55,6 +56,7 @@ namespace PrePoMax.Forms
         [Category("Data")]
         [OrderedDisplayName(2, 10, "Scale factor")]
         [DescriptionAttribute("Select the exploded view scale factor [0, 1].")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(3, 1)]
         public double ScaleFactor
         {

@@ -7,50 +7,41 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace PrePoMax
+namespace CaeGlobals
 {
-    public class StringDefaultStringConverter : System.ComponentModel.TypeConverter
+    public class StringStringDefaultConverter : TypeConverter
     {
+        // Variables                                                                                                                
         private ArrayList values;
         private string _default = "Default";
         public static string InitialValue = "1";
-        public StringDefaultStringConverter()
+
+
+        // Constructors                                                                                                             
+        public StringStringDefaultConverter()
         {
             // Initializes the standard values list with defaults.
             values = new ArrayList(new string[] { null, InitialValue });
         }
 
-        // Indicates this converter provides a list of standard values.
-        public override bool GetStandardValuesSupported(System.ComponentModel.ITypeDescriptorContext context)
+
+        // Methods                                                                                                                  
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
-
-        // Returns a StandardValuesCollection of standard value objects.
-        public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             // Passes the local integer array.
             StandardValuesCollection svc = new StandardValuesCollection(values);
             return svc;
         }
-
-        // Returns true for a sourceType of string to indicate that 
-        // conversions from string to integer are supported. (The 
-        // GetStandardValues method requires a string to native type 
-        // conversion because the items in the drop-down list are 
-        // translated to string.)
-        public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
             else return base.CanConvertFrom(context, sourceType);
         }
-
-        // If the type of the value to convert is string, parses the string 
-        // and returns the integer to set the value of the property to. 
-        // This example first extends the integer array that supplies the 
-        // standard values collection if the user-entered value is not 
-        // already in the array.
-        public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value.GetType() == typeof(string))
             {
@@ -61,9 +52,9 @@ namespace PrePoMax
             }
             else return base.ConvertFrom(context, culture, value);
         }
-
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
+            // Convert to string
             try
             {
                 if (destinationType == typeof(string))

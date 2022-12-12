@@ -359,6 +359,7 @@
     <Compile Include="Forms\37_Amplitude\ViewAmplitude.cs" />
     <Compile Include="Forms\37_Amplitude\ViewAmplitudeTabular.cs" />
     <Compile Include="Forms\41_Step\ViewCoupledTempDispStep.cs" />
+    <Compile Include="Forms\41_Step\ViewDynamicStep.cs" />
     <Compile Include="Forms\41_Step\ViewSlipWearStep.cs" />
     <Compile Include="Forms\41_Step\ViewBoundaryDisplacementStep.cs" />
     <Compile Include="Forms\41_Step\ViewUncoupledTempDispStep.cs" />
@@ -412,8 +413,6 @@
     <Compile Include="Forms\73_Transformation\ViewLinearPattern.cs" />
     <Compile Include="Forms\73_Transformation\ViewTransformation.cs" />
     <Compile Include="Forms\73_Transformation\ViewSymetry.cs" />
-    <Compile Include="Forms\StringDefaultStringConverter.cs" />
-    <Compile Include="Forms\StringDefaultDoubleConverter.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewFriction.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewSurfaceInteractionProperty.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewSurfaceBehavior.cs" />

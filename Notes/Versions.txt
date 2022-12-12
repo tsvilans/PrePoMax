@@ -215,8 +215,33 @@ Dependency nglib - added following files for c++ redistriburable compatibility:
 
 
 
-Done
 
+ToDo
+
+Add support for PERTURBATION
+Collapsable group box in front of the Name?
+Binary with comments?
+Axysymetric line?
+2D Fixed not working for rotations?
+Select similar in size?
+VtkMeshQuality
+Add color for slave constraint and contact items
+Load, Bc, duplicate?
+Save as: Krilo 	... if a file Krilo with no extension exist it will ask for overwrite !!! Windows problem
+
+
+DONE
+
+Version 1.3.5.1
+All property field support equations
+Added support for double-clicking the part to edit it
+Temperature loads removed from the buckle step
+Added support for mortar contact
+Added support to collapse the material libraries
+Changed the behaviour of the area selection
+Added support for imaginary results
+Added support for reading binary OpenFOAM files
+Bug fixes
 
 Version 1.3.5
 Added partial support for opening OpenFOAM results

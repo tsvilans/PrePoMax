@@ -33,25 +33,25 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMaterialLibrary));
             this.gbModelMaterials = new System.Windows.Forms.GroupBox();
             this.btnDeleteFromModel = new System.Windows.Forms.Button();
-            this.lvModelMaterials = new UserControls.ListViewWithSelection();
             this.btnRename = new System.Windows.Forms.Button();
             this.tbCategoryName = new System.Windows.Forms.TextBox();
             this.gbLibraryMaterials = new System.Windows.Forms.GroupBox();
             this.btnDeleteFromLibrary = new System.Windows.Forms.Button();
             this.btnAddCategory = new System.Windows.Forms.Button();
-            this.cltvLibrary = new UserControls.CodersLabTreeView();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
             this.btnCopyToLibrary = new System.Windows.Forms.Button();
             this.btnCopyToModel = new System.Windows.Forms.Button();
             this.ttText = new System.Windows.Forms.ToolTip(this.components);
             this.cbPreview = new System.Windows.Forms.CheckBox();
-            this.gbLibraries = new System.Windows.Forms.GroupBox();
+            this.gbLibraries = new UserControls.CollapsableGroupBox();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.lvLibraries = new UserControls.ListViewWithSelection();
+            this.cltvLibrary = new UserControls.CodersLabTreeView();
+            this.lvModelMaterials = new UserControls.ListViewWithSelection();
             this.gbModelMaterials.SuspendLayout();
             this.gbLibraryMaterials.SuspendLayout();
             this.gbLibraries.SuspendLayout();
@@ -81,29 +81,6 @@
             this.btnDeleteFromModel.Text = "Delete";
             this.btnDeleteFromModel.UseVisualStyleBackColor = true;
             this.btnDeleteFromModel.Click += new System.EventHandler(this.btnDeleteFromModel_Click);
-            // 
-            // lvModelMaterials
-            // 
-            this.lvModelMaterials.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvModelMaterials.DisableMouse = false;
-            this.lvModelMaterials.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lvModelMaterials.FullRowSelect = true;
-            this.lvModelMaterials.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lvModelMaterials.HideSelection = false;
-            this.lvModelMaterials.Location = new System.Drawing.Point(6, 51);
-            this.lvModelMaterials.MultiSelect = false;
-            this.lvModelMaterials.Name = "lvModelMaterials";
-            this.lvModelMaterials.ShowGroups = false;
-            this.lvModelMaterials.Size = new System.Drawing.Size(251, 331);
-            this.lvModelMaterials.TabIndex = 1;
-            this.lvModelMaterials.UseCompatibleStateImageBehavior = false;
-            this.lvModelMaterials.View = System.Windows.Forms.View.List;
-            this.lvModelMaterials.Enter += new System.EventHandler(this.lvModelMaterials_Enter);
-            this.lvModelMaterials.Leave += new System.EventHandler(this.lvModelMaterials_Leave);
-            this.lvModelMaterials.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lvModelMaterials_MouseDown);
-            this.lvModelMaterials.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lvModelMaterials_MouseUp);
             // 
             // btnRename
             // 
@@ -163,29 +140,6 @@
             this.btnAddCategory.UseVisualStyleBackColor = true;
             this.btnAddCategory.Click += new System.EventHandler(this.btnAddCategory_Click);
             // 
-            // cltvLibrary
-            // 
-            this.cltvLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cltvLibrary.ChangeHighlightOnFocusLost = true;
-            this.cltvLibrary.DisableMouse = false;
-            this.cltvLibrary.HighlightForeErrorColor = System.Drawing.Color.Red;
-            this.cltvLibrary.Location = new System.Drawing.Point(6, 51);
-            this.cltvLibrary.Name = "cltvLibrary";
-            treeNode1.Name = "Materials";
-            treeNode1.Text = "Materials";
-            this.cltvLibrary.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
-            this.cltvLibrary.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            this.cltvLibrary.SelectionMode = UserControls.TreeViewSelectionMode.SingleSelect;
-            this.cltvLibrary.Size = new System.Drawing.Size(268, 302);
-            this.cltvLibrary.TabIndex = 4;
-            this.cltvLibrary.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cltvLibrary_AfterSelect);
-            this.cltvLibrary.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDoubleClick);
-            this.cltvLibrary.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDown);
-            this.cltvLibrary.MouseUp += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseUp);
-            // 
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -210,18 +164,6 @@
             this.btnCancel.TabIndex = 11;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSave.Location = new System.Drawing.Point(494, 109);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 13;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnCopyToLibrary
             // 
@@ -267,12 +209,14 @@
             this.gbLibraries.Controls.Add(this.btnNew);
             this.gbLibraries.Controls.Add(this.btnSave);
             this.gbLibraries.Controls.Add(this.lvLibraries);
+            this.gbLibraries.IsCollapsed = false;
             this.gbLibraries.Location = new System.Drawing.Point(12, 12);
             this.gbLibraries.Name = "gbLibraries";
             this.gbLibraries.Size = new System.Drawing.Size(575, 139);
             this.gbLibraries.TabIndex = 15;
             this.gbLibraries.TabStop = false;
             this.gbLibraries.Text = "Libraries";
+            this.gbLibraries.OnCollapsedChanged += new UserControls.CollapsableGroupBox.CollapseChangeEventHandler(this.gbLibraries_OnCollapsedChanged);
             // 
             // btnRemove
             // 
@@ -307,6 +251,18 @@
             this.btnNew.UseVisualStyleBackColor = true;
             this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
             // 
+            // btnSave
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnSave.Location = new System.Drawing.Point(494, 109);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 13;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
             // lvLibraries
             // 
             this.lvLibraries.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -321,6 +277,52 @@
             this.lvLibraries.UseCompatibleStateImageBehavior = false;
             this.lvLibraries.View = System.Windows.Forms.View.List;
             this.lvLibraries.SelectedIndexChanged += new System.EventHandler(this.lvLibraries_SelectedIndexChanged);
+            // 
+            // cltvLibrary
+            // 
+            this.cltvLibrary.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cltvLibrary.ChangeHighlightOnFocusLost = true;
+            this.cltvLibrary.DisableMouse = false;
+            this.cltvLibrary.HighlightForeErrorColor = System.Drawing.Color.Red;
+            this.cltvLibrary.Location = new System.Drawing.Point(6, 51);
+            this.cltvLibrary.Name = "cltvLibrary";
+            treeNode1.Name = "Materials";
+            treeNode1.Text = "Materials";
+            this.cltvLibrary.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1});
+            this.cltvLibrary.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            this.cltvLibrary.SelectionMode = UserControls.TreeViewSelectionMode.SingleSelect;
+            this.cltvLibrary.Size = new System.Drawing.Size(268, 302);
+            this.cltvLibrary.TabIndex = 4;
+            this.cltvLibrary.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cltvLibrary_AfterSelect);
+            this.cltvLibrary.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDoubleClick);
+            this.cltvLibrary.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseDown);
+            this.cltvLibrary.MouseUp += new System.Windows.Forms.MouseEventHandler(this.cltvLibrary_MouseUp);
+            // 
+            // lvModelMaterials
+            // 
+            this.lvModelMaterials.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvModelMaterials.DisableMouse = false;
+            this.lvModelMaterials.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lvModelMaterials.FullRowSelect = true;
+            this.lvModelMaterials.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvModelMaterials.HideSelection = false;
+            this.lvModelMaterials.Location = new System.Drawing.Point(6, 51);
+            this.lvModelMaterials.MultiSelect = false;
+            this.lvModelMaterials.Name = "lvModelMaterials";
+            this.lvModelMaterials.ShowGroups = false;
+            this.lvModelMaterials.Size = new System.Drawing.Size(251, 331);
+            this.lvModelMaterials.TabIndex = 1;
+            this.lvModelMaterials.UseCompatibleStateImageBehavior = false;
+            this.lvModelMaterials.View = System.Windows.Forms.View.List;
+            this.lvModelMaterials.Enter += new System.EventHandler(this.lvModelMaterials_Enter);
+            this.lvModelMaterials.Leave += new System.EventHandler(this.lvModelMaterials_Leave);
+            this.lvModelMaterials.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lvModelMaterials_MouseDown);
+            this.lvModelMaterials.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lvModelMaterials_MouseUp);
             // 
             // FrmMaterialLibrary
             // 
@@ -374,7 +376,7 @@
         private System.Windows.Forms.Button btnDeleteFromModel;
         private System.Windows.Forms.ToolTip ttText;
         private System.Windows.Forms.CheckBox cbPreview;
-        private System.Windows.Forms.GroupBox gbLibraries;
+        private UserControls.CollapsableGroupBox gbLibraries;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnNew;
         private UserControls.ListViewWithSelection lvLibraries;

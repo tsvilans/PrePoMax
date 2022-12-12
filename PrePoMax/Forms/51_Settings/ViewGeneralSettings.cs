@@ -65,7 +65,7 @@ namespace PrePoMax.Settings
         [Category("Import mesh")]
         [OrderedDisplayName(0, 10, "Edge angle")]
         [Description("Select the edge angle for the detection of model edges. The angle will be used for future imports.")]
-        [TypeConverter(typeof(CaeGlobals.StringAngleDegConverter))]
+        [TypeConverter(typeof(StringAngleDegConverter))]
         public double EdgeAngle { get { return _generalSettings.EdgeAngle; } set { _generalSettings.EdgeAngle = value; } }
 
 

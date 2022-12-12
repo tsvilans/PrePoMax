@@ -37,17 +37,7 @@ namespace CaeGlobals
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             // Convert from string
-            if (value is string valueString)
-            {
-                int valueInt;
-                //
-                if (!int.TryParse(valueString, out valueInt))
-                {
-                    valueInt = ConvertToCurrentUnits(valueString);
-                }
-                //
-                return valueInt;
-            }
+            if (value is string valueString) return (int)MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
             else return base.ConvertFrom(context, culture, value);
         }
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
@@ -70,7 +60,7 @@ namespace CaeGlobals
             }
         }
         //
-        public static int ConvertToCurrentUnits(string valueWithUnitString)
+        public static double ConvertToCurrentUnits(string valueWithUnitString)
         {
             try
             {

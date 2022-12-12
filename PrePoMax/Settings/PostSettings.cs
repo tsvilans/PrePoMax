@@ -30,8 +30,6 @@ namespace PrePoMax
     {
         // Variables                                                                                                                
         private string _deformationFieldOutputName;
-        private CaeResults.DeformationScaleFactorTypeEnum _dsfType;
-        private double _deformationScaleFactorValue;
         private UndeformedModelTypeEnum _undeformedModelType;
         private Color _undeformedModelColor;
         private bool _showMinValueLocation;
@@ -77,8 +75,6 @@ namespace PrePoMax
         public void Reset()
         {
             _deformationFieldOutputName = CaeResults.FeResults.GetPossibleDeformationFieldOutputNames()[0];
-            _dsfType = CaeResults.DeformationScaleFactorTypeEnum.Automatic;
-            _deformationScaleFactorValue = -1;
             _undeformedModelType = UndeformedModelTypeEnum.WireframeBody;
             _undeformedModelColor = Color.Black;
             //

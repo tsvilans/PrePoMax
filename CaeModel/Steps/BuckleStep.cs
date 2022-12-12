@@ -108,7 +108,7 @@ namespace CaeModel
 
         public override bool IsDefinedFieldSupported(DefinedField definedField)
         {
-            if (definedField is DefinedTemperature) return true;
+            if (definedField is DefinedTemperature) return false;
             else throw new NotSupportedException();
         }
         // ISerialization

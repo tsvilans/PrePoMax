@@ -544,16 +544,19 @@ namespace FileInOut.Input
                             break;
                         // Linear tetrahedron element
                         case "C3D4":
+                        case "DC3D4":
                             element = GetLinearTetraElement(ref i, lines, _splitter);
                             break;
                         // Linear wedge element
                         case "C3D6":
+                        case "DC3D6":
                             element = GetLinearWedgeElement(ref i, lines, _splitter);
                             break;
                         // Linear hexahedron element
                         case "C3D8":
                         case "C3D8R":
                         case "C3D8I":
+                        case "DC3D8":
                             element = GetLinearHexaElement(ref i, lines, _splitter);
                             break;
                         // PARABOLIC ELEMENTS                                                                                       
@@ -581,15 +584,18 @@ namespace FileInOut.Input
                         // Parabolic tetrahedron element
                         case "C3D10":
                         case "C3D10T":
+                        case "DC3D10":
                             element = GetParabolicTetraElement(ref i, lines, _splitter);
                             break;
                         // Parabolic wedge element
                         case "C3D15":
+                        case "DC3D15":
                             element = GetParabolicWedgeElement(ref i, lines, _splitter);
                             break;
                         // Parabolic hexahedron element
                         case "C3D20":
                         case "C3D20R":
+                        case "DC3D20":
                             element = GetParabolicHexaElement(ref i, lines, _splitter);
                             break;
                         default:

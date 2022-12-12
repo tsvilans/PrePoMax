@@ -31,11 +31,10 @@ namespace PrePoMax
         [TypeConverter(typeof(StringPressureConverter))]
         public double Hardness { get { return _slipWear.Hardness; } set { _slipWear.Hardness = value; } }
         //
-
         [CategoryAttribute("Data")]
         [OrderedDisplayName(1, 10, "Wear coefficient")]
         [DescriptionAttribute("The value of the wear coefficient.")]
-        //[TypeConverter(typeof(stringdoub))]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double WearCoefficient { get { return _slipWear.WearCoefficient; } set { _slipWear.WearCoefficient = value; } }
 
 

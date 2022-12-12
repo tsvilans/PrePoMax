@@ -18,7 +18,7 @@ namespace CaeModel
         private string _pressureTime;
         private string _pressureVariableName;
         private InterpolatorEnum _interpolatorType;
-        private float _scaleFactor;
+        private double _scaleFactor;
         //
         private FileInfo _oldFileInfo;
         //
@@ -31,7 +31,7 @@ namespace CaeModel
         public string PressureTime { get { return _pressureTime; } set { _pressureTime = value; } }
         public string PressureVariableName { get { return _pressureVariableName; } set { _pressureVariableName = value; } }
         public InterpolatorEnum InterpolatorType { get { return _interpolatorType; } set { _interpolatorType = value; } }
-        public float ScaleFactor { get { return _scaleFactor; } set { _scaleFactor = value; } }
+        public double ScaleFactor { get { return _scaleFactor; } set { _scaleFactor = value; } }
 
 
         // Constructors                                                                                                             
@@ -57,7 +57,7 @@ namespace CaeModel
                 error = "The selected file does not exist.";
                 return false;
             }
-            Dictionary<string, string[]> timeResultVariableNames = OpenFoamFileReader.GetTimeResultVariableNames(_fileName);
+            Dictionary<string, string[]> timeResultVariableNames = OpenFoamFileReader.GetTimeResultScalarVariableNames(_fileName);
             if (timeResultVariableNames.Count == 0)
             {
                 error = "The selected OpenFOAM folder does not contain results.";
@@ -146,7 +146,11 @@ namespace CaeModel
             float[] distances3 = new float[allData.Nodes.Coor.Length];
             float[] values = new float[allData.Nodes.Coor.Length];
             //
-            for (int i = 0; i < values.Length; i++)
+
+
+            
+            Parallel.For(0, values.Length, i =>
+            //for (int i = 0; i < values.Length; i++)
             {
                 if (nodeIds.Contains(allData.Nodes.Ids[i]))
                 {
@@ -168,6 +172,7 @@ namespace CaeModel
                     values[i] = float.NaN;
                 }
             }
+            );
             //
             Dictionary<int, int> nodeIdsLookUp = new Dictionary<int, int>();
             for (int i = 0; i < allData.Nodes.Coor.Length; i++) nodeIdsLookUp.Add(allData.Nodes.Ids[i], i);

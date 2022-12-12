@@ -133,9 +133,6 @@ namespace vtkControl
                 {
                     _selectBy = value;
                     //
-                    if (_selectBy == vtkSelectBy.Off || _selectBy == vtkSelectBy.Default) _style.Selection = false;
-                    else _style.Selection = true;
-                    //
                     switch (_selectBy)
                     {
                         // General
@@ -172,6 +169,10 @@ namespace vtkControl
                         case vtkSelectBy.QueryPart:
                             _style.RubberBandEnabled = false;
                             break;
+                        // Widget
+                        case vtkSelectBy.Widget:
+                            _style.RubberBandEnabled = false;
+                            break;
                         default:
                             throw new NotSupportedException();
                     }
@@ -180,17 +181,6 @@ namespace vtkControl
             }
         }
         public vtkSelectItem SelectItem { get { return _selectItem; } set { if (_selectItem != value) { _selectItem = value; } } }
-        public bool DisableInteractor
-        {
-            get
-            {
-                return ((vtkInteractorStyleControl)_renderWindowInteractor.GetInteractorStyle()).DisableInteractor;
-            }
-            set
-            {
-                ((vtkInteractorStyleControl)_renderWindowInteractor.GetInteractorStyle()).DisableInteractor = value;
-            }
-        }
 
 
         // Setters                                                                                                                  
@@ -218,7 +208,6 @@ namespace vtkControl
                 return style.IsRubberBandActive;
             } 
         }
-
 
 
         // Callbacks                                                                                                                
@@ -337,42 +326,50 @@ namespace vtkControl
             }
         }
         //
-        void _style_EnterEvt(vtkObject sender, vtkObjectEventArgs e)
+        void style_EnterEvt(vtkObject sender, vtkObjectEventArgs e)
         {
             if (!_mouseIn) _mouseIn = true;
         }
-        void _style_LeaveEvt(vtkObject sender, vtkObjectEventArgs e)
+        void style_LeaveEvt(vtkObject sender, vtkObjectEventArgs e)
         {
             if (_mouseIn) _mouseIn = false;
             _renderWindow.SetCurrentCursor(0);  // Default
         }
         //
-        private void widget_DoubleClicked(object sender)
+        private void colorBarWidget_DoubleClicked(object sender, MouseEventArgs e)
         {
-            if (sender is vtkMaxColorBarWidget) Form_ShowColorBarSettings?.Invoke();
-            else if (sender is vtkMaxScalarBarWidget) Form_ShowLegendSettings?.Invoke();
-            else if (sender is vtkMaxStatusBlockWidget sbw)
+            Form_ShowColorBarSettings?.Invoke();
+        }
+        private void scalarBarWidget_DoubleClicked(object sender, MouseEventArgs e)
+        {
+            Form_ShowLegendSettings?.Invoke();
+        }
+        private void statusBlockWidget_DoubleClicked(object sender, MouseEventArgs e)
+        {
+            Form_ShowStatusBlockSettings?.Invoke();
+        }
+        private void arrowWidget_DoubleClicked(object sender, MouseEventArgs e)
+        {
+            if (sender is vtkMaxTextWithArrowWidget aw)
             {
-                if (sbw.DeformationScaleFactorTextClicked)
-                {
-
-                }
-                else Form_ShowStatusBlockSettings?.Invoke();
+                Form_WidgetPicked(e, Keys.None, aw.GetName(), aw.GetRectangle());
             }
-            else if (sender is vtkMaxTextWithArrowWidget aw) EditArrowWidget(aw);
         }
 
         // Mouse Events - Style                                                                                                     
         public void Pick(int x1, int y1, bool rubberBandSelection, int x2, int y2)
         {
-            _style_PointPickedOnLeftUpEvt(x1, y1, rubberBandSelection, x2, y2);
+            // Test only method
+            MouseEventArgs e = new MouseEventArgs(MouseButtons.Left, 1, x1, y1, 0);
+            style_PointPickedOnLeftUpEvt(e, rubberBandSelection, x2, y2);
         }
-        private void _style_PointPickedOnMouseMoveEvt(int x1, int y1, bool rubberBandSelection, int x2, int y2)
+        private void style_PointPickedOnMouseMoveEvt(int x1, int y1, bool rubberBandSelection, int x2, int y2)
         {
             try
             {
                 // Off
                 if (_probeWidget == null || _selectBy == vtkSelectBy.Off) return;
+                else if (_selectBy == vtkSelectBy.Widget) return;
                 // Default selection of parts
                 else if (_selectBy == vtkSelectBy.Default)
                 {
@@ -470,29 +467,32 @@ namespace vtkControl
             }
             catch { }
         }
-        private void _style_PointPickedOnLeftUpEvt(int x1, int y1, bool rubberBandSelection, int x2, int y2)
+        private void style_PointPickedOnLeftUpEvt(MouseEventArgs mea, bool rubberBandSelection, int x2, int y2)
         {
             string[] pickedActorNames = null;
             // Off
             if (_selectBy == vtkSelectBy.Off) return;
-            // Default selection of parts
-            if (_selectBy == vtkSelectBy.Default)
+            else if (_selectBy == vtkSelectBy.Widget)
+            {
+                if (mea.Clicks == 1) Form_EndEditArrowWidget?.Invoke();
+            }
+            // Default selection of parts during normal use
+            else if (_selectBy == vtkSelectBy.Default)
             {
                 // Point selection
                 if (!rubberBandSelection)
                 {
                     vtkActor pickedActor;
-                    GetPickPoint(out pickedActor, x1, y1);
+                    GetPickPoint(out pickedActor, mea.Location.X, mea.Location.Y);
                     pickedActorNames = new string[] { GetActorName(pickedActor) };
                 }
                 // Area selection
                 else
                 {
-                    PickByArea(x1, y1, x2, y2, false, out pickedActorNames);
+                    PickByArea(mea.Location.X, mea.Location.Y, x2, y2, false, out pickedActorNames);
                 }
-                MouseEventArgs e = new MouseEventArgs(MouseButtons.Left, 1, x1, y1, 0);
                 //
-                Controller_ActorsPicked?.Invoke(e, ModifierKeys, pickedActorNames.ToArray());
+                Controller_ActorsPicked?.Invoke(mea, ModifierKeys, pickedActorNames.ToArray());
             }
             else
             {
@@ -506,7 +506,7 @@ namespace vtkControl
                 // Point selection
                 if (!rubberBandSelection)
                 {
-                    double[] pickedPoint = GetPickPoint(out pickedActor, x1, y1);
+                    double[] pickedPoint = GetPickPoint(out pickedActor, mea.Location.X, mea.Location.Y);
                     double[] direction = _renderer.GetActiveCamera().GetDirectionOfProjection();
                     pickedActorNames = new string[] { GetActorName(pickedActor) };
                     OnMouseLeftButtonUpSelection?.Invoke(pickedPoint, direction,  null, selectOperation, pickedActorNames);
@@ -514,8 +514,7 @@ namespace vtkControl
                 // Area selection
                 else
                 {
-                    //_areaPicker.AreaPick(x1, y1, x2, y2, _renderer);
-                    PickByArea(x1, y1, x2, y2, false, out pickedActorNames);
+                    PickByArea(mea.Location.X, mea.Location.Y, x2, y2, false, out pickedActorNames);
                     vtkPlanes planes = _areaPicker.GetFrustum();
                     vtkPlane plane;
                     double[] origin;
@@ -534,33 +533,23 @@ namespace vtkControl
                 }
             }
         }
-        private void _style_LeftButtonPressEvent(int x, int y)
-        {
-            // A background point was picked
-            Form_EndEditArrowWidget?.Invoke();
-        }
-        private void _style_RightButtonPressEvent(int x, int y, string widgetName)
+        private void style_RightButtonPressEvent(object sender, MouseEventArgs e)
         {
             // Off
             if (_selectBy == vtkSelectBy.Off) return;
+            else if (_selectBy == vtkSelectBy.Widget) return;
             //
-            if (widgetName != null)
+            if (sender != null && sender is vtkMaxTextWithArrowWidget twaw)
             {
-                vtkMaxTextWithArrowWidget widget;
-                if (_arrowWidgets.TryGetValue(widgetName, out widget))
-                {
-                    MouseEventArgs mouseEventArgs = new MouseEventArgs(MouseButtons.Right, 1, x, y, 1);
-                    Form_WidgetPicked(mouseEventArgs, Keys.None, widgetName, widget.GetRectangle());
-                }
+                Form_WidgetPicked(e, Keys.None, twaw.GetName(), twaw.GetRectangle());
             }
             else 
             {
                 vtkActor pickedActor;
-                GetPickPoint(out pickedActor, x, y);
+                GetPickPoint(out pickedActor, e.Location.X, e.Location.Y);
                 //
                 if (pickedActor != null)
                 {
-                    MouseEventArgs e = new MouseEventArgs(MouseButtons.Right, 1, x, y, 0);
                     Controller_ActorsPicked?.Invoke(e, ModifierKeys, new string[] { GetActorName(pickedActor) });
                 }
             }
@@ -1323,14 +1312,17 @@ namespace vtkControl
             // Make all actors visible
             foreach (var entry in _actors)
             {
-                if (_selectableActorsFilter != null)
+                //if (entry.Value.Pickable)
                 {
-                    // Change the visibility of geometry only to enable reset
-                    if (_selectableActorsFilter.Contains(entry.Value.Name)) entry.Value.Geometry.VisibilityOn();
-                    else entry.Value.Geometry.VisibilityOff();
+                    if (_selectableActorsFilter != null)
+                    {
+                        // Change the visibility of geometry only to enable reset
+                        if (_selectableActorsFilter.Contains(entry.Value.Name)) entry.Value.Geometry.VisibilityOn();
+                        else entry.Value.Geometry.VisibilityOff();
+                    }
+                    // Set opacity for all visible actors to 1
+                    if (entry.Value.GeometryProperty.GetOpacity() != 1) entry.Value.GeometryProperty.SetOpacity(1);
                 }
-                // Set opacity for all visible actors to 1
-                if (entry.Value.GeometryProperty.GetOpacity() != 1) entry.Value.GeometryProperty.SetOpacity(1);
             }
             // Pick actor by hardware rendering - render the sceene before Pick
             _renderer.Render();
@@ -1390,9 +1382,12 @@ namespace vtkControl
             // Reset the actor visibility
             foreach (var entry in _actors)
             {
-                entry.Value.UpdateColor();
-                ApplyEdgeVisibilityAndBackfaceCullingToActor(entry.Value.Geometry, entry.Value.GeometryProperty,
-                                                             vtkRendererLayer.Base);
+                //if (entry.Value.Pickable)
+                {
+                    entry.Value.UpdateColor();
+                    ApplyEdgeVisibilityAndBackfaceCullingToActor(entry.Value.Geometry, entry.Value.GeometryProperty,
+                                                                 vtkRendererLayer.Base);
+                }
             }
             //
             if (cellId == -1)
@@ -1706,14 +1701,13 @@ namespace vtkControl
             _style.SetSelectionRenderer(_selectionRenderer);
             _style.GetPickPoint = this.GetPickPoint;
             //
-            _style.PointPickedOnMouseMoveEvt += _style_PointPickedOnMouseMoveEvt;
-            _style.PointPickedOnLeftUpEvt += _style_PointPickedOnLeftUpEvt;
+            _style.PointPickedOnMouseMoveEvt += style_PointPickedOnMouseMoveEvt;
+            _style.PointPickedOnLeftUpEvt += style_PointPickedOnLeftUpEvt;
             _style.ClearCurrentMouseSelection += ClearCurrentMouseSelection;
-            _style.LeftButtonPressEvent += _style_LeftButtonPressEvent;
-            _style.RightButtonPressEvent += _style_RightButtonPressEvent;
-            _style.KeyPressEvt += _style_KeyPressEvt;
-            _style.LeaveEvt += _style_LeaveEvt;
-            _style.EnterEvt += _style_EnterEvt;
+            _style.RightButtonPressEvent += style_RightButtonPressEvent;
+            _style.KeyPressEvt += style_KeyPressEvt;
+            _style.LeaveEvt += style_LeaveEvt;
+            _style.EnterEvt += style_EnterEvt;
             _renderWindowInteractor.SetInteractorStyle(_style);
             _style.Reset();
             _renderWindowInteractor.ModifiedEvt += _renderWindowInteractor_ModifiedEvt;
@@ -1749,7 +1743,7 @@ namespace vtkControl
             _colorBarWidget.BackgroundVisibilityOn();
             _colorBarWidget.BorderVisibilityOn();
             _colorBarWidget.SetBackgroundColor(1, 1, 1);
-            _colorBarWidget.MouseDoubleClick += widget_DoubleClicked;
+            _colorBarWidget.MouseDoubleClick += colorBarWidget_DoubleClicked;
             // Status block
             _statusBlockWidget = new vtkMaxStatusBlockWidget();
             //_statusBlock.SetRenderer(_selectionRenderer);
@@ -1759,7 +1753,7 @@ namespace vtkControl
             _statusBlockWidget.GetBackgroundProperty().SetColor(1, 1, 1);
             _statusBlockWidget.BackgroundVisibilityOff();
             _statusBlockWidget.VisibilityOff();
-            _statusBlockWidget.MouseDoubleClick += widget_DoubleClicked;
+            _statusBlockWidget.MouseDoubleClick += statusBlockWidget_DoubleClicked;
             // Probe widget
             _probeWidget = new vtkMaxTextWidget();
             _probeWidget.SetInteractor(_selectionRenderer, _renderWindowInteractor);
@@ -1796,14 +1790,14 @@ namespace vtkControl
             _scalarBarWidget.BorderVisibilityOn();
             _scalarBarWidget.SetBackgroundColor(1, 1, 1);
             //
-            _scalarBarWidget.MouseDoubleClick += widget_DoubleClicked;
+            _scalarBarWidget.MouseDoubleClick += scalarBarWidget_DoubleClicked;
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
             ((Timer)sender).Enabled = false;
             AddDiskAnimation();
         }
-        private void _style_KeyPressEvt(vtkObject sender, vtkObjectEventArgs e)
+        private void style_KeyPressEvt(vtkObject sender, vtkObjectEventArgs e)
         {
             if (_scalarBarWidget.GetVisibility() == 1) _scalarBarWidget.OnRenderWindowModified();
         }
@@ -5798,6 +5792,7 @@ namespace vtkControl
                                    bool drawBackground, bool drawBorder, bool visible)
         {
             vtkMaxTextWithArrowWidget arrowWidget;
+            // Create annotation
             if (!_arrowWidgets.TryGetValue(name, out arrowWidget))
             {
                 arrowWidget = new vtkMaxTextWithArrowWidget(name);
@@ -5809,12 +5804,13 @@ namespace vtkControl
                 // Set text, number format and anchor befofre arrange
                 arrowWidget.SetNumberFormat(numberFormat);
                 // Event
-                arrowWidget.MouseDoubleClick += widget_DoubleClicked;
+                arrowWidget.MouseDoubleClick += arrowWidget_DoubleClicked;
                 // Add
                 _arrowWidgets.Add(name, arrowWidget);
                 // Arange
                 ArrangeVisibleArrowWidgets();
             }
+            // Edit annptation
             else
             {
                 arrowWidget.SetNumberFormat(numberFormat);
@@ -5897,12 +5893,7 @@ namespace vtkControl
         {
             foreach (var entry in _arrowWidgets) entry.Value.VisibilityOff();
         }
-        //
-        private void EditArrowWidget(vtkMaxTextWithArrowWidget widget)
-        {
-            MouseEventArgs mouseEventArgs = new MouseEventArgs(MouseButtons.Left, 2, 0, 0, 1);
-            Form_WidgetPicked(mouseEventArgs, Keys.None, widget.GetName(), widget.GetRectangle());
-        }
+        
         #endregion #################################################################################################################
 
         public void SwithchLights()

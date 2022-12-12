@@ -16,15 +16,14 @@ namespace PrePoMax
         private CaeModel.StaticStep _staticStep;
 
 
-
         // Properties                                                                                                               
         [CategoryAttribute("Data")]
         [OrderedDisplayName(2, 10, "Nlgeom")]
         [DescriptionAttribute("Enable/disable the nonlinear effects of large deformations and large displacements.")]
         public bool Nlgeom { get { return _staticStep.Nlgeom; } set { _staticStep.Nlgeom = value; } }
         //
-        [CategoryAttribute("Data")]
-        [OrderedDisplayName(10, 10, "Incrementation")]
+        [CategoryAttribute("Incrementation")]
+        [OrderedDisplayName(0, 10, "Type")]
         [DescriptionAttribute("Select the incrementation type.")]
         public CaeModel.IncrementationTypeEnum IncrementationType
         { 
@@ -37,23 +36,23 @@ namespace PrePoMax
         }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(0, 10, "Direct")]
+        [OrderedDisplayName(1, 10, "Direct")]
         [DescriptionAttribute("By using the 'Direct' keyword automatic incrementation of nonlinear step is switched off.")]
         public bool Direct { get { return _staticStep.Direct; } set { _staticStep.Direct = value; } }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(1, 10, "Max increments")]
+        [OrderedDisplayName(2, 10, "Max increments")]
         [DescriptionAttribute("The maximum number of increments in the step.")]
         public int MaxIncrements { get { return _staticStep.MaxIncrements; } set { _staticStep.MaxIncrements = value; } }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(2, 10, "Time period")]
+        [OrderedDisplayName(3, 10, "Time period")]
         [DescriptionAttribute("Time period of the step.")]
         [TypeConverter(typeof(StringTimeConverter))]
         public double TimePeriod { get { return _staticStep.TimePeriod; } set { _staticStep.TimePeriod = value; } }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(3, 10, "Initial time increment")]
+        [OrderedDisplayName(4, 10, "Initial time increment")]
         [DescriptionAttribute("Initial time increment of the step.")]
         [TypeConverter(typeof(StringTimeConverter))]
         public double InitialTimeIncrement
@@ -63,7 +62,7 @@ namespace PrePoMax
         }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(4, 10, "Min time increment")]
+        [OrderedDisplayName(5, 10, "Min time increment")]
         [DescriptionAttribute("Minimum time increment allowed.")]
         [TypeConverter(typeof(StringTimeConverter))]
         public double MinTimeIncrement
@@ -73,7 +72,7 @@ namespace PrePoMax
         }
         //
         [CategoryAttribute("Incrementation")]
-        [OrderedDisplayName(5, 10, "Max time increment")]
+        [OrderedDisplayName(6, 10, "Max time increment")]
         [DescriptionAttribute("Maximum time increment allowed.")]
         [TypeConverter(typeof(StringTimeConverter))]
         public double MaxTimeIncrement

@@ -106,6 +106,7 @@ namespace CaeGlobals
 
         public static double RoundToSignificantDigits(double d, int digits)
         {
+            //double[] stdValues = new double[] { 0.1, 0.2, 0.25, 0.5 };
             if (d == 0.0)
             {
                 return 0.0;

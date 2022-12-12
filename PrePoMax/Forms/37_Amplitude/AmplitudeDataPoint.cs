@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using DynamicTypeDescriptor;
+using CaeGlobals;
 
 namespace PrePoMax
 {
@@ -18,9 +19,11 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         [DisplayName("Time [?]\nFrequency [?]")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Time { get { return _time; } set { _time = value; } }
         //
         [DisplayName("Amplitude\n[?]")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Amplitude { get { return _amplitude; } set { _amplitude = value; } }
 
 

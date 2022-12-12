@@ -31,13 +31,21 @@ namespace CaeResults
         private BoundingBox[] _regionBoxes;     // Tag of each bounding box contains dictionary<triangleId, boundingBox>
         private Triangle[] _triangles;
         private Octree.BoundsOctree<Triangle> _trianglesOctree;
-
+        private vtkControl.vtkMaxLocator _locator;
 
         // Constructor                                                                                                              
         public ResultsInterpolator(PartExchangeData source)
         {
+            int numBoxes = 10000000;
             _sourceBox = ComputeAllNodesBoundingBox(source);
-            double l = _sourceBox.GetDiagonal() / 128;
+            double l = _sourceBox.GetDiagonal() / 128;            
+            //
+            _nx = (int)Math.Ceiling(_sourceBox.GetXSize() / l);
+            _ny = (int)Math.Ceiling(_sourceBox.GetYSize() / l);
+            _nz = (int)Math.Ceiling(_sourceBox.GetZSize() / l);
+            int currNumBoxes = _nx * _ny * _nz;
+            double factor = Math.Pow(numBoxes / currNumBoxes, 0.333333);
+            l /= factor;
             //
             _nx = (int)Math.Ceiling(_sourceBox.GetXSize() / l);
             _ny = (int)Math.Ceiling(_sourceBox.GetYSize() / l);
@@ -50,18 +58,24 @@ namespace CaeResults
             _cellBoxes = ComputeCellBoundingBoxes(source);
             _regionBoxes = SplitCellBoxesToRegions(_cellBoxes, _sourceBox, _nx, _ny, _nz);
             _triangles = TriangularCellsToTriangles(source);
+            //
+            //_locator = new vtkControl.vtkMaxLocator(source);
+            //
             //_trianglesOctree = GenerateOctree(source, _cellBoxes, _sourceBox);
             //
             //int max = 0;
             //int num = 0;
+            //List<int> nums = new List<int>();
             //double average = 0;
             //foreach (var boundingBox in _regionBoxes)
             //{
             //    num = ((Dictionary<int, BoundingBox>)boundingBox.Tag).Count;
+            //    nums.Add(num);
             //    if (num > max) max = num;
             //    average += num;
             //}
             //average /= _regionBoxes.Length;
+            //nums.Sort();
         }
         public void InterpolateAt(double[] point, InterpolatorEnum interpolator, out double[] distance, out double value)
         {
@@ -102,16 +116,16 @@ namespace CaeResults
             else if (k >= _nz) k = _nz - 1;
             index = k * _nxy + j * _nx + i;
             bb = _regionBoxes[index];
-            regions.Add(index, bb);
+            if (bb != null) regions.Add(index, bb);
             //
-            mini = i;
-            maxi = i;
-            minj = j;
-            maxj = j;
-            mink = k;
-            maxk = k;
+            //mini = i;
+            //maxi = i;
+            //minj = j;
+            //maxj = j;
+            //mink = k;
+            //maxk = k;
             delta = 0;
-            num = ((Dictionary<int, BoundingBox>)bb.Tag).Count;
+            num = bb == null ? 0 : ((Dictionary<int, BoundingBox>)bb.Tag).Count;
             // Add next layer of regions
             while (num == 0 || delta < 1)
             {
@@ -128,6 +142,7 @@ namespace CaeResults
                 if (maxj >= _ny) maxj = _ny - 1;
                 if (mink < 0) mink = 0;
                 if (maxk >= _nz) maxk = _nz - 1;
+                //
                 for (int kk = mink; kk <= maxk; kk++)
                 {
                     for (int jj = minj; jj <= maxj; jj++)
@@ -138,7 +153,7 @@ namespace CaeResults
                             if (!regions.ContainsKey(index))
                             {
                                 bb = _regionBoxes[index];
-                                if (((Dictionary<int, BoundingBox>)bb.Tag).Count > 0)
+                                if (bb != null && ((Dictionary<int, BoundingBox>)bb.Tag).Count > 0)
                                 {
                                     regions.Add(index, bb);
                                     num += ((Dictionary<int, BoundingBox>)bb.Tag).Count;
@@ -157,6 +172,8 @@ namespace CaeResults
                 {
                     foreach (var entry in (Dictionary<int, BoundingBox>)regionEntry.Value.Tag)
                     {
+                        //if (entry.Value == null) continue;  // empty boxes are null
+                        //
                         triangle = _triangles[entry.Key];
                         if (entry.Value.IsMaxOutsideDistance2SmallerThan(sourceCoor, minD))
                         {
@@ -225,10 +242,30 @@ namespace CaeResults
             distance = (bestPoint - sourcePoint).Coor;
             value = bestTriangle.InterpolateAt(bestPoint);
         }
-
+        public void InterpolateAt1(double[] point, InterpolatorEnum interpolator, out double[] distance, out double value)
+        {
+            int cellId;
+            double[] pointOut;
+            _locator.GetClosestPoint(point, out cellId, out pointOut);
+            //
+            if (cellId != -1)
+            {
+                Vec3D sourcePoint = new Vec3D(point);
+                Vec3D bestPoint = new Vec3D(pointOut);
+                Triangle triangle = _triangles[cellId];
+                //
+                distance = (bestPoint - sourcePoint).Coor;
+                value = triangle.InterpolateAt(bestPoint);
+            }
+            else
+            {
+                distance = new double[] { double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity };
+                value = double.PositiveInfinity;
+            }
+        }
         public void InterpolateAt2(double[] point, InterpolatorEnum interpolator, out double[] distance, out double value)
         {
-            double size = _sourceBox.GetDiagonal() * 1E-4;
+            double size = _sourceBox.GetDiagonal() * 1E-3;
             Octree.Point centerP = new Octree.Point(point);
             Octree.Point sizeP = new Octree.Point(size, size, size);
             Octree.BoundingBox tbb = new Octree.BoundingBox(centerP, sizeP);
@@ -310,24 +347,24 @@ namespace CaeResults
             //
             BoundingBox bb;
             BoundingBox[] regions = new BoundingBox[nxy * nz];
-            for (int k = 0; k < nz; k++)
-            {
-                for (int j = 0; j < ny; j++)
-                {
-                    for (int i = 0; i < nx; i++)
-                    {
-                        bb = new BoundingBox();
-                        bb.MinX = cellBoxesBox.MinX + i * deltaX;
-                        bb.MaxX = bb.MinX + deltaX;
-                        bb.MinY = cellBoxesBox.MinY + j * deltaY;
-                        bb.MaxY = bb.MinY + deltaY;
-                        bb.MinZ = cellBoxesBox.MinZ + k * deltaZ;
-                        bb.MaxZ = bb.MinZ + deltaZ;
-                        bb.Tag = new Dictionary<int, BoundingBox>();
-                        regions[k * nxy + j * nx + i] = bb;
-                    }
-                }
-            }
+            //for (int k = 0; k < nz; k++)
+            //{
+            //    for (int j = 0; j < ny; j++)
+            //    {
+            //        for (int i = 0; i < nx; i++)
+            //        {
+            //            bb = new BoundingBox();
+            //            bb.MinX = cellBoxesBox.MinX + i * deltaX;
+            //            bb.MaxX = bb.MinX + deltaX;
+            //            bb.MinY = cellBoxesBox.MinY + j * deltaY;
+            //            bb.MaxY = bb.MinY + deltaY;
+            //            bb.MinZ = cellBoxesBox.MinZ + k * deltaZ;
+            //            bb.MaxZ = bb.MinZ + deltaZ;
+            //            bb.Tag = new Dictionary<int, BoundingBox>();
+            //            regions[k * nxy + j * nx + i] = bb;
+            //        }
+            //    }
+            //}
             //
             int count = 0;
             int mini;
@@ -358,6 +395,18 @@ namespace CaeResults
                         for (int i = mini; i <= maxi; i++)
                         {
                             bb = regions[k * nxy + j * nx + i];
+                            if (bb == null)
+                            {
+                                bb = new BoundingBox();
+                                bb.MinX = cellBoxesBox.MinX + i * deltaX;
+                                bb.MaxX = bb.MinX + deltaX;
+                                bb.MinY = cellBoxesBox.MinY + j * deltaY;
+                                bb.MaxY = bb.MinY + deltaY;
+                                bb.MinZ = cellBoxesBox.MinZ + k * deltaZ;
+                                bb.MaxZ = bb.MinZ + deltaZ;
+                                bb.Tag = new Dictionary<int, BoundingBox>();
+                                regions[k * nxy + j * nx + i] = bb;
+                            }
                             ((Dictionary<int, BoundingBox>)bb.Tag).Add(count, cellBox);
                         }
                     }
@@ -370,20 +419,21 @@ namespace CaeResults
         }
         private static Triangle[] TriangularCellsToTriangles(PartExchangeData pData)
         {
-            int[] cell;
             Triangle[] triangles = new Triangle[pData.Cells.CellNodeIds.Length];
             //
-            for (int i = 0; i < triangles.Length; i++)
+            Parallel.For(0, triangles.Length, i =>
+            //for (int i = 0; i < triangles.Length; i++)
             {
-                cell = pData.Cells.CellNodeIds[i];
+                int[] cell = pData.Cells.CellNodeIds[i];
                 if (cell.Length != 3) throw new NotSupportedException();
                 triangles[i] = new Triangle(i, pData.Nodes.Coor[cell[0]],
-                                            pData.Nodes.Coor[cell[1]],
-                                            pData.Nodes.Coor[cell[2]],
-                                            pData.Nodes.Values[cell[0]],
-                                            pData.Nodes.Values[cell[1]],
-                                            pData.Nodes.Values[cell[2]]);
+                                               pData.Nodes.Coor[cell[1]],
+                                               pData.Nodes.Coor[cell[2]],
+                                               pData.Nodes.Values[cell[0]],
+                                               pData.Nodes.Values[cell[1]],
+                                               pData.Nodes.Values[cell[2]]);
             }
+            );
             //
             return triangles;
         }
@@ -391,7 +441,7 @@ namespace CaeResults
                                                                     BoundingBox cellBoxesBox)
         {
             double size = cellBoxesBox.GetDiagonal();
-            double minSize = size * 1E-2;
+            double minSize = size * 1E-3;
             Octree.Point centerP = new Octree.Point(cellBoxesBox.GetCenter());
             Octree.BoundsOctree<Triangle> trianglesOctree = new Octree.BoundsOctree<Triangle>(size, centerP, minSize, 1);
             //

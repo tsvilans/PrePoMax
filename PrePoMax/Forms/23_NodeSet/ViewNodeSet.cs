@@ -104,7 +104,7 @@ namespace PrePoMax.Forms
         [CategoryAttribute("Bounding box center")]
         [DisplayName("Z")]
         [DescriptionAttribute("Bounding box Z center of gravity.")]
-        [TypeConverter(typeof(CaeGlobals.StringLengthConverter))]
+        [TypeConverter(typeof(StringLengthConverter))]
         [Id(2, 2)]
         public double ZBoundingBoxCG
         {

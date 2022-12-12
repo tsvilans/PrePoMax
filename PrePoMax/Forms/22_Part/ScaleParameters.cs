@@ -80,6 +80,7 @@ namespace PrePoMax.Forms
         [Category("Scale factors")]
         [OrderedDisplayName(0, 10, "X")]
         [Description("Scale factor in the X direction.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(1, 3)]
         public double FactorX
         {
@@ -94,6 +95,7 @@ namespace PrePoMax.Forms
         [Category("Scale factors")]
         [OrderedDisplayName(0, 10, "Y")]
         [Description("Scale factor in the Y direction.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(1, 3)]
         public double FactorY
         {
@@ -108,6 +110,7 @@ namespace PrePoMax.Forms
         [Category("Scale factors")]
         [OrderedDisplayName(0, 10, "Z")]
         [Description("Scale factor in the Z direction.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(1, 3)]
         public double FactorZ
         {
@@ -121,7 +124,7 @@ namespace PrePoMax.Forms
 
 
         // Constructors                                                                                                             
-        public ScaleParameters(CaeModel.ModelSpaceEnum modelSpace)
+        public ScaleParameters(ModelSpaceEnum modelSpace)
         {
             Clear();
             //

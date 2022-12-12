@@ -249,7 +249,7 @@ namespace PrePoMax.Forms
             {
                 foreach (var entry in _userKeywords)
                 {
-                    AddUserKeywordToTreeByIndex(entry.Key, entry.Value);
+                    AddUserKeywordToTreeByIndex(entry.Key, entry.Value.DeepClone());
                 }
             }
         }

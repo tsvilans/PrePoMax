@@ -103,6 +103,16 @@ namespace UserControls.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Collapse {
+            get {
+                object obj = ResourceManager.GetObject("Collapse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Color_contours {
             get {
                 object obj = ResourceManager.GetObject("Color_contours", resourceCulture);
@@ -167,6 +177,16 @@ namespace UserControls.Properties {
             get {
                 object obj = ResourceManager.GetObject("Empty", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Expand {
+            get {
+                object obj = ResourceManager.GetObject("Expand", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

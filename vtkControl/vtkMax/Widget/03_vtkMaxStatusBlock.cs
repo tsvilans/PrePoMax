@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Kitware.VTK;
 
 namespace vtkControl
@@ -139,15 +140,15 @@ namespace vtkControl
 
 
         // Public methods                                                                                                           
-        public override bool LeftButtonPress(int x, int y)
+        public override bool LeftButtonPress(MouseEventArgs e)
         {
             int[] size = _renderer.GetSize();
-            int localX = x - (int)_position[0];
-            int loaclY = size[1] - y - (int)_position[1];
+            int localX = e.Location.X - (int)_position[0];
+            int loaclY = size[1] - e.Location.Y - (int)_position[1];
             //
             _deformationScaleFactorTextClicked = _deformationScaleFactorRect.Contains(localX, loaclY);
             //
-            return base.LeftButtonPress(x, y);
+            return base.LeftButtonPress(e);
         }
     }
 }

@@ -96,6 +96,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Color spectrum settings")]
         [OrderedDisplayName(1, 10, "Brightness")]
         [DescriptionAttribute("Set the brightness of the color legend (0 ... 1).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double ColorBrightness
         {
             get { return _legendSettings.ColorSpectrum.ColorBrightness; }
@@ -161,6 +162,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Color spectrum values")]
         [OrderedDisplayName(4, 10, "Max value")]
         [DescriptionAttribute("Set the max limit value.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double ColorSpectrumMax
         {
             get { return _legendSettings.ColorSpectrum.MaxUserValue; }
@@ -170,6 +172,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Color spectrum values")]
         [OrderedDisplayName(3, 10, "Min value")]
         [DescriptionAttribute("Set the min limit value.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double ColorSpectrumMin
         {
             get { return _legendSettings.ColorSpectrum.MinUserValue; }
@@ -211,8 +214,6 @@ namespace PrePoMax.Settings
             get { return _legendSettings.DrawBorder; }
             set { _legendSettings.DrawBorder = value; }
         }
-
-
 
 
         // Constructors                                                                               

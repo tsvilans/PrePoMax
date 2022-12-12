@@ -34,6 +34,7 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(5, 10, "Accuracy")]
         [DescriptionAttribute("Accuracy desired (default: 0.01).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Accuracy { get { return _buckleStep.Accuracy; } set { _buckleStep.Accuracy = value; } }
 
 

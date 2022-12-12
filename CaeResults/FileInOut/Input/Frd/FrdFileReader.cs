@@ -431,7 +431,9 @@ namespace CaeResults
             switch (fieldData.Name)
             {
                 case FOFieldNames.Disp:
+                case FOFieldNames.Dispi:
                 case FOFieldNames.Forc:
+                case FOFieldNames.Forci:
                 // Thermal
                 case FOFieldNames.Flux:
                 // Sensitivity
@@ -439,10 +441,14 @@ namespace CaeResults
                     field = CreateVectorField(fieldData.Name, components, values);
                     break;
                 case FOFieldNames.Stress:
+                case FOFieldNames.Stressi:
                 case FOFieldNames.ToStrain:
+                case FOFieldNames.ToStraii:
                 case FOFieldNames.MeStrain:
+                case FOFieldNames.MeStraii:
                 // Error
                 case FOFieldNames.ZZStr:
+                case FOFieldNames.ZZStri:
                     field = CreateStressField(fieldData.Name, components, values);
                     break;
                 default:
@@ -660,6 +666,8 @@ namespace CaeResults
             int start;
             int width;
             string line;
+            string substring;
+            float value;
             //
             if (constantWidth)
             {
@@ -683,7 +691,6 @@ namespace CaeResults
                 for (int i = 0; i < numOfVal; i++)
                 {
                     line = lines[lineId];
-                    line = line.Replace("NAN", "NaN");
                     // Node id
                     if (directIds) nodeValueId = i;
                     else
@@ -703,14 +710,19 @@ namespace CaeResults
                             {
                                 lineId++;
                                 line = lines[lineId];
-                                line = line.Replace("NAN", "NaN");
                                 start = 13;
                             }
                             // No continuation found
                             else continue;
                         }
                         //
-                        if (nodeValueId != -1) values[j][nodeValueId] = float.Parse(line.Substring(start, width));
+                        if (nodeValueId != -1)
+                        {
+                            substring = line.Substring(start, width);
+                            if (!float.TryParse(substring, out value)) value = float.NaN;
+                            //
+                            values[j][nodeValueId] = value;
+                        }
                         start += width;
                     }
                     //

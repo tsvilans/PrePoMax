@@ -69,6 +69,7 @@ namespace PrePoMax
         [CategoryAttribute("Parameters")]
         [OrderedDisplayName(1, 10, "Emissivity")]
         [DescriptionAttribute("Value of the surface emissivity (blackbody radiation is characterized by 1).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(2, 3)]
         public double Emissivity
         {

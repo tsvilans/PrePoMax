@@ -31,11 +31,13 @@ namespace PrePoMax
         [CategoryAttribute("Modify")]
         [OrderedDisplayName(0, 10, "Shift time")]
         [DescriptionAttribute("Select the fixed amout used to shift the time/frequency values.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public abstract double ShiftX { get; set; }
         //
         [CategoryAttribute("Modify")]
         [OrderedDisplayName(1, 10, "Shift amplitude")]
         [DescriptionAttribute("Select the fixed amout used to shift the amplitude values.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public abstract double ShiftY { get; set; }
         //
         [Browsable(false)]

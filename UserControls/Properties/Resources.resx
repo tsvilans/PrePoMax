@@ -197,7 +197,7 @@
     <value>..\Resources\Search1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Unactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Unactive.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Unactive2.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Field_output" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Field_output.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -223,7 +223,10 @@
   <data name="Color_contours" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Color_contours.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Unactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Unactive2.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Collapse" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\Collapse.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Expand" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Images\Expand.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

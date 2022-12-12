@@ -16,7 +16,6 @@ namespace PrePoMax
         protected CaeModel.HeatTransferStep _heatTransferStep;
 
 
-
         // Properties                                                                                                               
         [CategoryAttribute("Data")]
         [OrderedDisplayName(9, 10, "Steady state")]
@@ -28,7 +27,6 @@ namespace PrePoMax
         //[DescriptionAttribute("Value of the parameter DELTMX that is used to limit the temperature change" + 
         //                      " in two subsequent increments.")]
         //public double Deltmx { get { return _heatTransferStep.Deltmx; } set { _heatTransferStep.Deltmx = value; } }
-
 
 
         // Constructors                                                                                                             

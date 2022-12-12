@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using DynamicTypeDescriptor;
+using CaeGlobals;
 
 namespace PrePoMax
 {
@@ -18,10 +19,11 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         [DisplayName("Youngs modulus\n[?]")]
-        [TypeConverter(typeof(CaeGlobals.StringPressureFromConverter))]
+        [TypeConverter(typeof(StringPressureFromConverter))]
         public double YoungsModulus { get { return _youngsModulus; } set { _youngsModulus = value; } }
         //
         [DisplayName("Poissons ratio\n[?]")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double PoissonsRatio { get { return _poissonsRatio; } set { _poissonsRatio = value; } }
 
 

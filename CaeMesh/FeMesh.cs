@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CaeGlobals;
 using System.Runtime.Serialization;
+using System.Collections.Concurrent;
 
 namespace CaeMesh
 {
@@ -1080,7 +1081,8 @@ namespace CaeMesh
         {
             int[][] cells = part.Visualization.Cells;
             // Get all edges
-            Dictionary<int[], CellEdgeData> allEdges = part.Visualization.GetCellEdgeData(GetVisualizationEdgeCells);
+            Dictionary<int[], CellEdgeData> allEdges;
+            allEdges = part.Visualization.GetCellEdgeData3(GetVisualizationEdgeCells);
             // Get only edges where cells meet at an angle > input angle
             // Get free surface edges
             double phi;
@@ -2280,7 +2282,7 @@ namespace CaeMesh
         public bool ArePartsMergable(string[] partNames)
         {
             HashSet<PartType> partTypes = new HashSet<PartType>();
-            foreach (var entry in _parts) partTypes.Add(entry.Value.PartType);
+            foreach (var partName in partNames) partTypes.Add(_parts[partName].PartType);
             return partTypes.Count == 1;
         }
         private void MergeGeometryParts()
@@ -5052,7 +5054,7 @@ namespace CaeMesh
             geometryId = itemId * 100000 + typeId * 10000 + partId;
             return geometryId;
         }
-        public int[] GetGeometryIds(int[] elementIds)
+        public int[] GetGeometryIds(int[] nodeIds, int[] elementIds)
         {
             // geometryId = itemId * 100000 + typeId * 10000 + partId       
             int itemId = -1;
@@ -5060,10 +5062,9 @@ namespace CaeMesh
             int partId = -1;
             HashSet<int> geometryIds = new HashSet<int>();
             VisualizationData visualization;
-            Dictionary<int, HashSet<int>> surfaceIdsByElements;
-            //
-            HashSet<int> elementSurfaces;
-            HashSet<int> allElementSurfaces;
+            HashSet<int> selectedNodes = new HashSet<int>(nodeIds);
+            HashSet<int> nodesToRemove = new HashSet<int>();
+            Dictionary<int, HashSet<int>> nodeIdsByItems;
             //
             foreach (var entry in _parts)
             {
@@ -5072,30 +5073,54 @@ namespace CaeMesh
                 partId = entry.Value.PartId;
                 visualization = entry.Value.Visualization;
                 // Surfaces
-                if (entry.Value.PartType == PartType.Shell)
-                    typeId = (int)GeometryType.ShellFrontSurface;
-                else if (entry.Value.PartType == PartType.SolidAsShell)
-                    typeId = (int)GeometryType.ShellFrontSurface;
-                else if (entry.Value.PartType == PartType.Solid)
-                    typeId = (int)GeometryType.SolidSurface;
+                if (entry.Value.PartType == PartType.Shell) typeId = (int)GeometryType.ShellFrontSurface;
+                else if (entry.Value.PartType == PartType.SolidAsShell) typeId = (int)GeometryType.ShellFrontSurface;
+                else if (entry.Value.PartType == PartType.Solid) typeId = (int)GeometryType.SolidSurface;
                 else throw new NotSupportedException();
                 //
-                surfaceIdsByElements = visualization.GetSurfaceIdsForEachElement();
-                allElementSurfaces = new HashSet<int>();
-                //
-                foreach (int elementId in elementIds)
+                nodesToRemove.Clear();
+                nodeIdsByItems = visualization.GetNodeIdsBySurfaces();
+                foreach (var surfaceEntry in nodeIdsByItems)
                 {
-                    if (surfaceIdsByElements.TryGetValue(elementId, out elementSurfaces))
-                        allElementSurfaces.UnionWith(elementSurfaces);
-                }
-                foreach (int surfaceId in allElementSurfaces)
-                {
-                    itemId = surfaceId;
-                    geometryIds.Add(itemId * 100000 + typeId * 10000 + partId);
-                    // Add faces of the shell back face
-                    if (entry.Value.PartType == PartType.Shell && typeId == (int)GeometryType.ShellFrontSurface)
+                    // Check for one first - speed?
+                    if (selectedNodes.Count >= surfaceEntry.Value.Count && selectedNodes.Contains(surfaceEntry.Value.First()))
                     {
-                        geometryIds.Add(itemId * 100000 + (int)GeometryType.ShellBackSurface * 10000 + partId);
+                        if (surfaceEntry.Value.IsSubsetOf(selectedNodes))
+                        {
+                            itemId = surfaceEntry.Key;
+                            geometryIds.Add(itemId * 100000 + typeId * 10000 + partId);
+                            nodesToRemove.UnionWith(surfaceEntry.Value);
+                            
+                        }
+                    }
+                }
+                selectedNodes.ExceptWith(nodesToRemove);
+                // Edges
+                typeId = (int)GeometryType.Edge;
+                nodesToRemove.Clear();
+                nodeIdsByItems = visualization.GetNodeIdsByEdges();
+                foreach (var edgeEntry in nodeIdsByItems)
+                {
+                    // Check for one first - speed?
+                    if (selectedNodes.Count >= edgeEntry.Value.Count && selectedNodes.Contains(edgeEntry.Value.First()))
+                    {
+                        if (edgeEntry.Value.IsSubsetOf(selectedNodes))
+                        {
+                            itemId = edgeEntry.Key;
+                            geometryIds.Add(itemId * 100000 + typeId * 10000 + partId);
+                            nodesToRemove.UnionWith(edgeEntry.Value);                            
+                        }
+                    }
+                }
+                selectedNodes.ExceptWith(nodesToRemove);
+                // Vertices
+                typeId = (int)GeometryType.Vertex;
+                for (int i = 0; i < visualization.VertexNodeIds.Length; i++)
+                {
+                    if (selectedNodes.Contains(visualization.VertexNodeIds[i]))
+                    {
+                        itemId = i;
+                        geometryIds.Add(itemId * 100000 + typeId * 10000 + partId);
                     }
                 }
             }

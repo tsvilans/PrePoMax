@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Kitware.VTK;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace vtkControl
 {
@@ -18,15 +19,15 @@ namespace vtkControl
     {
         // Variables                                                                                                                
         protected vtkCoordinate _positionCoordinate;
-
+        //
         protected vtkPolyDataMapper2D _borderMapper;
         protected vtkActor2D _borderActor;
         protected vtkPolyDataMapper2D _backgroundMapper;
         protected vtkActor2D _backgroundActor;
-
+        //
         protected vtkRenderer _renderer;
         protected vtkRenderWindowInteractor _renderWindowInteractor;
-
+        //
         protected bool _visibility;
         protected bool _borderVisibility;
         protected bool _backgroundVisibility;
@@ -36,14 +37,12 @@ namespace vtkControl
         protected double[] _position;
         protected double[] _size;
         protected vtkMaxWidgetPosition _widgetPosition;
-
+        //
         protected int[] _clickPos;
-        protected int[] _lastClickPos;
-        protected DateTime _lastClickTime;
 
 
         // Events                                                                                                                   
-        public event Action<object> MouseDoubleClick;
+        public event Action<object, MouseEventArgs> MouseDoubleClick;
 
 
         // Constructors                                                                                                             
@@ -51,71 +50,68 @@ namespace vtkControl
         {
             _positionCoordinate = vtkCoordinate.New();
             _positionCoordinate.SetCoordinateSystemToDisplay();
-
+            //
             _visibility = true;
             _borderVisibility = true;
             _backgroundVisibility = true;
             _position = null;
             _prewWindowSize = new int[] { 0, 0 };
             _scaleBySectors = true;
-
+            //
             _position = new double[] { 100, 100 };
             _size = new double[] { 100, 100 };
             _widgetPosition = vtkMaxWidgetPosition.FromBottomLeft;
-
+            //
             _clickPos = null;
-            _lastClickTime = DateTime.Now;
-
             // Border                                                                          
             vtkPoints points = vtkPoints.New();
             points.InsertNextPoint(_position[0], _position[1], 0);
             points.InsertNextPoint(_position[0] + _size[0], _position[1], 0);
             points.InsertNextPoint(_position[0] + _size[0], _position[1] + _size[1], 0);
             points.InsertNextPoint(_position[0], _position[1] + _size[1], 0);
-
+            //
             vtkCellArray lines = vtkCellArray.New();
             lines.InsertNextCell(2);
             lines.InsertCellPoint(0);
             lines.InsertCellPoint(1);
-
+            //
             lines.InsertNextCell(2);
             lines.InsertCellPoint(1);
             lines.InsertCellPoint(2);
-
+            //
             lines.InsertNextCell(2);
             lines.InsertCellPoint(2);
             lines.InsertCellPoint(3);
-
+            //
             lines.InsertNextCell(2);
             lines.InsertCellPoint(3);
             lines.InsertCellPoint(0);
-
+            //
             vtkPolyData scalarBarPolyData = vtkPolyData.New();
             scalarBarPolyData.SetPoints(points);
             scalarBarPolyData.SetLines(lines);
-
+            //
             _borderMapper = vtkPolyDataMapper2D.New();
             _borderMapper.SetInput(scalarBarPolyData);
-
+            //
             _borderActor = vtkActor2D.New();
             _borderActor.SetMapper(_borderMapper);
             _borderActor.GetProperty().SetColor(0, 0, 0);
-
-            // Background
+            // Background                                                                   
             vtkCellArray backgroundPolygon = vtkCellArray.New();
             backgroundPolygon.InsertNextCell(4);
             backgroundPolygon.InsertCellPoint(0);
             backgroundPolygon.InsertCellPoint(1);
             backgroundPolygon.InsertCellPoint(2);
             backgroundPolygon.InsertCellPoint(3);
-
+            //
             vtkPolyData backgroundPolyData = vtkPolyData.New();
             backgroundPolyData.SetPoints(_borderMapper.GetInput().GetPoints());
             backgroundPolyData.SetPolys(backgroundPolygon);
-
+            //
             _backgroundMapper = vtkPolyDataMapper2D.New();
             _backgroundMapper.SetInput(backgroundPolyData);
-
+            //
             _backgroundActor = vtkActor2D.New();
             _backgroundActor.SetMapper(_backgroundMapper);
             _backgroundActor.GetProperty().SetColor(1, 1, 1);
@@ -282,7 +278,7 @@ namespace vtkControl
             OnMovedOrSizeChanged();
         }
         //
-        public virtual bool LeftButtonPress(int x, int y)
+        public virtual bool LeftButtonPress(MouseEventArgs e)
         {
             if (!_visibility) return false;
             //
@@ -293,22 +289,20 @@ namespace vtkControl
                 position[1] = size[1] - _size[1] - position[1];
             }
             // Inside click
-            if (x >= position[0] && x <= position[0] + _size[0] && y >= position[1] && y <= position[1] + _size[1])
+            if (e.Location.X >= position[0] && e.Location.X <= position[0] + _size[0] &&
+                e.Location.Y >= position[1] && e.Location.Y <= position[1] + _size[1])
             {
                 //System.Diagnostics.Debug.WriteLine(DateTime.Now.Millisecond);
                 // Double click
-                if ((DateTime.Now - _lastClickTime).TotalMilliseconds < 300 &&
-                    Math.Abs(x - _lastClickPos[0]) < 5 && Math.Abs(y - _lastClickPos[1]) < 5)
+                if (e.Clicks == 2)
                 {
-                    MouseDoubleClick?.Invoke(this);
+                    MouseDoubleClick?.Invoke(this, e);
                     return true;
                 }
                 // Single click
                 else
                 {
-                    _clickPos = new int[] { x, y };
-                    _lastClickPos = _clickPos.ToArray();
-                    _lastClickTime = DateTime.Now;
+                    _clickPos = new int[] { e.Location.X, e.Location.Y };
                     //
                     //_borderActor.GetProperty().SetColor(1, 0, 0);
                     //

@@ -24,8 +24,8 @@ namespace PrePoMax.Forms
 
         // Callbacks                                                                                                               
         public Action<string> Form_WriteDataToOutput;
+        public Action<object, EventArgs> Form_RemoveAnnotations;
 
-        
         // Constructors                                                                                                             
         public FrmQuery()
         {
@@ -111,7 +111,7 @@ namespace PrePoMax.Forms
         private void btnClear_Click(object sender, EventArgs e)
         {
             // Annotations
-            _controller.Annotations.RemoveCurrentArrowAnnotations();
+            Form_RemoveAnnotations?.Invoke(null, null);
             // Selection
             _controller.ClearSelectionHistoryAndCallSelectionChanged();
         }

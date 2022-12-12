@@ -22,32 +22,35 @@ namespace PrePoMax.Forms
         [Category("Mesh size")]
         [OrderedDisplayName(0, 10, "Max element size")]
         [Description("The value for the maximum element size.")]
-        [TypeConverter(typeof(CaeGlobals.StringLengthConverter))]
+        [TypeConverter(typeof(StringLengthConverter))]
         [Id(1, 1)]
         public virtual double MaxH { get { return _parameters.MaxH; } set { _parameters.MaxH = value; } }
         //
         [Category("Mesh size")]
         [OrderedDisplayName(1, 10, "Min element size")]
         [Description("The value for the minimum element size.")]
-        [TypeConverter(typeof(CaeGlobals.StringLengthConverter))]
+        [TypeConverter(typeof(StringLengthConverter))]
         [Id(2, 1)]
         public virtual double MinH { get { return _parameters.MinH; } set { _parameters.MinH = value; } }
         //
         [Category("Mesh size")]
         [OrderedDisplayName(2, 10, "Grading")]
         [Description("The value of the mesh grading (0 => uniform mesh; 1 => aggressive local grading).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(3, 1)]
         public double Grading { get { return _parameters.Grading; } set { _parameters.Grading = value; } }
         //
         [Category("Mesh size")]
         [OrderedDisplayName(3, 10, "Elements per edge")]
         [Description("Number of elements to generate per edge of the geometry.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(4, 1)]
         public double Elementsperedge { get { return _parameters.Elementsperedge; } set { _parameters.Elementsperedge = value; } }
         //
         [Category("Mesh size")]
         [OrderedDisplayName(4, 10, "Elements per curvature")]
         [Description("Number of elements to generate per curvature radius.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(5, 1)]
         public double Elementspercurve { get { return _parameters.Elementspercurve; } set { _parameters.Elementspercurve = value; } }
         // Maximal Hausdorff distance for the boundaries approximation.
@@ -55,6 +58,7 @@ namespace PrePoMax.Forms
         [OrderedDisplayName(5, 10, "Hausdorff")]
         [Description("Maximal Hausdorff distance for the boundaries approximation. " +
                               "A value of 0.01 is a suitable value for an object of size 1 in each direction.")]
+        //
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(6, 1)]
         public double Hausdorff { get { return _parameters.Hausdorff; } set { _parameters.Hausdorff = value; } }

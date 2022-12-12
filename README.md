@@ -1,6 +1,6 @@
 # Prerequisites
-*  Visual Studio 2019 Community (development environment) - https://www.visualstudio.com/downloads/
-*  ActiViz OpenSource Edition 5.8.0 (64-bit Windows XP or later) (3D library used for graphics - must be installed only on the development PC; users do not need it) - https://www.kitware.fr/activiz-dotnet/
+*  Visual Studio 2022 Community (development environment) - https://www.visualstudio.com/downloads/
+*  ActiViz OpenSource Edition 5.8.0 (64-bit Windows XP or later) (3D library used for graphics - must be installed only on the development PC; users do not need it) - https://prepomax.fs.um.si/downloads/
 
 # PrePoMax Visual Studio setup
 *  Download a Master branch of the PrePoMax package and extract it to a PrePoMax folder
@@ -35,7 +35,7 @@ The PrePoMax is a solution which consists of 9 projects:
 *  PrePoMax: classes for user interface
 *  STL: classes for stl geometry import
 *  UserControls: classes for more complex user controls, as model tree view...
-*  vtkcontrol: classes for 3D visualization
+*  vtkControl: classes for 3D visualization
 
 PrePoMax is compiled in an exe file all the other projects are compiled in dll files.
 

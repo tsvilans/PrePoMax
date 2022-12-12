@@ -78,8 +78,7 @@ namespace PrePoMax.Forms
             _viewValue.SetDisplayName(valueName);
             _viewValue.SetDescription(valueDescription);
             if (typeConverter != null) _viewValue.SetTypeConverter(typeConverter);
-            //
-            
+            else _viewValue.SetTypeConverter(new StringDoubleConverter());
             //
             propertyGrid.SelectedObject = _viewValue;
             propertyGrid.Select();

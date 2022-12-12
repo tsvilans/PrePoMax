@@ -44,10 +44,10 @@
             this.labProgramName.ForeColor = System.Drawing.Color.Black;
             this.labProgramName.Location = new System.Drawing.Point(41, 2);
             this.labProgramName.Name = "labProgramName";
-            this.labProgramName.Size = new System.Drawing.Size(335, 44);
+            this.labProgramName.Size = new System.Drawing.Size(547, 44);
             this.labProgramName.TabIndex = 0;
-            this.labProgramName.Text = "PrePoMax v0.0.0";
-            this.labProgramName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labProgramName.Text = "PrePoMax v0.0.0.0";
+            this.labProgramName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // progressBar
             // 

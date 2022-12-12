@@ -27,7 +27,7 @@ namespace PrePoMax
         [OrderedDisplayName(3, 10, "Offset")]
         [DescriptionAttribute("Set the offset of the shell mid-surface in regard to the selected geometry. " +
                               "The unit is the shell thickness.")]
-        [TypeConverter(typeof(StringDefaultDoubleConverter))]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double Offset { get { return _shellSection.Offset; } set { _shellSection.Offset = value; } }
 
 
@@ -36,8 +36,6 @@ namespace PrePoMax
         {
             _shellSection = shellSection;
             SetBase(_shellSection);
-            //
-            StringDefaultDoubleConverter.InitialValue = 1;
         }
 
 

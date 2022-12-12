@@ -36,6 +36,9 @@ namespace FileInOut.Output.Calculix
             sb.AppendFormat("*Contact pair, Interaction={0}, Type=", _contactPair.SurfaceInteractionName );
             if (_contactPair.Method == ContactPairMethod.NodeToSurface) sb.Append("Node to surface");
             else if (_contactPair.Method == ContactPairMethod.SurfaceToSurface) sb.Append("Surface to surface");
+            else if (_contactPair.Method == ContactPairMethod.Mortar) sb.Append("Mortar");
+            else if (_contactPair.Method == ContactPairMethod.LinMortar) sb.Append("LinMortar");
+            else if (_contactPair.Method == ContactPairMethod.PGLinMortar) sb.Append("PGLinMortar");
             else throw new NotSupportedException();
             //
             if (_contactPair.Method == ContactPairMethod.NodeToSurface && _contactPair.SmallSliding) sb.Append(", Small sliding");

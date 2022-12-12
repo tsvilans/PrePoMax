@@ -33,6 +33,8 @@ namespace CaeGlobals
         QueryElement,
         QueryEdge,
         QuerySurface,
-        QueryPart
+        QueryPart,
+        //
+        Widget
     }
 }

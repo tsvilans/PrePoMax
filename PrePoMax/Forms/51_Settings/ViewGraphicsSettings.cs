@@ -108,6 +108,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Lighting")]
         [OrderedDisplayName(0, 10, "Ambient component")]
         [DescriptionAttribute("Select the ambient light component (0 ... 1).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double AmbientComponent
         {
             get { return _graphicsSettings.AmbientComponent; }
@@ -117,6 +118,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Lighting")]
         [OrderedDisplayName(1, 10, "Diffuse component")]
         [DescriptionAttribute("Select the diffuse light component (0 ... 1).")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double DiffuseComponent
         {
             get { return _graphicsSettings.DiffuseComponent; }
@@ -144,6 +146,7 @@ namespace PrePoMax.Settings
         [CategoryAttribute("Geometry")]
         [OrderedDisplayName(0, 10, "CAD deflection")]
         [DescriptionAttribute("This parameter controls the deflection of the geometry visualization, i.e. how accurate it is at approximating the actual curved surfaces")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double GeometryDeflection
         {
             get { return _graphicsSettings.GeometryDeflection; }

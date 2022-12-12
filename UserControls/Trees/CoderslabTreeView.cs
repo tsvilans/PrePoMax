@@ -717,6 +717,9 @@ namespace UserControls
 		{
 			try
 			{
+				if (startNode == null && endNode == null) return;
+				if (startNode == null && endNode != null) startNode = endNode;
+                if (startNode != null && endNode == null) endNode = startNode;
 				// Calculate start node and end node
 				TreeNode firstNode = null;
 				TreeNode lastNode = null;
@@ -759,8 +762,11 @@ namespace UserControls
 		/// <param name="tva">Specifies the action that caused the selection change.</param>
 		private void UnselectNodesOutsideRange(TreeNode startNode, TreeNode endNode, TreeViewAction tva)
 		{
-			// Calculate start node and end node
-			TreeNode firstNode = null;
+            if (startNode == null && endNode == null) return;
+            if (startNode == null && endNode != null) startNode = endNode;
+            if (startNode != null && endNode == null) endNode = startNode;
+            // Calculate start node and end node
+            TreeNode firstNode = null;
 			TreeNode lastNode = null;
 			if (startNode.Bounds.Y < endNode.Bounds.Y)
 			{

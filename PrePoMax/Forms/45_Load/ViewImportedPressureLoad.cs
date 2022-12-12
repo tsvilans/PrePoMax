@@ -88,8 +88,9 @@ namespace PrePoMax
         [CategoryAttribute("Magnitude")]
         [OrderedDisplayName(4, 10, "Scale factor")]
         [DescriptionAttribute("Value of the pressure scale factor.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         [Id(5, 3)]
-        public float ScaleFactor { get { return _importedPressure.ScaleFactor; } set { _importedPressure.ScaleFactor = value; } }
+        public double ScaleFactor { get { return _importedPressure.ScaleFactor; } set { _importedPressure.ScaleFactor = value; } }
         //
         public override string AmplitudeName { get { return _importedPressure.AmplitudeName; } set { _importedPressure.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _importedPressure.Color; } set { _importedPressure.Color = value; } }
@@ -132,7 +133,7 @@ namespace PrePoMax
             bool browsable = false;
             //
             Dictionary<string, string[]> timeResultVariableNames =
-                CaeResults.OpenFoamFileReader.GetTimeResultVariableNames(_importedPressure.FileName);
+                CaeResults.OpenFoamFileReader.GetTimeResultScalarVariableNames(_importedPressure.FileName);
             //
             if (timeResultVariableNames != null && timeResultVariableNames.Count > 0)
             {

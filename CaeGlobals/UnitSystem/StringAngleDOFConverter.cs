@@ -61,14 +61,9 @@ namespace CaeGlobals
             // Convert from string
             if (value is string valueString)
             {
-                double valueDouble;
-                if (String.Equals(value, _free)) valueDouble = double.NaN;
-                else if (String.Equals(value, _fixed)) valueDouble = double.PositiveInfinity;
-                else if (!double.TryParse(valueString, out valueDouble))
-                {
-                    valueDouble = ConvertToCurrentUnits(valueString);
-                }
-                return valueDouble;
+                if (String.Equals(value, _free)) return double.NaN;
+                else if (String.Equals(value, _fixed)) return double.PositiveInfinity;
+                else return MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
             }
             else return base.ConvertFrom(context, culture, value);
         }

@@ -52,7 +52,9 @@ namespace PrePoMax.Forms
                 tabPage.Paint += TabPage_Paint;
                 _pages[i++] = tabPage;
             }
+            
         }
+
         private void InitializeComponent()
         {
             this.tcProperties.SuspendLayout();
@@ -84,6 +86,10 @@ namespace PrePoMax.Forms
             // propertyGrid
             // 
             this.propertyGrid.Size = new System.Drawing.Size(296, 278);
+            //
+            // dgvData
+            //
+            this.dgvData.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvData_DataError);
             // 
             // FrmAmplitude
             // 
@@ -120,6 +126,10 @@ namespace PrePoMax.Forms
         private void Binding_ListChanged(object sender, ListChangedEventArgs e)
         {
             _propertyItemChanged = true;
+        }
+        private void dgvData_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBoxes.ShowError(e.Exception.Message);
         }
 
 

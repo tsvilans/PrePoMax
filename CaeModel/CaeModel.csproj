@@ -81,6 +81,7 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalLinearSpringSection.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\SurfaceInteraction\CalGapConductance.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\BC\CalTemperatureBC.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalDynamicStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalHeatTransferStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalCoupledTempDispStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalUncoupledTempDispStep.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="FileInOut\Output\Stl\StlFileWriter.cs" />
     <Compile Include="GeometricRegionType.cs" />
     <Compile Include="Steps\CoupledTempDispStep.cs" />
+    <Compile Include="Steps\DynamicStep.cs" />
     <Compile Include="Steps\Loads\IPreviewLoad.cs" />
     <Compile Include="Steps\Loads\VariablePressure.cs" />
     <Compile Include="Steps\Loads\ImportedPressure.cs" />

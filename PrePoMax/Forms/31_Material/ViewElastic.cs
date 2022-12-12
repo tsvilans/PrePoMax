@@ -68,6 +68,7 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(1, 2, "Poisson's ratio")]
         [DescriptionAttribute("The value of the Poisson's ratio.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
         public double PoissonsRatio
         {
             get

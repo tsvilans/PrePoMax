@@ -66,7 +66,6 @@ namespace CaeGlobals
             return true;
         }
 
-        // Returns a StandardValuesCollection of standard value objects.
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             // Passes the local integer array.
@@ -74,35 +73,16 @@ namespace CaeGlobals
             return svc;
         }
 
-        // Returns true for a sourceType of string to indicate that 
-        // conversions from string to integer are supported. (The 
-        // GetStandardValues method requires a string to native type 
-        // conversion because the items in the drop-down list are 
-        // translated to string.)
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
             else return base.CanConvertFrom(context, sourceType);
         }
 
-        // If the type of the value to convert is string, parses the string 
-        // and returns the integer to set the value of the property to. 
-        // This example first extends the integer array that supplies the 
-        // standard values collection if the user-entered value is not 
-        // already in the array.
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             // Convert from string
-            if (value is string valueString)
-            {
-                double valueDouble;
-                if (String.Equals(value, _default)) valueDouble = double.NaN;
-                else if (!double.TryParse(valueString, out valueDouble))
-                {
-                    valueDouble = ConvertToCurrentUnits(valueString);
-                }
-                return valueDouble;
-            }
+            if (value is string valueString) return MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
             else return base.ConvertFrom(context, culture, value);
         }
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)

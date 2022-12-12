@@ -21,6 +21,8 @@ namespace PrePoMax.Forms
         private bool _modelChanged;
         private UnitSystem _libraryUnitSystem;
         private FrmMaterial _frmMaterial;
+        private int _yPadding;
+        static bool _collapsed = true;
 
         // Properties                                                                                                               
 
@@ -74,6 +76,10 @@ namespace PrePoMax.Forms
                 _frmMaterial.PrepareFormForPreview();
                 //
                 cltvLibrary_AfterSelect(null, null);
+                //
+                _yPadding = gbLibraries.Bottom - gbLibraryMaterials.Top;
+                //
+                gbLibraries.IsCollapsed = _collapsed;
             }
             catch (Exception ex)
             {
@@ -88,8 +94,22 @@ namespace PrePoMax.Forms
                 if (cbPreview.Checked) cbPreview.Checked = false;
             }
         }
-
-
+        private void gbLibraries_OnCollapsedChanged(object sender)
+        {
+            int newPadding = gbLibraries.Bottom - gbLibraryMaterials.Top;
+            if (newPadding != _yPadding)
+            {
+                int delta = newPadding - _yPadding;
+                gbLibraryMaterials.Top += delta;
+                gbModelMaterials.Top += delta;
+                btnCopyToModel.Top += delta;
+                btnCopyToLibrary.Top += delta;
+                //
+                gbLibraryMaterials.Height -= delta;
+                gbModelMaterials.Height -= delta;
+            }
+            _collapsed = gbLibraries.IsCollapsed;
+        }
         // Libraries
         private void btnNew_Click(object sender, EventArgs e)
         {

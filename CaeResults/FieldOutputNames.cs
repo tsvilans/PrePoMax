@@ -12,15 +12,21 @@ namespace CaeResults
         public const string Default = "DEFAULT";
         //
         public const string Disp = "DISP";
+        public const string Dispi = "DISPI";
         // Stress
         public const string Stress = "STRESS";
+        public const string Stressi = "STRESSI";
         public const string ZZStr = "ZZSTR";
+        public const string ZZStri = "ZZSTRI";
         // Strain
         public const string ToStrain = "TOSTRAIN";
+        public const string ToStraii = "TOSTRAII";
         public const string MeStrain = "MESTRAIN";
+        public const string MeStraii = "MESTRAII";
         public const string Pe = "PE";
         //
         public const string Forc = "FORC";
+        public const string Forci = "FORCI";
         public const string Ener = "ENER";
         public const string Contact = "CONTACT";
         // Thermal
@@ -28,6 +34,7 @@ namespace CaeResults
         public const string Flux = "FLUX";
         public const string Rfl = "RFL";
         public const string HError = "HERROR";
+        public const string HErrori = "HERRORI";
         // Sensitivity
         public const string Norm = "NORM";
         public const string SenFreq = "SENFREQ";
@@ -42,6 +49,7 @@ namespace CaeResults
         public const string Imported = "IMPORTED";
         //
         public const string Error = "ERROR";
+        public const string Errori = "ERRORI";
     }
 
     public class FOComponentNames
