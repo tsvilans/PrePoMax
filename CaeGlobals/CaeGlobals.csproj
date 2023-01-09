@@ -133,6 +133,7 @@
     <Compile Include="CommonClasses\Vec3D.cs" />
     <Compile Include="UnitSystem\MyNCalc.cs" />
     <Compile Include="UnitSystem\MyUnit.cs" />
+    <Compile Include="UnitSystem\StringVelocityConverter.cs" />
     <Compile Include="UnitSystem\StringAccelerationConverter.cs" />
     <Compile Include="UnitSystem\StringDoubleDefaultConverter.cs" />
     <Compile Include="UnitSystem\StringStringDefaultConverter.cs" />

@@ -191,7 +191,7 @@ namespace CaeGlobals
             }
             return true;
         }
-        public static string[] ReadAllLines(string fileName)
+        public static string[] ReadAllLines(string fileName, bool trimStart = false)
         {
             long count;
             string[] lines = null;
@@ -206,7 +206,11 @@ namespace CaeGlobals
                 //
                 count = 0;
                 fileStream.Position = 0;
-                while (!streamReader.EndOfStream) lines[count++] = streamReader.ReadLine();
+                while (!streamReader.EndOfStream)
+                {
+                    if (trimStart) lines[count++] = streamReader.ReadLine().TrimStart();
+                    else lines[count++] = streamReader.ReadLine();
+                }
                 //
                 streamReader.Close();
                 fileStream.Close();

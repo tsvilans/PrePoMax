@@ -8,6 +8,7 @@ using CaeGlobals;
 using System.Runtime.Serialization;
 using Calculix = FileInOut.Output.Calculix;
 using System.IO;
+using System.Drawing;
 
 namespace CaeModel
 {
@@ -63,17 +64,19 @@ namespace CaeModel
         // Constructors                                                                                                             
         public FeModel(string name)
         {
+            StringComparer sc = StringComparer.OrdinalIgnoreCase;
+            //
             Name = name;
             _hashName = Tools.GetRandomString(8);
             _geometry = new FeMesh(MeshRepresentation.Geometry);
             _mesh = new FeMesh(MeshRepresentation.Mesh);
-            _materials = new OrderedDictionary<string, Material>("Materials");
-            _sections = new OrderedDictionary<string, Section>("Sections");
-            _constraints = new OrderedDictionary<string, Constraint>("Constraints");
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions");
-            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
-            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions");
-            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
+            _materials = new OrderedDictionary<string, Material>("Materials", sc);
+            _sections = new OrderedDictionary<string, Section>("Sections", sc);
+            _constraints = new OrderedDictionary<string, Constraint>("Constraints", sc);
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions", sc);
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions", sc);
+            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
             _stepCollection = new StepCollection();
             _properties = new ModelProperties();
             _unitSystem = new UnitSystem();
@@ -82,17 +85,18 @@ namespace CaeModel
         // ISerialization
         public FeModel(SerializationInfo info, StreamingContext context)
         {
+            StringComparer sc = StringComparer.OrdinalIgnoreCase;
             // Compatibility for version v.0.6.0
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions");
-            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions", sc);
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
             // Compatibility for version v.0.7.0
             _unitSystem = new UnitSystem();
             // Compatibility for version v.0.8.0
             _hashName = Tools.GetRandomString(8);
             // Compatibility for version v.1.0.0
-            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions");
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions", sc);
             // Compatibility for version v.1.2.1
-            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
+            _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
             //
             foreach (SerializationEntry entry in info)
             {
@@ -110,7 +114,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             md.OnDeserialization(null);
-                            _materials = new OrderedDictionary<string, Material>("", md);
+                            _materials = new OrderedDictionary<string, Material>("", md, sc);
                         }
                         else if (entry.Value is OrderedDictionary<string, Material> mod) _materials = mod;
                         else if (entry.Value == null) _materials = null;
@@ -121,7 +125,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             sd.OnDeserialization(null);
-                            _sections = new OrderedDictionary<string, Section>("", sd);
+                            _sections = new OrderedDictionary<string, Section>("", sd, sc);
                         }
                         else if (entry.Value is OrderedDictionary<string, Section> sod) _sections = sod;
                         else if (entry.Value == null) _sections = null;
@@ -132,7 +136,7 @@ namespace CaeModel
                         {
                             // Compatibility for version v.0.5.1
                             cd.OnDeserialization(null);
-                            _constraints = new OrderedDictionary<string, Constraint>("", cd);
+                            _constraints = new OrderedDictionary<string, Constraint>("", cd, sc);
                         }
                         else if (entry.Value is OrderedDictionary<string, Constraint> cod) _constraints = cod;
                         else if (entry.Value == null) _constraints = null;
@@ -846,10 +850,10 @@ namespace CaeModel
             //
             ImportMesh(mesh, null, false);
             // Recolor parts at the end of the import
-            for (int i = 0; i < importedParts.Length; i++)
+            foreach (var importedPart in importedParts)
             {
-                if (_geometry.Parts.ContainsKey(importedParts[i].Name))
-                    importedParts[i].Color = _geometry.Parts[importedParts[i].Name].Color;
+                if (_geometry.Parts.ContainsKey(importedPart.Name) && _mesh.Parts.ContainsKey(importedPart.Name))
+                    _mesh.Parts[importedPart.Name].Color = _geometry.Parts[importedPart.Name].Color;
             }
         }
         public void ImportGeneratedRemeshFromMeshFile(string fileName, int[] elementIds, BasePart part,

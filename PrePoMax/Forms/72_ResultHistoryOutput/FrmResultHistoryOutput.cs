@@ -123,12 +123,8 @@ namespace PrePoMax.Forms
             if (ResultHistoryOutput.RegionType == RegionTypeEnum.Selection &&
                 (ResultHistoryOutput.CreationIds == null || ResultHistoryOutput.CreationIds.Length == 0))
                 throw new CaeException("The history output must contain at least one item.");
-            //
-            if ((_historyOutputToEditName == null &&
-                 _historyOutputSetNames.Contains(ResultHistoryOutput.Name)) ||   // named to existing name
-                (ResultHistoryOutput.Name != _historyOutputToEditName &&
-                 _historyOutputSetNames.Contains(ResultHistoryOutput.Name)))     // renamed to existing name
-                throw new CaeException("The selected history output name already exists.");            
+            // Check if the name exists
+            CheckName(_historyOutputToEditName, ResultHistoryOutput.Name, _historyOutputSetNames, "history output");
             // Create
             if (_historyOutputToEditName == null)
             {

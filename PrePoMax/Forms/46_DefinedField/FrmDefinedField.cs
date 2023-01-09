@@ -135,12 +135,8 @@ namespace PrePoMax.Forms
                 else if (dt.Type == DefinedTemperatureTypeEnum.FromFile && dt.FileName == null && dt.FileName.Length == 0)
                     throw new CaeException("The file name to read the temperature from is missing.");
             }
-            //
-            if ((_definedFieldToEditName == null &&
-                 _definedFieldNames.Contains(DefinedField.Name)) ||   // named to existing name
-                (DefinedField.Name != _definedFieldToEditName &&
-                 _definedFieldNames.Contains(DefinedField.Name)))     // renamed to existing name
-                throw new CaeException("The selected defined field name already exists.");
+            // Check if the name exists
+            CheckName(_definedFieldToEditName, DefinedField.Name, _definedFieldNames, "defined field");
             // Create
             if (_definedFieldToEditName == null)
             {

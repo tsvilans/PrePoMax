@@ -290,9 +290,9 @@ namespace PrePoMax.Forms
         }
         public void Add()
         {
-            if ((_surfaceInteractionToEditName == null && _surfraceInteractionNames.Contains(tbName.Text)) ||           // Create
-                    (tbName.Text != _surfaceInteractionToEditName && _surfraceInteractionNames.Contains(tbName.Text)))  // Edit
-                throw new CaeException("The selected surface interaction name already exists.");
+            // Check if the name exists
+            UserControls.FrmProperties.CheckName(_surfaceInteractionToEditName, tbName.Text, _surfraceInteractionNames,
+                                                 "surface interaction");
             //
             Friction friction = null;
             SurfaceBehavior surfaceBehavior = null;

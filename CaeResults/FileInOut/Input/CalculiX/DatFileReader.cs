@@ -46,14 +46,15 @@ namespace CaeResults
                 //
                 List<string> dataSetNames = new List<string>();
                 // Nodal                                                                
-                dataSetNames.Add(HOFieldNames.Displacements);                
+                dataSetNames.Add(HOFieldNames.Displacements);
+                dataSetNames.Add(HOFieldNames.Velocities);
                 dataSetNames.Add(HOFieldNames.Forces);
                 dataSetNames.Add(HOFieldNames.TotalForce);
                 dataSetNames.Add(HOFieldNames.Stresses);
                 dataSetNames.Add(HOFieldNames.Strains);
                 dataSetNames.Add(HOFieldNames.MechanicalStrains);
                 dataSetNames.Add(HOFieldNames.EquivalentPlasticStrains);
-                dataSetNames.Add(HOFieldNames.InternalEnergyDensity);                
+                dataSetNames.Add(HOFieldNames.InternalEnergyDensity);
                 // Thermal
                 dataSetNames.Add(HOFieldNames.Temperatures);
                 dataSetNames.Add(HOFieldNames.HeatGeneration);
@@ -273,6 +274,12 @@ namespace CaeResults
                                 //displacements (vx,vy,vz) for set NODESET-1 and time  0.1000000E+01
                                 //       310 -2.462709E-03 -6.331758E-04 -4.384750E-05
                                 lines[0] = lines[0].Replace("(vx,vy,vz)", "(Id,U1,U2,U3)");
+                            }
+                            else if (name == HOFieldNames.Velocities)
+                            {
+                                //velocities (vx,vy,vz) for set INTERNAL_SELECTION-1_NH_OUTPUT-1 and time  0.8102399E-05
+                                //       40  1.162032E-17 -7.948453E-02 -8.204195E-18
+                                lines[0] = lines[0].Replace("(vx,vy,vz)", "(Id,V1,V2,V3)");
                             }
                             else if (name ==HOFieldNames.Forces)
                             {

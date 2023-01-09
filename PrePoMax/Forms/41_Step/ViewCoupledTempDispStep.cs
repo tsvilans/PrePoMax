@@ -19,9 +19,14 @@ namespace PrePoMax
         
 
         // Constructors                                                                                                             
-        public ViewCoupledTempDispStep(CaeModel.UncoupledTempDispStep step)
-            : base(step)
+        public ViewCoupledTempDispStep(CaeModel.UncoupledTempDispStep step, bool installProvider = true)
+            : base(step, false)
         {
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -29,6 +34,14 @@ namespace PrePoMax
         public override CaeModel.Step GetBase()
         {
             return _heatTransferStep;
+        }
+        public override void InstallProvider()
+        {
+            base.InstallProvider();
+        }
+        public override void UpdateVisibility()
+        {
+            base.UpdateVisibility();
         }
     }
 }

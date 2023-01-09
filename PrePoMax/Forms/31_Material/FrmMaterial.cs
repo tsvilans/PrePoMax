@@ -498,9 +498,8 @@ namespace PrePoMax.Forms
         }
         public void Add()
         {
-            if ((_materialToEditName == null && _materialNames.Contains(tbName.Text)) ||            // create
-                    (tbName.Text != _materialToEditName && _materialNames.Contains(tbName.Text)))   // edit
-                throw new CaeException("The selected material name already exists.");
+            // Check if the name exists
+            UserControls.FrmProperties.CheckName(_materialToEditName, tbName.Text, _materialNames, "material");
             //
             _material = new Material(tbName.Text);
             _material.Description = tbDescription.Text;

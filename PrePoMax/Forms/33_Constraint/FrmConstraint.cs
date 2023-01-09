@@ -212,10 +212,8 @@ namespace PrePoMax.Forms
                 var tmp = new Tie(tie.Name, tie.MasterRegionName, tie.MasterRegionType,
                                   tie.SlaveRegionName, tie.SlaveRegionType, twoD);
             }
-            //
-            if ((_constraintToEditName == null && _constraintNames.Contains(Constraint.Name)) ||            // named to existing name
-                (Constraint.Name != _constraintToEditName && _constraintNames.Contains(Constraint.Name)))   // renamed to existing name
-                throw new CaeException("The selected constraint name already exists.");
+            // Check if the name exists
+            CheckName(_constraintToEditName, Constraint.Name, _constraintNames, "constraint");
             // Create
             if (_constraintToEditName == null)
             {

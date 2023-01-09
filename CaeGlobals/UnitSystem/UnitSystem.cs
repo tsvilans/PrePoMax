@@ -52,7 +52,7 @@ namespace CaeGlobals
         // Derived units
         private AreaUnit _areaUnit;
         private VolumeUnit _volumeUnit;
-        private SpeedUnit _speedUnit;
+        private SpeedUnit _velocityUnit;
         private RotationalSpeedUnit _rotationalSpeedUnit;
         private AccelerationUnit _accelerationUnit;
         private ForceUnit _forceUnit;
@@ -146,12 +146,12 @@ namespace CaeGlobals
                 else return Volume.GetAbbreviation(_volumeUnit);
             }
         }
-        public string SpeedUnitAbbreviation
+        public string VelocityUnitAbbreviation
         {
             get
             {
-                if ((int)_speedUnit == MyUnit.NoUnit) return "";
-                else return Speed.GetAbbreviation(_speedUnit);
+                if ((int)_velocityUnit == MyUnit.NoUnit) return "";
+                else return Speed.GetAbbreviation(_velocityUnit);
             }
         }
         public string RotationalSpeedUnitAbbreviation
@@ -368,7 +368,7 @@ namespace CaeGlobals
                     // Derived
                     _areaUnit = (AreaUnit)MyUnit.NoUnit;
                     _volumeUnit = (VolumeUnit)MyUnit.NoUnit;
-                    _speedUnit = (SpeedUnit)MyUnit.NoUnit;
+                    _velocityUnit = (SpeedUnit)MyUnit.NoUnit;
                     _rotationalSpeedUnit = (RotationalSpeedUnit)MyUnit.NoUnit;
                     _accelerationUnit = (AccelerationUnit)MyUnit.NoUnit;
                     _forceUnit = (ForceUnit)MyUnit.NoUnit;
@@ -397,7 +397,7 @@ namespace CaeGlobals
                     // Derived
                     _areaUnit = AreaUnit.SquareMeter;
                     _volumeUnit = VolumeUnit.CubicMeter;
-                    _speedUnit = SpeedUnit.MeterPerSecond;
+                    _velocityUnit = SpeedUnit.MeterPerSecond;
                     _rotationalSpeedUnit = RotationalSpeedUnit.RadianPerSecond;
                     _accelerationUnit = AccelerationUnit.MeterPerSecondSquared;
                     _forceUnit = ForceUnit.Newton;
@@ -425,7 +425,7 @@ namespace CaeGlobals
                     // Derived
                     _areaUnit = AreaUnit.SquareMillimeter;
                     _volumeUnit = VolumeUnit.CubicMillimeter;
-                    _speedUnit = SpeedUnit.MillimeterPerSecond;
+                    _velocityUnit = SpeedUnit.MillimeterPerSecond;
                     _rotationalSpeedUnit = RotationalSpeedUnit.RadianPerSecond;
                     _accelerationUnit = AccelerationUnit.MillimeterPerSecondSquared;
                     _forceUnit = ForceUnit.Newton;
@@ -453,7 +453,7 @@ namespace CaeGlobals
                     // Derived
                     _areaUnit = AreaUnit.SquareMeter;
                     _volumeUnit = VolumeUnit.CubicMeter;
-                    _speedUnit = SpeedUnit.MeterPerSecond;
+                    _velocityUnit = SpeedUnit.MeterPerSecond;
                     _rotationalSpeedUnit = RotationalSpeedUnit.RadianPerSecond;
                     _accelerationUnit = AccelerationUnit.MeterPerSecondSquared;
                     _forceUnit = ForceUnit.Kilonewton;
@@ -481,7 +481,7 @@ namespace CaeGlobals
                     // Derived
                     _areaUnit = AreaUnit.SquareInch;
                     _volumeUnit = VolumeUnit.CubicInch;
-                    _speedUnit = SpeedUnit.InchPerSecond;
+                    _velocityUnit = SpeedUnit.InchPerSecond;
                     _rotationalSpeedUnit = RotationalSpeedUnit.RadianPerSecond;
                     _accelerationUnit = AccelerationUnit.InchPerSecondSquared;
                     _forceUnit = ForceUnit.PoundForce;
@@ -524,6 +524,7 @@ namespace CaeGlobals
             StringAreaConverter.SetUnit = AreaUnitAbbreviation;
             StringVolumeConverter.SetUnit = VolumeUnitAbbreviation;
             StringRotationalSpeedConverter.SetUnit = RotationalSpeedUnitAbbreviation;
+            StringVelocityConverter.SetUnit = VelocityUnitAbbreviation;
             StringAccelerationConverter.SetUnit = AccelerationUnitAbbreviation;
             StringForceConverter.SetUnit = ForceUnitAbbreviation;
             StringForcePerLenghtConverter.SetUnit = ForcePerLengthUnitAbbreviation;

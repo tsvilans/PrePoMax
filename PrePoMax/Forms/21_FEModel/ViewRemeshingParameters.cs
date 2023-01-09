@@ -89,14 +89,14 @@ namespace PrePoMax.Forms
             regionTypePropertyNamePairs.Add(RegionTypeEnum.Selection, nameof(SelectionHidden));
             regionTypePropertyNamePairs.Add(RegionTypeEnum.ElementSetName, nameof(ElementSetName));
             //
-            base.SetBase(_parameters, regionTypePropertyNamePairs);
-            base.DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
+            SetBase(_parameters, regionTypePropertyNamePairs);
+            DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             // Category sorting
-            base.DynamicCustomTypeDescriptor.CategorySortOrder = CustomSortOrder.AscendingById;
-            base.DynamicCustomTypeDescriptor.PropertySortOrder = CustomSortOrder.AscendingById;    // seems not to work
+            DynamicCustomTypeDescriptor.CategorySortOrder = CustomSortOrder.AscendingById;
+            DynamicCustomTypeDescriptor.PropertySortOrder = CustomSortOrder.AscendingById;    // seems not to work
             // Now lets display Yes/No instead of True/False
-            base.DynamicCustomTypeDescriptor.RenameBooleanPropertyToYesNo(nameof(SecondOrder));
-            base.DynamicCustomTypeDescriptor.RenameBooleanPropertyToYesNo(nameof(KeepModelEdges));
+            DynamicCustomTypeDescriptor.RenameBooleanPropertyToYesNo(nameof(SecondOrder));
+            DynamicCustomTypeDescriptor.RenameBooleanPropertyToYesNo(nameof(KeepModelEdges));
         }
 
 
@@ -110,7 +110,7 @@ namespace PrePoMax.Forms
             Dictionary<RegionTypeEnum, string[]> regionTypeListItemsPairs = new Dictionary<RegionTypeEnum, string[]>();
             regionTypeListItemsPairs.Add(RegionTypeEnum.Selection, new string[] { "Hidden" });
             regionTypeListItemsPairs.Add(RegionTypeEnum.ElementSetName, elementSetNames);
-            base.PopulateDropDownLists(regionTypeListItemsPairs);
+            PopulateDropDownLists(regionTypeListItemsPairs);
         }
         public override void UpdateRegionVisibility()
         {
@@ -119,7 +119,7 @@ namespace PrePoMax.Forms
             CustomPropertyDescriptor cpd;
             if (base.RegionType == RegionTypeEnum.Selection.ToFriendlyString())
             {
-                cpd = base.DynamicCustomTypeDescriptor.GetProperty(nameof(SelectionHidden));
+                cpd = DynamicCustomTypeDescriptor.GetProperty(nameof(SelectionHidden));
                 cpd.SetIsBrowsable(false);
             }
         }

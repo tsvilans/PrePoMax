@@ -1325,6 +1325,10 @@ namespace vtkControl
                 }
             }
             // Pick actor by hardware rendering - render the sceene before Pick
+            //_overlayRenderer.Render();
+            //_propPicker.Pick(x, y, 0, _overlayRenderer);
+            //pickedActor = _propPicker.GetActor();
+            //
             _renderer.Render();
             _propPicker.Pick(x, y, 0, _renderer);
             pickedActor = _propPicker.GetActor();
@@ -3056,7 +3060,7 @@ namespace vtkControl
             ApplySymbolFormatingToActor(actor);
             AddActorGeometry(actor, data.Layer);
             //
-            if (_drawSymbolEdges) AddSymbolEdges(data, glyph.GetOutputPort());
+            if (_drawSymbolEdges || data.BackfaceColor != null) AddSymbolEdges(data, glyph.GetOutputPort());
         }
         public void AddOrientedDisplacementConstraintActor(vtkMaxActorData data, double symbolSize)
         {
@@ -3725,8 +3729,20 @@ namespace vtkControl
             mapper.SetInputConnection(silhouette.GetOutputPort());
             // Actor
             data.Name += Globals.NameSeparator + "silhouette";
+            bool pickable = data.Pickable;
+            data.Pickable = false;
             vtkMaxActor actor = new vtkMaxActor(data, mapper);
-            actor.GeometryProperty.SetLineWidth(1f);
+            data.Pickable = pickable;
+            // Backface color is used for reference points
+            if (data.BackfaceColor != null)
+            {
+                actor.Color = data.BackfaceColor;
+                actor.GeometryProperty.SetLineWidth(1.5f);
+            }
+            else
+            {
+                actor.GeometryProperty.SetLineWidth(1f);
+            }
             // Add
             AddActorGeometry(actor, data.Layer);
         }        
@@ -3763,7 +3779,12 @@ namespace vtkControl
                 _overlayActors.Add(actor.Name, actor.Geometry);
                 _overlayRenderer.AddActor(actor.Geometry);
                 //
-                actor.Geometry.PickableOff();
+                if (actor.Geometry.GetPickable() == 1)
+                {
+                    if (actor.CellLocator != null) _cellPicker.AddLocator(actor.CellLocator);
+                    _propPicker.AddPickList(actor.Geometry);
+                }
+                else actor.Geometry.PickableOff();
             }
             else if (layer == vtkRendererLayer.Selection)
             {

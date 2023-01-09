@@ -32,7 +32,7 @@ namespace FileInOut.Output.Calculix
             if (_globalResultsFileName != null)
                 return string.Format("*Submodel, Type=Node, Input=\"{0}\"{1}", _globalResultsFileName.ToUTF8(), Environment.NewLine);
             else
-                throw new CaeException("The input file name of the submodel model is missing.");
+                throw new CaeException("The file with the global result is not defined (Model -> Edit)");
         }
 
         public override string GetDataString()

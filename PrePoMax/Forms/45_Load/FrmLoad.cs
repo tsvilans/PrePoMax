@@ -304,10 +304,8 @@ namespace PrePoMax.Forms
             _viewLoad = (ViewLoad)propertyGrid.SelectedObject;
             //
             if (_viewLoad == null) throw new CaeException("No load selected.");
-            //
-            if ((_loadToEditName == null && _loadNames.Contains(FELoad.Name)) ||        // named to existing name
-                (FELoad.Name != _loadToEditName && _loadNames.Contains(FELoad.Name)))   // renamed to existing name
-                throw new CaeException("The selected load name already exists.");
+            // Check if the name exists
+            CheckName(_loadToEditName, FELoad.Name, _loadNames, "load");
             //
             if (FELoad.RegionType == RegionTypeEnum.Selection &&
                 (FELoad.CreationIds == null || FELoad.CreationIds.Length == 0))

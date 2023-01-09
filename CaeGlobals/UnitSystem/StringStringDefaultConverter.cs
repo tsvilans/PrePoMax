@@ -45,10 +45,8 @@ namespace CaeGlobals
         {
             if (value.GetType() == typeof(string))
             {
-                string newVal;
-                if (String.Equals(value, _default)) newVal = null;
-                else newVal = (string)value;
-                return newVal;
+                if (String.Equals(value, _default)) return null;
+                else return value;
             }
             else return base.ConvertFrom(context, culture, value);
         }

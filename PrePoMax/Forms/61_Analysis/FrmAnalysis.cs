@@ -61,10 +61,8 @@ namespace PrePoMax.Forms
             try
             {
                 _viewJob = (ViewJob)propertyGrid.SelectedObject;
-                //
-                if ((_jobToEditName == null && _jobNames.Contains(_viewJob.Name)) ||                // named to existing name
-                    (_viewJob.Name != _jobToEditName && _jobNames.Contains(_viewJob.Name)))         // renamed to existing name
-                    throw new CaeException("The selected analysis name already exists.");
+                // Check if the name exists
+                UserControls.FrmProperties.CheckName(_jobToEditName, _viewJob.Name, _jobNames, "analysis");
                 //
                 if (_jobToEditName == null)
                 {

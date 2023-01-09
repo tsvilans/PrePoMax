@@ -245,6 +245,7 @@ namespace UserControls
         public event Action<string[]> SetTransparencyEvent;
         public event Action<NamedClass[], bool> ColorContoursVisibilityEvent;
         public event Action<string> RunEvent;
+        public event Action<string> CheckModelEvent;
         public event Action<string> MonitorEvent;
         public event Action<string> ResultsEvent;
         public event Action<string> KillEvent;
@@ -499,6 +500,7 @@ namespace UserControls
             visible = menuFields.Run == n;
             tsmiSpaceAnalysis.Visible = visible && oneAboveVisible;
             tsmiRun.Visible = visible;
+            tsmiCheckModel.Visible = visible;
             tsmiMonitor.Visible = visible;
             tsmiResults.Visible = visible;
             tsmiKill.Visible = visible;
@@ -790,7 +792,7 @@ namespace UserControls
         {
             CodersLabTreeView tree = GetActiveTree();
             //
-            //if (tree.Focused)
+            //if (tree.Focused) // Disable since called from FrmMain.KeyboardHook_KeyDown
             {
                 if (e.KeyCode == Keys.Delete)
                 {
@@ -1335,12 +1337,30 @@ namespace UserControls
             {
                 CodersLabTreeView tree = GetActiveTree();
                 if (tree.SelectedNodes.Count != 1) return;
-
+                //
                 TreeNode selectedNode = tree.SelectedNodes[0];
-
+                //
                 if (selectedNode.Tag == null) return;
-
+                //
                 RunEvent?.Invoke(selectedNode.Name);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        private void tsmiCheckModel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                CodersLabTreeView tree = GetActiveTree();
+                if (tree.SelectedNodes.Count != 1) return;
+                //
+                TreeNode selectedNode = tree.SelectedNodes[0];
+                //
+                if (selectedNode.Tag == null) return;
+                //
+                CheckModelEvent?.Invoke(selectedNode.Name);
             }
             catch (Exception ex)
             {
@@ -2828,5 +2848,7 @@ namespace UserControls
                 cmsTree.Show(control, x, y);
             }
         }
+
+        
     }
 }

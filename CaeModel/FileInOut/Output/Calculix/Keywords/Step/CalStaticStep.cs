@@ -35,6 +35,7 @@ namespace FileInOut.Output.Calculix
         }
         public override string GetDataString()
         {
+            string data = "";
             if (_step.IncrementationType != IncrementationTypeEnum.Default)
             {
                 string minMax = "";
@@ -42,10 +43,12 @@ namespace FileInOut.Output.Calculix
                     minMax = string.Format(", {0}, {1}", _step.MinTimeIncrement.ToCalculiX16String(),
                                            _step.MaxTimeIncrement.ToCalculiX16String());
                 //
-                return string.Format("{0}, {1}{2}{3}", _step.InitialTimeIncrement.ToCalculiX16String(),
+                data = string.Format("{0}, {1}{2}{3}", _step.InitialTimeIncrement.ToCalculiX16String(),
                                      _step.TimePeriod.ToCalculiX16String(), minMax, Environment.NewLine);
             }
-            else return "";
+            //
+            if (!_step.RunAnalysis) data += "*No Analysis" + Environment.NewLine;
+            return data;
         }
     }
 }

@@ -166,10 +166,8 @@ namespace PrePoMax.Forms
             if (propertyGrid.SelectedObject == null) throw new CaeException("No item selected.");
             //
             _viewAmplitude = (ViewAmplitude)propertyGrid.SelectedObject;
-            //
-            if ((_amplitudeToEditName == null && _amplitudeNames.Contains(_viewAmplitude.Name)) ||              // create
-               (_viewAmplitude.Name != _amplitudeToEditName && _amplitudeNames.Contains(_viewAmplitude.Name)))  // rename
-                throw new CaeException("The selected amplitude name already exists.");
+            // Check if the name exists
+            CheckName(_amplitudeToEditName, _viewAmplitude.Name, _amplitudeNames, "amplitude");
             // Create
             if (_amplitudeToEditName == null)
             {

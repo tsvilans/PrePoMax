@@ -23,7 +23,7 @@ namespace CaeModel
 
         // Constructors                                                                                                             
         public InitialTemperature(string name, string regionName, RegionTypeEnum regionType)
-            : base(name, regionName, regionType)
+            : base(name, regionName, regionType, false)
         {
             _temperature = 0;
         }
@@ -62,7 +62,7 @@ namespace CaeModel
             for (int i = 0; i < allData.Nodes.Coor.Length; i++) nodeIdsLookUp.Add(allData.Nodes.Ids[i], i);
             FeResults results = new FeResults(resultName);
             results.SetMesh(targetMesh, nodeIdsLookUp);
-            // Add distances
+            // Add group
             FieldData fieldData = new FieldData(FOFieldNames.NdTemp);
             fieldData.GlobalIncrementId = 1;
             fieldData.Type = StepType.Static;

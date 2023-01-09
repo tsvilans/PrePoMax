@@ -11,7 +11,7 @@ namespace PrePoMax.Forms
     class FrmPartProperties : UserControls.FrmProperties, IFormBase
     {
         // Variables                                                                                                                
-        private HashSet<string> _allExistingNames;
+        private HashSet<string> _partNames;
         private string _partToEditName;
         private ViewPartProperties _viewPartProperties;
         private ViewGeometryModelResults _currentView;
@@ -38,7 +38,7 @@ namespace PrePoMax.Forms
             _controller = controller;
             _viewPartProperties = null;
             _currentView = ViewGeometryModelResults.Geometry;
-            _allExistingNames = new HashSet<string>();
+            _partNames = new HashSet<string>();
 
             _addNew = false;
 
@@ -79,10 +79,7 @@ namespace PrePoMax.Forms
         {
             _viewPartProperties = (ViewPartProperties)propertyGrid.SelectedObject;
             // Check if the name exists
-            if ((_partToEditName == null && _allExistingNames.Contains(_viewPartProperties.Name)) ||    // named to existing name
-                (_viewPartProperties.Name != _partToEditName &&                                         // renamed to existing name
-                _allExistingNames.Contains(_viewPartProperties.Name)))
-                throw new CaeGlobals.CaeException("The name '" + _viewPartProperties.Name + "' already exists.");
+            CheckName(_partToEditName, _viewPartProperties.Name, _partNames, "part");
             //
             if (_partToEditName == null)
             {
@@ -94,9 +91,12 @@ namespace PrePoMax.Forms
                 // Replace
                 if (_propertyItemChanged)
                 {
-                    if (_currentView == ViewGeometryModelResults.Geometry) _controller.ReplaceGeometryPartPropertiesCommand(_partToEditName, PartProperties);
-                    else if (_currentView == ViewGeometryModelResults.Model) _controller.ReplaceModelPartPropertiesCommand(_partToEditName, PartProperties);
-                    else if (_currentView == ViewGeometryModelResults.Results) _controller.ReplaceResultPartProperties(_partToEditName, PartProperties);
+                    if (_currentView == ViewGeometryModelResults.Geometry)
+                        _controller.ReplaceGeometryPartPropertiesCommand(_partToEditName, PartProperties);
+                    else if (_currentView == ViewGeometryModelResults.Model)
+                        _controller.ReplaceModelPartPropertiesCommand(_partToEditName, PartProperties);
+                    else if (_currentView == ViewGeometryModelResults.Results)
+                        _controller.ReplaceResultPartProperties(_partToEditName, PartProperties);
                     else throw new NotSupportedException();
                     //
                     _partToEditName = PartProperties.Name;    // to enable next apply
@@ -109,17 +109,17 @@ namespace PrePoMax.Forms
             _controller.SetSelectByToOff();
             //
             _propertyItemChanged = false;
-            _allExistingNames.Clear();
+            _partNames.Clear();
             _partToEditName = null;
             _viewPartProperties = null;
             //
             if (_currentView == ViewGeometryModelResults.Geometry || _currentView == ViewGeometryModelResults.Model)
             {
-                _allExistingNames.UnionWith(_controller.GetGeometryPartNames());
-                _allExistingNames.UnionWith(_controller.GetAllMeshEntityNames());
+                _partNames.UnionWith(_controller.GetGeometryPartNames());
+                _partNames.UnionWith(_controller.GetAllMeshEntityNames());
             }
             else if (_currentView == ViewGeometryModelResults.Results)
-                _allExistingNames.UnionWith(_controller.GetResultPartNames());
+                _partNames.UnionWith(_controller.GetResultPartNames());
             else
                 throw new NotSupportedException();
             //

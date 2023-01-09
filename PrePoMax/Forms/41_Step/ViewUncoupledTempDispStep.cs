@@ -19,10 +19,14 @@ namespace PrePoMax
         
 
         // Constructors                                                                                                             
-        public ViewUncoupledTempDispStep(CaeModel.UncoupledTempDispStep step)
-            : base(step)
+        public ViewUncoupledTempDispStep(CaeModel.UncoupledTempDispStep step, bool installProvider = true)
+            : base(step, false)
         {
-            _dctd.GetProperty(nameof(Nlgeom)).SetIsBrowsable(true);
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -30,6 +34,16 @@ namespace PrePoMax
         public override CaeModel.Step GetBase()
         {
             return _heatTransferStep;
+        }
+        public override void InstallProvider()
+        {
+            base.InstallProvider();
+        }
+        public override void UpdateVisibility()
+        {
+            base.UpdateVisibility();
+            //
+            _dctd.GetProperty(nameof(Nlgeom)).SetIsBrowsable(true);
         }
     }
 }

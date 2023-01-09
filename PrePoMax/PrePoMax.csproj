@@ -351,6 +351,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\38_InitialConditions\ViewInitialCondition.cs" />
+    <Compile Include="Forms\38_InitialConditions\ViewInitialVelocity.cs" />
     <Compile Include="Forms\38_InitialConditions\ViewInitialTemperature.cs" />
     <Compile Include="Forms\37_Amplitude\AmplitudeDataPoint.cs" />
     <Compile Include="Forms\37_Amplitude\FrmAmplitude.cs">

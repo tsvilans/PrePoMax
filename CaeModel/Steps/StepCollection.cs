@@ -173,7 +173,8 @@ namespace CaeModel
         public OrderedDictionary<int, double> GetStepIdDuration()
         {
             int count = 1;  // start at 1
-            OrderedDictionary<int, double> stepIdDuration = new OrderedDictionary<int, double>("Step id - duration");
+            OrderedDictionary<int, double> stepIdDuration =
+                new OrderedDictionary<int, double>("Step id - duration");
             //
             foreach (var step in _steps)
             {
@@ -185,6 +186,15 @@ namespace CaeModel
             }
             //
             return stepIdDuration;
+        }
+        // Run or check analysis
+        public void SetRunAnalysis()
+        {
+            foreach (Step step in _steps) step.RunAnalysis = true;
+        }
+        public void SetCheckModel()
+        {
+            foreach (Step step in _steps) step.RunAnalysis = false;
         }
         // History
         public void AddHistoryOutput(HistoryOutput historyOutput, string stepName)

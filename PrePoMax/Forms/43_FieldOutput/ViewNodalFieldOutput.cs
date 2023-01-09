@@ -20,11 +20,13 @@ namespace PrePoMax
         RF = 1,
         [StandardValue("U", Description = "Displacements.")]
         U = 2,
+        [StandardValue("V", Description = "Velocities.")]
+        V = 4,
         // Thermal
         [StandardValue("NT", Description = "Temperatures.")]
-        NT = 4,
+        NT = 8,
         [StandardValue("RFL", Description = "External concentrated heat sources.")]
-        RFL = 8
+        RFL = 16
     }
 
     [Serializable]

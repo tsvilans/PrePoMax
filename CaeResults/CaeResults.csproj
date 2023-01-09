@@ -85,10 +85,10 @@
     <Compile Include="HistoryOutputs\HistoryResultEntries.cs" />
     <Compile Include="FieldOutput\FieldComponent.cs" />
     <Compile Include="FieldOutput\FieldData.cs" />
-    <Compile Include="FileInOut\Input\Frd\DatDataSet.cs" />
-    <Compile Include="FileInOut\Input\Frd\FrdFeDescriptorId.cs" />
-    <Compile Include="FileInOut\Input\Frd\DatFileReader.cs" />
-    <Compile Include="FileInOut\Input\Frd\FrdFileReader.cs" />
+    <Compile Include="FileInOut\Input\CalculiX\DatDataSet.cs" />
+    <Compile Include="FileInOut\Input\CalculiX\FrdFeDescriptorId.cs" />
+    <Compile Include="FileInOut\Input\CalculiX\DatFileReader.cs" />
+    <Compile Include="FileInOut\Input\CalculiX\FrdFileReader.cs" />
     <Compile Include="HistoryOutputs\ResultHistoryOutput.cs" />
     <Compile Include="HistoryOutputs\ResultHistoryOutputFromField.cs" />
     <Compile Include="Interpolator\Plane.cs" />

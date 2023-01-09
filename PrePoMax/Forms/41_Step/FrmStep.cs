@@ -31,12 +31,13 @@ namespace PrePoMax.Forms
                     _viewStep = new ViewSlipWearStep(sws.DeepClone());
                 else if (value is BoundaryDisplacementStep bds)
                     _viewStep = new ViewBoundaryDisplacementStep(bds.DeepClone());
-                else if (value.GetType() == typeof(DynamicStep))    // use this form due to inheritance
-                    _viewStep = new ViewDynamicStep((value as DynamicStep).DeepClone());
                 else if (value is FrequencyStep fs)
                     _viewStep = new ViewFrequencyStep(fs.DeepClone());
                 else if (value is BuckleStep bs)
                     _viewStep = new ViewBuckleStep(bs.DeepClone());
+                else if (value.GetType() == typeof(DynamicStep))    // use this form due to inheritance
+                    _viewStep = new ViewDynamicStep((value as DynamicStep).DeepClone());
+                // Thermal
                 else if (value.GetType() == typeof(HeatTransferStep))   // use this form due to inheritance
                     _viewStep = new ViewHeatTransferStep((value as HeatTransferStep).DeepClone());
                 else if (value.GetType() == typeof(UncoupledTempDispStep))  // use this form due to inheritance
@@ -119,10 +120,8 @@ namespace PrePoMax.Forms
             _viewStep = (ViewStep)propertyGrid.SelectedObject;
             //
             if (_viewStep == null) throw new CaeException("No step selected.");
-            //
-            if ((_stepToEditName == null && _stepNames.Contains(Step.Name)) ||              // create
-                (Step.Name != _stepToEditName && _stepNames.Contains(Step.Name)))           // edit
-                throw new CaeException("The selected step name already exists.");
+            // Check if the name exists
+            CheckName(_stepToEditName, Step.Name, _stepNames, "step");
             // Create
             if (_stepToEditName == null)
             {
@@ -193,9 +192,9 @@ namespace PrePoMax.Forms
             bool addStaticStep = false;
             bool addSlipWearStep = false;
             bool addBoundaryDisplacementStep = false;
-            bool addDynamicStep = false;
             bool addFrequencyStep = false;
             bool addBuckleStep = false;
+            bool addDynamicStep = false;
             bool addHeatTransferStep = false;
             bool addUncoupledTemDispStep = false;
             bool addCoupledTemDispStep = false;
@@ -267,15 +266,6 @@ namespace PrePoMax.Forms
                     item.Tag = new ViewBoundaryDisplacementStep(boundaryDisplacementStep);
                     lvTypes.Items.Add(item);
                 }
-                if (addDynamicStep)
-                {
-                    // Dynamic step
-                    item = new ListViewItem("Dynamic step");
-                    DynamicStep dynamicStep = new DynamicStep(GetStepName());
-                    dynamicStep.SolverType = defaultSolverType;
-                    item.Tag = new ViewDynamicStep(dynamicStep);
-                    lvTypes.Items.Add(item);
-                }
                 if (addFrequencyStep)
                 {
                     // Frequency step
@@ -292,6 +282,15 @@ namespace PrePoMax.Forms
                     BuckleStep buckleStep = new BuckleStep(GetStepName());
                     buckleStep.SolverType = defaultSolverType;
                     item.Tag = new ViewBuckleStep(buckleStep);
+                    lvTypes.Items.Add(item);
+                }
+                if (addDynamicStep)
+                {
+                    // Dynamic step
+                    item = new ListViewItem("Dynamic step");
+                    DynamicStep dynamicStep = new DynamicStep(GetStepName());
+                    dynamicStep.SolverType = defaultSolverType;
+                    item.Tag = new ViewDynamicStep(dynamicStep);
                     lvTypes.Items.Add(item);
                 }
                 if (addHeatTransferStep)

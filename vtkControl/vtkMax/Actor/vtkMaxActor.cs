@@ -274,10 +274,12 @@ namespace vtkControl
         public vtkMaxActor(vtkMaxActorData data, bool extractVisualizationSurface, bool createNodalActor)
             : this()
         {
-            this._name = data.Name;            
+            this._name = data.Name;
             //
             if ((data.Geometry.Cells.CellNodeIds == null && data.Geometry.Nodes.Coor != null) || createNodalActor)
+            {
                 CreateNodalActor(data);
+            }
             else
             {
                 if (extractVisualizationSurface) CreateFromDataByVisualizationSurfaceExtraction(data);

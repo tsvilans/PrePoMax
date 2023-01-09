@@ -30,15 +30,16 @@ namespace PrePoMax
 
 
         // Constructors                                                                                                             
-        public ViewHeatTransferStep(CaeModel.HeatTransferStep step)
+        public ViewHeatTransferStep(CaeModel.HeatTransferStep step, bool installProvider = true)
             : base(step, false)
         {
             _heatTransferStep = step;
-            InstallProvider();
             //
-            _dctd.RenameBooleanPropertyToOnOff(nameof(SteadyState));
-            //
-            _dctd.GetProperty(nameof(Nlgeom)).SetIsBrowsable(false);
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -47,9 +48,17 @@ namespace PrePoMax
         {
             return _heatTransferStep;
         }
+        public override void InstallProvider()
+        {
+            base.InstallProvider();
+            //
+            _dctd.RenameBooleanPropertyToOnOff(nameof(SteadyState));
+        }
         public override void UpdateVisibility()
         {
             base.UpdateVisibility();
+            //
+            _dctd.GetProperty(nameof(Nlgeom)).SetIsBrowsable(false);
         }
     }
 }

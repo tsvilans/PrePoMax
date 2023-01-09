@@ -8,6 +8,7 @@ using CaeMesh;
 using CaeGlobals;
 using CaeModel;
 using FileInOut.Output.Calculix;
+using System.Reflection;
 
 namespace FileInOut.Input
 {
@@ -138,16 +139,18 @@ namespace FileInOut.Input
                     }
                 }
                 //
-
-                OrderedDictionary<string, FeReferencePoint> referencePoints = new OrderedDictionary<string, FeReferencePoint>("Reference points");
-                OrderedDictionary<string, Material> materials = new OrderedDictionary<string, Material>("Materials");
-                OrderedDictionary<string, Section> sections = new OrderedDictionary<string, Section>("Sections");
-                OrderedDictionary<string, Constraint> constraints = new OrderedDictionary<string, Constraint>("Constraints");
+                StringComparer sc = StringComparer.OrdinalIgnoreCase;
+                //
+                OrderedDictionary<string, FeReferencePoint> referencePoints
+                    = new OrderedDictionary<string, FeReferencePoint>("Reference points", sc);
+                OrderedDictionary<string, Material> materials = new OrderedDictionary<string, Material>("Materials", sc);
+                OrderedDictionary<string, Section> sections = new OrderedDictionary<string, Section>("Sections", sc);
+                OrderedDictionary<string, Constraint> constraints = new OrderedDictionary<string, Constraint>("Constraints", sc);
                 OrderedDictionary<string, SurfaceInteraction> surfaceInteractions = 
-                    new OrderedDictionary<string, SurfaceInteraction>("Surface interactions");
-                OrderedDictionary<string, ContactPair> contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs");
-                OrderedDictionary<string, Amplitude> amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes");
-                OrderedDictionary<string, Step> steps = new OrderedDictionary<string, Step>("Steps");
+                    new OrderedDictionary<string, SurfaceInteraction>("Surface interactions", sc);
+                OrderedDictionary<string, ContactPair> contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
+                OrderedDictionary<string, Amplitude> amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
+                OrderedDictionary<string, Step> steps = new OrderedDictionary<string, Step>("Steps", sc);
                 List<CalculixUserKeyword> userKeywords = new List<CalculixUserKeyword>();
                 //
                 for (int i = 0; i < dataSets.Length; i++)
@@ -275,7 +278,6 @@ namespace FileInOut.Input
             if (fileName != null && File.Exists(fileName))
             {
                 string[] lines = Tools.ReadAllLines(fileName);
-                //lines = ReadIncludes(lines, 0, Path.GetDirectoryName(fileName));
                 //
                 string[] dataSet;
                 string[][] dataSets = GetDataSets(lines);
@@ -299,6 +301,48 @@ namespace FileInOut.Input
                 // Remove duplicate elements
                 RemoveDuplicateElements(elements, inpElementTypeSets, out uniqueElements, out elementSets);
             }
+        }
+
+        static public void ReadNam(string fileName, out string[] nodeSetNames, out int[][] nodeIds)
+        {
+            nodeSetNames = null;
+            nodeIds = null;
+            List<string> nodeSetNamesList = new List<string>();
+            List<int[]> nodeIdsLists = new List<int[]>();
+            _errors = new List<string>();
+            //
+            if (fileName != null && File.Exists(fileName))
+            {
+                string[] lines = Tools.ReadAllLines(fileName, true);
+                //
+                string[] dataSet;
+                string[][] dataSets = GetDataSets(lines);
+                //
+                int[] ids;
+                string name;
+                string keyword;
+                FeMesh mesh = new FeMesh(MeshRepresentation.Results);
+                //
+                for (int i = 0; i < dataSets.Length; i++)
+                {
+                    dataSet = dataSets[i];
+                    keyword = dataSet[0].Split(_splitterComma, StringSplitOptions.RemoveEmptyEntries)[0].Trim().ToUpper();
+                    //
+                    if (keyword == "*NSET")
+                    {
+                        GetNodeOrElementSet("NSET", dataSet, mesh, out name, out ids);
+                        if (NamedClass.CheckNameError(name) != null) AddError(NamedClass.CheckNameError(name));
+                        else if (ids != null)
+                        {
+                            nodeSetNamesList.Add(name);
+                            nodeIdsLists.Add(ids);
+                        }
+                    }
+                }
+            }
+            //
+            nodeSetNames = nodeSetNamesList.ToArray();
+            nodeIds = nodeIdsLists.ToArray();
         }
         private static void RemoveDuplicateElements(Dictionary<int, FeElement> elements,
                                                     List<InpElementSet> inpElementTypeSets,

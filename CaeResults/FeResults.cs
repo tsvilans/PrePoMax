@@ -589,7 +589,8 @@ namespace CaeResults
         }
         public static OrderedDictionary<string, string> GetPossibleDeformationFieldOutputNamesMap()
         {
-            OrderedDictionary<string, string> names = new OrderedDictionary<string, string>("Deformation names");
+            OrderedDictionary<string, string> names =
+                new OrderedDictionary<string, string>("Deformation names", StringComparer.OrdinalIgnoreCase);
             names.Add("Displacements", FOFieldNames.Disp);
             names.Add("Forces", FOFieldNames.Forc);
             names.Add("Surface normals", FOFieldNames.SurfaceNormal);
@@ -682,6 +683,10 @@ namespace CaeResults
                     case FOFieldNames.Distance: // Imported pressure
                         unitConverter = new StringLengthConverter();
                         unitAbbreviation = _unitSystem.LengthUnitAbbreviation;
+                        break;
+                    case FOFieldNames.Velo:
+                        unitConverter = new StringVelocityConverter();
+                        unitAbbreviation = _unitSystem.VelocityUnitAbbreviation;
                         break;
                     case FOFieldNames.Stress:
                     case FOFieldNames.Stressi:
@@ -825,6 +830,10 @@ namespace CaeResults
                             unitConverter = new StringLengthConverter();
                             unitAbbreviation = _unitSystem.LengthUnitAbbreviation;
                         }
+                        break;
+                    case HOFieldNames.Velocities:
+                        unitConverter = new StringVelocityConverter();
+                        unitAbbreviation = _unitSystem.VelocityUnitAbbreviation;
                         break;
                     case HOFieldNames.SurfaceArea:
                         unitConverter = new StringAreaConverter();

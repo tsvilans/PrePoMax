@@ -434,6 +434,8 @@ namespace CaeResults
                 case FOFieldNames.Dispi:
                 case FOFieldNames.Forc:
                 case FOFieldNames.Forci:
+                //
+                case FOFieldNames.Velo:
                 // Thermal
                 case FOFieldNames.Flux:
                 // Sensitivity

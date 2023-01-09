@@ -18,7 +18,7 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         [CategoryAttribute("Data")]
-        [OrderedDisplayName(2, 10, "Nlgeom")]
+        [OrderedDisplayName(3, 10, "Nlgeom")]
         [DescriptionAttribute("Enable/disable the nonlinear effects of large deformations and large displacements.")]
         public bool Nlgeom { get { return _staticStep.Nlgeom; } set { _staticStep.Nlgeom = value; } }
         //
@@ -87,7 +87,12 @@ namespace PrePoMax
             : base(step)
         {
             _staticStep = step;
-            if (installProvider) InstallProvider();
+            //
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -96,17 +101,17 @@ namespace PrePoMax
         {
             return _staticStep;
         }
-        protected void InstallProvider()
+        public override void InstallProvider()
         {
-            _dctd = ProviderInstaller.Install(this);
+            base.InstallProvider();
             //
             _dctd.RenameBooleanPropertyToOnOff(nameof(Nlgeom));
             _dctd.RenameBooleanPropertyToOnOff(nameof(Direct));
-            //
-            UpdateVisibility();
         }
         public override void UpdateVisibility()
         {
+            base.UpdateVisibility();
+            //
             _dctd.GetProperty(nameof(Direct)).SetIsBrowsable(false);
             //
             if (_staticStep.IncrementationType == CaeModel.IncrementationTypeEnum.Default)

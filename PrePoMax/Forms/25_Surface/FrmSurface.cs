@@ -12,7 +12,7 @@ namespace PrePoMax.Forms
     class FrmSurface : UserControls.FrmProperties, IFormBase, IFormItemSetDataParent, IFormHighlight
     {
         // Variables                                                                                                                
-        private HashSet<string> _allExistingNames;
+        private HashSet<string> _surfaceNames;
         private string _surfaceToEditName;
         private ViewFeSurface _viewSurface;
         private List<SelectionNode> _prevSelectionNodes;
@@ -35,7 +35,7 @@ namespace PrePoMax.Forms
             //
             _controller = controller;
             _viewSurface = null;
-            _allExistingNames = new HashSet<string>();
+            _surfaceNames = new HashSet<string>();
             //
             SelectionClear = _controller.Selection.Clear;
         }
@@ -83,9 +83,7 @@ namespace PrePoMax.Forms
             //
             if (_viewSurface == null) throw new CaeGlobals.CaeException("No surface was selected.");
             // Check if the name exists
-            if ((_surfaceToEditName == null && _allExistingNames.Contains(Surface.Name)) ||       // named to existing name
-                (Surface.Name != _surfaceToEditName && _allExistingNames.Contains(Surface.Name))) // renamed to existing name
-                throw new CaeException("The selected name already exists.");
+            CheckName(_surfaceToEditName, Surface.Name, _surfaceNames, "surface");
             //
             if (Surface.CreatedFrom == FeSurfaceCreatedFrom.Selection && (Surface.FaceIds == null || Surface.FaceIds.Length == 0))
                 throw new CaeException("The surface must contain at least one item.");
@@ -136,14 +134,14 @@ namespace PrePoMax.Forms
             this.btnOkAddNew.Visible = surfaceToEditName == null;
             //
             _propertyItemChanged = false;
-            _allExistingNames.Clear();
+            _surfaceNames.Clear();
             _surfaceToEditName = null;
             _viewSurface = null;
             propertyGrid.SelectedObject = null;
             _prevSelectionNodes = null;
             _selectionNodeIds = null;
             //
-            _allExistingNames.UnionWith(_controller.GetAllMeshEntityNames());
+            _surfaceNames.UnionWith(_controller.GetAllMeshEntityNames());
             _surfaceToEditName = surfaceToEditName;
             //
             string[] nodeSetNames = _controller.GetUserNodeSetNames();
@@ -201,7 +199,7 @@ namespace PrePoMax.Forms
         // Methods                                                                                                                  
         private string GetSurfaceName()
         {
-            return _allExistingNames.GetNextNumberedKey("Surface");
+            return _surfaceNames.GetNextNumberedKey("Surface");
         }
         private void HighlightSurface()
         {

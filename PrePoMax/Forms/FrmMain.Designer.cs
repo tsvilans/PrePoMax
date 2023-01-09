@@ -365,6 +365,7 @@
             this.tsmiEditAnalysis = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDividerAnalysis1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiRunAnalysis = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiCheckModel = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiMonitorAnalysis = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiResultsAnalysis = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiKillAnalysis = new System.Windows.Forms.ToolStripMenuItem();
@@ -819,7 +820,7 @@
             this.tstbDeformationFactor});
             this.tsDeformationFactor.Location = new System.Drawing.Point(3, 25);
             this.tsDeformationFactor.Name = "tsDeformationFactor";
-            this.tsDeformationFactor.Size = new System.Drawing.Size(622, 25);
+            this.tsDeformationFactor.Size = new System.Drawing.Size(591, 25);
             this.tsDeformationFactor.TabIndex = 8;
             // 
             // tslResultName
@@ -2786,8 +2787,8 @@
             this.tsmiDividerInitialCondition1,
             this.tsmiDeleteInitialCondition});
             this.tsmiInitialCondition.Name = "tsmiInitialCondition";
-            this.tsmiInitialCondition.Size = new System.Drawing.Size(102, 20);
-            this.tsmiInitialCondition.Text = "Initial condition";
+            this.tsmiInitialCondition.Size = new System.Drawing.Size(104, 20);
+            this.tsmiInitialCondition.Text = "Initial Condition";
             // 
             // tsmiCreateInitialCondition
             // 
@@ -3192,6 +3193,7 @@
             this.tsmiEditAnalysis,
             this.tsmiDividerAnalysis1,
             this.tsmiRunAnalysis,
+            this.tsmiCheckModel,
             this.tsmiMonitorAnalysis,
             this.tsmiResultsAnalysis,
             this.tsmiKillAnalysis,
@@ -3204,59 +3206,66 @@
             // tsmiCreateAnalysis
             // 
             this.tsmiCreateAnalysis.Name = "tsmiCreateAnalysis";
-            this.tsmiCreateAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiCreateAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiCreateAnalysis.Text = "Create";
             this.tsmiCreateAnalysis.Click += new System.EventHandler(this.tsmiCreateAnalysis_Click);
             // 
             // tsmiEditAnalysis
             // 
             this.tsmiEditAnalysis.Name = "tsmiEditAnalysis";
-            this.tsmiEditAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiEditAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiEditAnalysis.Text = "Edit";
             this.tsmiEditAnalysis.Click += new System.EventHandler(this.tsmiEditAnalysis_Click);
             // 
             // tsmiDividerAnalysis1
             // 
             this.tsmiDividerAnalysis1.Name = "tsmiDividerAnalysis1";
-            this.tsmiDividerAnalysis1.Size = new System.Drawing.Size(114, 6);
+            this.tsmiDividerAnalysis1.Size = new System.Drawing.Size(177, 6);
             // 
             // tsmiRunAnalysis
             // 
             this.tsmiRunAnalysis.Name = "tsmiRunAnalysis";
-            this.tsmiRunAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiRunAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiRunAnalysis.Text = "Run";
             this.tsmiRunAnalysis.Click += new System.EventHandler(this.tsmiRunAnalysis_Click);
+            // 
+            // tsmiCheckModel
+            // 
+            this.tsmiCheckModel.Name = "tsmiCheckModel";
+            this.tsmiCheckModel.Size = new System.Drawing.Size(180, 22);
+            this.tsmiCheckModel.Text = "Check Model";
+            this.tsmiCheckModel.Click += new System.EventHandler(this.tsmiCheckModel_Click);
             // 
             // tsmiMonitorAnalysis
             // 
             this.tsmiMonitorAnalysis.Name = "tsmiMonitorAnalysis";
-            this.tsmiMonitorAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiMonitorAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiMonitorAnalysis.Text = "Monitor";
             this.tsmiMonitorAnalysis.Click += new System.EventHandler(this.tsmiMonitorAnalysis_Click);
             // 
             // tsmiResultsAnalysis
             // 
             this.tsmiResultsAnalysis.Name = "tsmiResultsAnalysis";
-            this.tsmiResultsAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiResultsAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiResultsAnalysis.Text = "Results";
             this.tsmiResultsAnalysis.Click += new System.EventHandler(this.tsmiResultsAnalysis_Click);
             // 
             // tsmiKillAnalysis
             // 
             this.tsmiKillAnalysis.Name = "tsmiKillAnalysis";
-            this.tsmiKillAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiKillAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiKillAnalysis.Text = "Kill";
             this.tsmiKillAnalysis.Click += new System.EventHandler(this.tsmiKillAnalysis_Click);
             // 
             // tsmiDividerAnalysis2
             // 
             this.tsmiDividerAnalysis2.Name = "tsmiDividerAnalysis2";
-            this.tsmiDividerAnalysis2.Size = new System.Drawing.Size(114, 6);
+            this.tsmiDividerAnalysis2.Size = new System.Drawing.Size(177, 6);
             // 
             // tsmiDeleteAnalysis
             // 
             this.tsmiDeleteAnalysis.Name = "tsmiDeleteAnalysis";
-            this.tsmiDeleteAnalysis.Size = new System.Drawing.Size(117, 22);
+            this.tsmiDeleteAnalysis.Size = new System.Drawing.Size(180, 22);
             this.tsmiDeleteAnalysis.Text = "Delete";
             this.tsmiDeleteAnalysis.Click += new System.EventHandler(this.tsmiDeleteAnalysis_Click);
             // 
@@ -4171,6 +4180,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiPreviewLoad;
         private System.Windows.Forms.ToolStripMenuItem tsmiPreviewInitialCondition;
         private System.Windows.Forms.ToolStripMenuItem tsmiPreviewDefinedField;
+        private System.Windows.Forms.ToolStripMenuItem tsmiCheckModel;
     }
 }
 

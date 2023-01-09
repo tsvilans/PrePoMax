@@ -22,7 +22,11 @@ namespace PrePoMax
         public ViewBoundaryDisplacementStep(CaeModel.BoundaryDisplacementStep step, bool installProvider = true)
             : base(step)
         {
-            if (installProvider) InstallProvider();
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -31,14 +35,14 @@ namespace PrePoMax
         {
             return _step;
         }
-        protected void InstallProvider()
+        public override void InstallProvider()
         {
-            _dctd = ProviderInstaller.Install(this);
-            //
-            UpdateVisibility();
+            base.InstallProvider();
         }
         public override void UpdateVisibility()
         {
+            base.UpdateVisibility();
+            //
             _dctd.GetProperty(nameof(SolverType)).SetIsBrowsable(false);
         }
 

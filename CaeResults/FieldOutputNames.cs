@@ -13,6 +13,8 @@ namespace CaeResults
         //
         public const string Disp = "DISP";
         public const string Dispi = "DISPI";
+        // Velocity
+        public const string Velo = "VELO";
         // Stress
         public const string Stress = "STRESS";
         public const string Stressi = "STRESSI";
@@ -61,6 +63,10 @@ namespace CaeResults
         public const string U1 = "U1";
         public const string U2 = "U2";
         public const string U3 = "U3";
+        //
+        public const string V1 = "V1";
+        public const string V2 = "V2";
+        public const string V3 = "V3";
         //
         public const string F1 = "F1";
         public const string F2 = "F2";

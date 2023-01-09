@@ -18,14 +18,23 @@ namespace PrePoMax
 
 
         // Properties                                                                                                               
-
         [CategoryAttribute("Data")]
         [OrderedDisplayName(0, 10, "Name")]
         [DescriptionAttribute("Name of the step.")]
         public string Name { get { return _step.Name; } set { _step.Name = value; } }
         //
         [CategoryAttribute("Data")]
-        [OrderedDisplayName(1, 10, "Solver")]
+        [OrderedDisplayName(1, 10, "Procedure")]
+        [DescriptionAttribute("Select Check model to only check the input deck and geometry. The set of equations is built " +
+                              "but not solved (the Jacobian determinant is checked).")]
+        public bool RunAnalysis
+        {
+            get { return _step.RunAnalysis; }
+            set { _step.RunAnalysis = value; }
+        }
+        //
+        [CategoryAttribute("Data")]
+        [OrderedDisplayName(2, 10, "Solver")]
         [DescriptionAttribute("Select the matrix solver type.")]
         public CaeModel.SolverTypeEnum SolverType
         {
@@ -34,12 +43,10 @@ namespace PrePoMax
         }
 
 
-
         // Constructors                                                                                                             
         public ViewStep(CaeModel.Step step)
         {
-            if (step == null)
-                throw new ArgumentNullException();
+            if (step == null) throw new ArgumentNullException();
             //
             _step = step;
         }
@@ -49,7 +56,15 @@ namespace PrePoMax
         {
             return _step;
         }
+        public virtual void InstallProvider()
+        {
+            _dctd = ProviderInstaller.Install(this);
+            //
+            _dctd.RenameBooleanProperty(nameof(RunAnalysis), "Analysis", "Check model");
+        }
         public virtual void UpdateVisibility()
-        { }
+        {
+            _dctd.GetProperty(nameof(RunAnalysis)).SetIsBrowsable(false);
+        }
     }
 }

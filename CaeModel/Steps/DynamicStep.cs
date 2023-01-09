@@ -42,7 +42,7 @@ namespace CaeModel
             {
                 _alpha = value;
                 if (_alpha > 0) _alpha = 0;
-                else if (_alpha < -1 / 3) _alpha = -1 / 3;
+                else if (_alpha < -1.0 / 3.0) _alpha = -1.0 / 3.0;
             }
         }
         public SolutionProcedureEnum SolutionProcedure { get { return _solutionProcedure; } set { _solutionProcedure = value; } }
@@ -64,7 +64,8 @@ namespace CaeModel
             //
             if (addFieldOutputs)
             {
-                AddFieldOutput(new NodalFieldOutput("NF-Output-1", NodalFieldVariable.U | NodalFieldVariable.RF));
+                AddFieldOutput(new NodalFieldOutput("NF-Output-1", NodalFieldVariable.RF | NodalFieldVariable.U |
+                                                    NodalFieldVariable.V));
                 AddFieldOutput(new ElementFieldOutput("EF-Output-1", ElementFieldVariable.E | ElementFieldVariable.S));
             }
         }

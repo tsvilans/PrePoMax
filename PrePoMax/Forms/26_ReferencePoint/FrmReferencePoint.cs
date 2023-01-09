@@ -14,7 +14,7 @@ namespace PrePoMax.Forms
     class FrmReferencePoint : UserControls.FrmProperties, IFormBase, IFormHighlight
     {
         // Variables                                                                                                                
-        private HashSet<string> _allExistingNames;
+        private HashSet<string> _referencePointNames;
         private string _referencePointToEditName;
         private ViewFeReferencePoint _viewReferencePoint;
         private Controller _controller;
@@ -38,7 +38,7 @@ namespace PrePoMax.Forms
             //
             _controller = controller;
             _viewReferencePoint = null;
-            _allExistingNames = new HashSet<string>();
+            _referencePointNames = new HashSet<string>();
             //
             _coorNodesToDraw = new double[1][];
             _coorNodesToDraw[0] = new double[3];
@@ -107,9 +107,7 @@ namespace PrePoMax.Forms
         {
             _viewReferencePoint = (ViewFeReferencePoint)propertyGrid.SelectedObject;
             //
-            if ((_referencePointToEditName == null && _allExistingNames.Contains(_viewReferencePoint.Name)) ||                       // named to existing name
-                (_viewReferencePoint.Name != _referencePointToEditName && _allExistingNames.Contains(_viewReferencePoint.Name)))     // renamed to existing name
-                throw new CaeGlobals.CaeException("The selected name already exists.");
+            CheckName(_referencePointToEditName, _viewReferencePoint.Name, _referencePointNames, "reference point");
             // Create
             if (_referencePointToEditName == null)
             {
@@ -143,11 +141,11 @@ namespace PrePoMax.Forms
             this.btnOkAddNew.Visible = referencePointToEditName == null;
             //
             _propertyItemChanged = false;
-            _allExistingNames.Clear();
+            _referencePointNames.Clear();
             _referencePointToEditName = null;
             _viewReferencePoint = null;
             //
-            _allExistingNames.UnionWith(_controller.GetAllMeshEntityNames());
+            _referencePointNames.UnionWith(_controller.GetAllMeshEntityNames());
             _referencePointToEditName = referencePointToEditName;
             //
             _nodeSetNames = _controller.GetUserNodeSetNames();
@@ -261,7 +259,7 @@ namespace PrePoMax.Forms
         }
         private string GetReferencePointName()
         {
-            return _allExistingNames.GetNextNumberedKey("Reference_point");
+            return _referencePointNames.GetNextNumberedKey("Reference_point");
         }
         private void HighlightReferencePoint()
         {

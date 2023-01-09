@@ -34,7 +34,9 @@ namespace FileInOut.Output.Calculix
         }
         public override string GetDataString()
         {
-            return string.Format("{0}{1}", _step.NumOfFrequencies, Environment.NewLine);
+            string data = string.Format("{0}{1}", _step.NumOfFrequencies, Environment.NewLine);
+            if (!_step.RunAnalysis) data += "*No Analysis" + Environment.NewLine;
+            return data;
         }
     }
 }

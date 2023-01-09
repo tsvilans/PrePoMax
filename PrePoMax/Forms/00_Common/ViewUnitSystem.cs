@@ -63,7 +63,7 @@ namespace PrePoMax
         [OrderedDisplayName(2, 50, "Velocity unit")]
         [DescriptionAttribute("Default velocity unit.")]
         [Id(3, 1)]
-        public string SpeedUnitAbbreviation { get { return _unitSystem.SpeedUnitAbbreviation; } }
+        public string VelocityUnitAbbreviation { get { return _unitSystem.VelocityUnitAbbreviation; } }
         //
         [CategoryAttribute("Derived units")]
         [OrderedDisplayName(3, 50, "Angular velocity unit")]

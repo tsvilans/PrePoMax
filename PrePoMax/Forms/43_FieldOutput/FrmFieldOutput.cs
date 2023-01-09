@@ -92,10 +92,8 @@ namespace PrePoMax.Forms
             if (propertyGrid.SelectedObject == null) throw new CaeException("No item selected.");
             //
             _viewFieldOutput = (ViewFieldOutput)propertyGrid.SelectedObject;
-            //
-            if ((_fieldOutputToEditName == null && _fieldOutputNames.Contains(_viewFieldOutput.Name)) ||                // create
-               (_viewFieldOutput.Name != _fieldOutputToEditName && _fieldOutputNames.Contains(_viewFieldOutput.Name)))  // rename
-                throw new CaeGlobals.CaeException("The selected field output name already exists.");
+            // Check if the name exists
+            CheckName(_fieldOutputToEditName, _viewFieldOutput.Name, _fieldOutputNames, "field output");
             // Create
             if (_fieldOutputToEditName == null)
             {

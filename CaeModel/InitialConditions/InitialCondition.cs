@@ -17,6 +17,7 @@ namespace CaeModel
         private string _regionName;
         private int[] _creationIds;
         private Selection _creationData;
+        protected bool _twoD;
 
 
         // Properties                                                                                                               
@@ -24,16 +25,18 @@ namespace CaeModel
         public RegionTypeEnum RegionType { get { return _regionType; } set { _regionType = value; } }
         public int[] CreationIds { get { return _creationIds; } set { _creationIds = value; } }
         public Selection CreationData { get { return _creationData; } set { _creationData = value; } }
+        public bool TwoD { get { return _twoD; } }
 
 
         // Constructors                                                                                                             
-        public InitialCondition(string name, string regionName, RegionTypeEnum regionType)
+        public InitialCondition(string name, string regionName, RegionTypeEnum regionType, bool twoD)
             : base(name)
         {
             _regionName = regionName;
             _regionType = regionType;
             _creationIds = null;
             _creationData = null;
+            _twoD = twoD;
         }
 
 

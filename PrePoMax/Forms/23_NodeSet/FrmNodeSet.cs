@@ -12,7 +12,7 @@ namespace PrePoMax.Forms
     class FrmNodeSet : UserControls.FrmProperties, IFormBase, IFormItemSetDataParent, IFormHighlight
     {
         // Variables                                                                                                                
-        private HashSet<string> _allExistingNames;
+        private HashSet<string> _nodeSetNames;
         private string _nodeSetToEditName;
         private ViewNodeSet _viewNodeSet;
         private List<SelectionNode> _prevSelectionNodes;
@@ -35,7 +35,7 @@ namespace PrePoMax.Forms
             //
             _controller = controller;
             _viewNodeSet = null;
-            _allExistingNames = new HashSet<string>();
+            _nodeSetNames = new HashSet<string>();
         }
         private void InitializeComponent()
         {
@@ -57,9 +57,7 @@ namespace PrePoMax.Forms
         {
             _viewNodeSet = (ViewNodeSet)propertyGrid.SelectedObject;
             //
-            if ((_nodeSetToEditName == null && _allExistingNames.Contains(_viewNodeSet.Name)) ||                // named to existing name
-                (_viewNodeSet.Name != _nodeSetToEditName && _allExistingNames.Contains(_viewNodeSet.Name)))     // renamed to existing name
-                throw new CaeGlobals.CaeException("The selected name already exists.");
+            CheckName(_nodeSetToEditName, _viewNodeSet.Name, _nodeSetNames, "node set");
             //
             if (NodeSet.Labels == null || NodeSet.Labels.Length <= 0) throw new CaeGlobals.CaeException("The node set must contain at least one item.");
             //
@@ -100,14 +98,14 @@ namespace PrePoMax.Forms
             this.btnOkAddNew.Visible = nodeSetToEditName == null;
             //
             _propertyItemChanged = false;
-            _allExistingNames.Clear();
+            _nodeSetNames.Clear();
             _nodeSetToEditName = null;
             _viewNodeSet = null;
             propertyGrid.SelectedObject = null;
             _prevSelectionNodes = null;
             _selectionNodeIds = null;
             //
-            _allExistingNames.UnionWith(_controller.GetAllMeshEntityNames());
+            _nodeSetNames.UnionWith(_controller.GetAllMeshEntityNames());
             _nodeSetToEditName = nodeSetToEditName;
             // Create new nodeset
             if (_nodeSetToEditName == null)
@@ -151,7 +149,7 @@ namespace PrePoMax.Forms
         // Methods                                                                                                                  
         private string GetNodeSetName()
         {
-            return _allExistingNames.GetNextNumberedKey("Node_set");
+            return _nodeSetNames.GetNextNumberedKey("Node_set");
         }
         private void HighlightNodeSet()
         {

@@ -12,7 +12,7 @@ namespace PrePoMax.Forms
     class FrmElementSet : UserControls.FrmProperties, IFormBase, IFormItemSetDataParent, IFormHighlight
     {
         // Variables                                                                                                                
-        private HashSet<string> _allExistingNames;
+        private HashSet<string> _elementSetNames;
         private string _elementSetToEditName;
         private ViewElementSet _viewElementSet;
         private List<SelectionNode> _prevSelectionNodes;
@@ -35,7 +35,7 @@ namespace PrePoMax.Forms
             //
             _controller = controller;
             _viewElementSet = null;
-            _allExistingNames = new HashSet<string>();
+            _elementSetNames = new HashSet<string>();
         }
         private void InitializeComponent()
         {
@@ -55,11 +55,9 @@ namespace PrePoMax.Forms
         // Overrides                                                                                                                
         protected override void OnApply(bool onOkAddNew)
         {
-            _viewElementSet = (ViewElementSet)propertyGrid.SelectedObject;            
+            _viewElementSet = (ViewElementSet)propertyGrid.SelectedObject;
             //
-            if ((_elementSetToEditName == null && _allExistingNames.Contains(_viewElementSet.Name)) ||                   // named to existing name
-                (_viewElementSet.Name != _elementSetToEditName && _allExistingNames.Contains(_viewElementSet.Name)))     // renamed to existing name
-                throw new CaeException("The selected name already exists.");
+            CheckName(_elementSetToEditName, _viewElementSet.Name, _elementSetNames, "element set");
             //
             if (ElementSet.Labels == null || ElementSet.Labels.Length <= 0)
                 throw new CaeException("The element set must contain at least one item.");
@@ -103,14 +101,14 @@ namespace PrePoMax.Forms
             this.btnOkAddNew.Visible = elementSetToEditName == null;
             //
             _propertyItemChanged = false;
-            _allExistingNames.Clear();
+            _elementSetNames.Clear();
             _elementSetToEditName = null;
             _viewElementSet = null;
             propertyGrid.SelectedObject = null;
             _prevSelectionNodes = null;
             _selectionNodeIds = null;
             //
-            _allExistingNames.UnionWith(_controller.GetAllMeshEntityNames());
+            _elementSetNames.UnionWith(_controller.GetAllMeshEntityNames());
             _elementSetToEditName = elementSetToEditName;
             //
             if (_elementSetToEditName == null)
@@ -155,7 +153,7 @@ namespace PrePoMax.Forms
         // Methods                                                                                                                  
         private string GetElementSetName()
         {
-            return _allExistingNames.GetNextNumberedKey("Element_set");
+            return _elementSetNames.GetNextNumberedKey("Element_set");
         }
         private void HighlightElementSet()
         {

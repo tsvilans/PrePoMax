@@ -166,7 +166,17 @@ namespace UserControls
         }
         protected virtual void OnEnabledChanged() { }
         protected virtual void OnApply(bool onOkAddNew) { }
-
+        //
+        public static void CheckName(string nameToEdit, string name, ICollection<string> existingNames, string messageName)
+        {
+            // Named to existing name
+            if ((nameToEdit == null && existingNames.Contains(name, StringComparer.OrdinalIgnoreCase)) ||
+            // Renamed to existing name
+            (name != nameToEdit && existingNames.Contains(name, StringComparer.OrdinalIgnoreCase)))
+            // Exception
+            throw new CaeException("The selected "+ messageName + " name already exists. " +
+                "Uppercase and lowercase letters are regarded as equal.");
+        }
         
     }
 }

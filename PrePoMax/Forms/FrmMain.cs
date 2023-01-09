@@ -249,6 +249,7 @@ namespace PrePoMax
                 _modelTree.SetTransparencyEvent += ModelTree_SetTransparencyEvent;
                 _modelTree.ColorContoursVisibilityEvent += ModelTree_ColorContoursVisibilityEvent;
                 _modelTree.RunEvent += RunAnalysis;
+                _modelTree.CheckModelEvent += CheckModel;
                 _modelTree.MonitorEvent += MonitorAnalysis;
                 _modelTree.ResultsEvent += ResultsAnalysis;
                 _modelTree.KillEvent += KillAnalysis;
@@ -727,10 +728,25 @@ namespace PrePoMax
                 // Model tree
                 else if (_modelTree.ActiveControl == null || !_modelTree.ActiveControl.Focused)
                 {
+                    Control focusedControl = FindFocusedControl(this);
+                    // Check for toolstrip
+                    if (focusedControl != null && focusedControl.Parent is ToolStripFocus) { }
                     // Check for annotation editor
-                    if (!aeAnnotationTextEditor.Visible) _modelTree.cltv_KeyDown(this, new KeyEventArgs(key));
+                    else if (aeAnnotationTextEditor.Visible) { }
+                    // Forward to tree
+                    else _modelTree.cltv_KeyDown(this, new KeyEventArgs(key));
                 }
             }
+        }
+        public static Control FindFocusedControl(Control control)
+        {
+            var container = control as IContainerControl;
+            while (container != null)
+            {
+                control = container.ActiveControl;
+                container = control as IContainerControl;
+            }
+            return control;
         }
         // Timer
         private void timerOutput_Tick(object sender, EventArgs e)
@@ -2780,7 +2796,8 @@ namespace PrePoMax
                 frmGetValue.MinValue = 25;
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
-                OrderedDictionary<string, double> presetValues = new OrderedDictionary<string, double>("Preset transparency values");
+                OrderedDictionary<string, double> presetValues =
+                    new OrderedDictionary<string, double>("Preset transparency values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -2842,7 +2859,8 @@ namespace PrePoMax
             frmGetValue.MinValue = 0;
             frmGetValue.MaxValue = 90;
             SetFormLoaction(frmGetValue);
-            OrderedDictionary<string, double> presetValues = new OrderedDictionary<string, double>("Preset values");
+            OrderedDictionary<string, double> presetValues =
+                new OrderedDictionary<string, double>("Preset values", StringComparer.OrdinalIgnoreCase);
             presetValues.Add("Default", CaeMesh.Globals.EdgeAngle);
             string desc = "Enter the face angle for model edges detection.";
             frmGetValue.PrepareForm("Find model edges: " + partNames.ToShortString(), "Angle", desc,
@@ -3706,7 +3724,8 @@ namespace PrePoMax
                 frmGetValue.MinValue = 25;
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
-                OrderedDictionary<string, double> presetValues = new OrderedDictionary<string, double>("Preset values");
+                OrderedDictionary<string, double> presetValues
+                    = new OrderedDictionary<string, double>("Preset values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -5871,6 +5890,17 @@ namespace PrePoMax
                 ExceptionTools.Show(this, ex);
             }
         }
+        private void tsmiCheckModel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SelectOneEntity("Analyses", _controller.GetAllJobs(), CheckModel);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
         private void tsmiMonitorAnalysis_Click(object sender, EventArgs e)
         {
             try
@@ -5922,6 +5952,14 @@ namespace PrePoMax
         }
         private void RunAnalysis(string jobName)
         {
+            RunAnalysis(jobName, false);
+        }
+        private void CheckModel(string jobName)
+        {
+            RunAnalysis(jobName, true);
+        }
+        private void RunAnalysis(string jobName, bool onlyCheckModel)
+        {
             // Check validity
             if (CheckValiditiy())
             {
@@ -5939,7 +5977,7 @@ namespace PrePoMax
                         if (MessageBoxes.ShowWarningQuestion("Overwrite existing analysis files?") != DialogResult.OK) return;
                     }
                     //
-                    if (_controller.PrepareAndRunJob(inputFileName, job)) MonitorAnalysis(jobName);
+                    if (_controller.PrepareAndRunJob(inputFileName, job, onlyCheckModel)) MonitorAnalysis(jobName);
                 }
                 else MessageBoxes.ShowError("The analysis is already running or in queue.");
             }
@@ -6208,7 +6246,8 @@ namespace PrePoMax
                 frmGetValue.MinValue = 25;
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
-                OrderedDictionary<string, double> presetValues = new OrderedDictionary<string, double>("Preset transparency values");
+                OrderedDictionary<string, double> presetValues =
+                    new OrderedDictionary<string, double>("Preset transparency values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -6906,7 +6945,7 @@ namespace PrePoMax
                 if (e.KeyCode == Keys.Enter)
                 {
                     _controller.Redraw();
-                    this.ActiveControl = null;
+                    this.ActiveControl = _vtk;
                     // No beep
                     e.SuppressKeyPress = true;
                 }
@@ -8500,6 +8539,6 @@ namespace PrePoMax
             }
         }
 
-      
+       
     }
 }

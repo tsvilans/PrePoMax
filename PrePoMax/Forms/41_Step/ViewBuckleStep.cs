@@ -18,12 +18,12 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         [CategoryAttribute("Data")]
-        [OrderedDisplayName(3, 10, "Perturbation")]
+        [OrderedDisplayName(4, 10, "Perturbation")]
         [DescriptionAttribute("Perturbation parameter set to On applies preloads from the previous step if it exists.")]
         public bool Perturbation { get { return _buckleStep.Perturbation; } set { _buckleStep.Perturbation = value; } }
         //
         [CategoryAttribute("Data")]
-        [OrderedDisplayName(4, 10, "Num. of buckling factors")]
+        [OrderedDisplayName(5, 10, "Num. of buckling factors")]
         [DescriptionAttribute("Number of buckling factors desired (default: 1).")]
         public int NumBucklingFactors
         {
@@ -32,22 +32,23 @@ namespace PrePoMax
         }
         //
         [CategoryAttribute("Data")]
-        [OrderedDisplayName(5, 10, "Accuracy")]
+        [OrderedDisplayName(6, 10, "Accuracy")]
         [DescriptionAttribute("Accuracy desired (default: 0.01).")]
         [TypeConverter(typeof(StringDoubleConverter))]
         public double Accuracy { get { return _buckleStep.Accuracy; } set { _buckleStep.Accuracy = value; } }
 
 
         // Constructors                                                                                                             
-        public ViewBuckleStep(CaeModel.BuckleStep step)
+        public ViewBuckleStep(CaeModel.BuckleStep step, bool installProvider = true)
             : base(step)
         {
             _buckleStep = step;
-            _dctd = ProviderInstaller.Install(this);
             //
-            _dctd.RenameBooleanPropertyToOnOff("Perturbation");
-            //
-            UpdateVisibility();
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -55,6 +56,16 @@ namespace PrePoMax
         public override CaeModel.Step GetBase()
         {
             return _buckleStep;
+        }
+        public override void InstallProvider()
+        {
+            base.InstallProvider();
+            //
+            _dctd.RenameBooleanPropertyToOnOff("Perturbation");
+        }
+        public override void UpdateVisibility()
+        {
+            base.UpdateVisibility();
         }
     }
 }

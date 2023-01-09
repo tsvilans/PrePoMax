@@ -112,10 +112,8 @@ namespace PrePoMax.Forms
             //
             if ((Section is ShellSection ss && ss.Thickness <= 0) || (Section is MembraneSection ms && ms.Thickness <= 0))
                 throw new CaeException("The section thickness must be larger than 0.");
-            //
-            if ((_sectionToEditName == null && _sectionNames.Contains(Section.Name)) ||                 // create
-                (Section.Name != _sectionToEditName && _sectionNames.Contains(Section.Name)))           // edit
-                throw new CaeException("The selected section name already exists.");
+            // Check if the name exists
+            CheckName(_sectionToEditName, Section.Name, _sectionNames, "section");
             // Create
             if (_sectionToEditName == null)
             {

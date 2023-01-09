@@ -82,7 +82,11 @@ namespace CaeGlobals
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             // Convert from string
-            if (value is string valueString) return MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
+            if (value is string valueString)
+            {
+                if (String.Equals(value, _default)) return double.NaN;
+                else return MyNCalc.ConvertFromString(valueString, ConvertToCurrentUnits);
+            }
             else return base.ConvertFrom(context, culture, value);
         }
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)

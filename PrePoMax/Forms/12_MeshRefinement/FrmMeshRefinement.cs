@@ -133,10 +133,7 @@ namespace PrePoMax.Forms
         {
             _viewFeMeshRefinement = (ViewFeMeshRefinement)propertyGrid.SelectedObject;
             // Check if the name exists
-            if ((_meshRefinementToEditName == null && _meshRefinementNames.Contains(MeshRefinement.Name)) ||  // named to existing name
-                (MeshRefinement.Name != _meshRefinementToEditName
-                 && _meshRefinementNames.Contains(MeshRefinement.Name))) // renamed to existing name
-                throw new CaeException("The selected name already exists.");
+            CheckName(_meshRefinementToEditName, MeshRefinement.Name, _meshRefinementNames, "mesh refinement");
             //
             if (MeshRefinement.GeometryIds == null || MeshRefinement.GeometryIds.Length == 0)
                 throw new CaeException("The mesh refinement must contain at least one item.");

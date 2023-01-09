@@ -21,10 +21,15 @@ namespace PrePoMax
 
         // Constructors                                                                                                             
         public ViewSlipWearStep(CaeModel.SlipWearStep step, bool installProvider = true)
-            : base(step, false) // delay provider installation
+            : base(step, false)
         {
             _slipWearStep = step;
-            if (installProvider) InstallProvider(); // install provider
+            //
+            if (installProvider)
+            {
+                InstallProvider();
+                UpdateVisibility();
+            }
         }
 
 
@@ -32,6 +37,14 @@ namespace PrePoMax
         public override CaeModel.Step GetBase()
         {
             return _slipWearStep;
+        }
+        public override void InstallProvider()
+        {
+            base.InstallProvider();
+        }
+        public override void UpdateVisibility()
+        {
+            base.UpdateVisibility();
         }
     }
 }

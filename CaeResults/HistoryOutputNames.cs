@@ -16,6 +16,7 @@ namespace CaeResults
         public const string Time = "TIME";
         // Nodal
         public const string Displacements = "DISPLACEMENTS";
+        public const string Velocities = "VELOCITIES";
         public const string Forces = "FORCES";
         public const string TotalForce = "TOTAL FORCE";
         public const string Stresses = "STRESSES";

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelTree));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Solid-Part-1");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Solid-Part-2");
@@ -95,7 +96,7 @@
             System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("Results", new System.Windows.Forms.TreeNode[] {
             treeNode34,
             treeNode35});
-            this.cmsTree = new System.Windows.Forms.ContextMenuStrip();
+            this.cmsTree = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiCreate = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiQuery = new System.Windows.Forms.ToolStripMenuItem();
@@ -145,8 +146,8 @@
             this.tsmiCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiSpaceDelete = new System.Windows.Forms.ToolStripSeparator();
             this.tsmiDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.ilIcons = new System.Windows.Forms.ImageList();
-            this.ilStatusIcons = new System.Windows.Forms.ImageList();
+            this.ilIcons = new System.Windows.Forms.ImageList(this.components);
+            this.ilStatusIcons = new System.Windows.Forms.ImageList(this.components);
             this.tcGeometryModelResults = new System.Windows.Forms.TabControl();
             this.tpGeometry = new System.Windows.Forms.TabPage();
             this.stbGeometry = new UserControls.SearchTextBox();
@@ -157,6 +158,7 @@
             this.tpResults = new System.Windows.Forms.TabPage();
             this.stbResults = new UserControls.SearchTextBox();
             this.cltvResults = new UserControls.CodersLabTreeView();
+            this.tsmiCheckModel = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsTree.SuspendLayout();
             this.tcGeometryModelResults.SuspendLayout();
             this.tpGeometry.SuspendLayout();
@@ -205,6 +207,7 @@
             this.tsmiColorContoursOn,
             this.tsmiSpaceAnalysis,
             this.tsmiRun,
+            this.tsmiCheckModel,
             this.tsmiMonitor,
             this.tsmiResults,
             this.tsmiKill,
@@ -217,7 +220,7 @@
             this.tsmiSpaceDelete,
             this.tsmiDelete});
             this.cmsTree.Name = "cmsTree";
-            this.cmsTree.Size = new System.Drawing.Size(212, 864);
+            this.cmsTree.Size = new System.Drawing.Size(212, 886);
             // 
             // tsmiCreate
             // 
@@ -567,7 +570,7 @@
             this.ilIcons.Images.SetKeyName(17, "SurfaceInteraction.ico");
             this.ilIcons.Images.SetKeyName(18, "ContactPair.ico");
             this.ilIcons.Images.SetKeyName(19, "Amplitude.ico");
-            this.ilIcons.Images.SetKeyName(20, "InitialConditions.ico");
+            this.ilIcons.Images.SetKeyName(20, "Initial_conditions.ico");
             this.ilIcons.Images.SetKeyName(21, "Step.ico");
             this.ilIcons.Images.SetKeyName(22, "History_output.ico");
             this.ilIcons.Images.SetKeyName(23, "Field_output.ico");
@@ -812,9 +815,9 @@
             treeNode24.SelectedImageKey = "Amplitude.ico";
             treeNode24.Text = "Amplitudes";
             treeNode24.ToolTipText = "Amplitudes";
-            treeNode25.ImageKey = "InitialConditions.ico";
+            treeNode25.ImageKey = "Initial_conditions.ico";
             treeNode25.Name = "Initial conditions";
-            treeNode25.SelectedImageKey = "InitialConditions.ico";
+            treeNode25.SelectedImageKey = "Initial_conditions.ico";
             treeNode25.Text = "Initial conditions";
             treeNode25.ToolTipText = "Initial conditions";
             treeNode26.ImageKey = "Step.ico";
@@ -947,6 +950,13 @@
             this.cltvResults.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cltv_MouseDown);
             this.cltvResults.MouseUp += new System.Windows.Forms.MouseEventHandler(this.cltv_MouseUp);
             // 
+            // tsmiCheckModel
+            // 
+            this.tsmiCheckModel.Name = "tsmiCheckModel";
+            this.tsmiCheckModel.Size = new System.Drawing.Size(211, 22);
+            this.tsmiCheckModel.Text = "Check Model";
+            this.tsmiCheckModel.Click += new System.EventHandler(this.tsmiCheckModel_Click);
+            // 
             // ModelTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1037,5 +1047,6 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiSearchContactPairs;
         private System.Windows.Forms.ToolStripMenuItem tsmiQuery;
         private System.Windows.Forms.ToolStripMenuItem tsmiPreview;
+        private System.Windows.Forms.ToolStripMenuItem tsmiCheckModel;
     }
 }

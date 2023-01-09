@@ -76,6 +76,7 @@
     <Compile Include="FileInOut\Input\Mmg\MmgFileReader.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalAmplitude.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalPhysicalConstants.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\InitialConditions\CalInitialVelocity.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Material\CalSlipWear.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalMembraneSection.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalLinearSpringSection.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalCoupledTempDispStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalUncoupledTempDispStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\DefinedField\CalDefinedTemperature.cs" />
-    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalInitialTemperature.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\InitialConditions\CalInitialTemperature.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalPreTensionSection.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalDeactivated.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalContactPair.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalShellEdgeLoad.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalHydrostaticPressureLoad.cs" />
     <Compile Include="FileInOut\Output\Mmg\MmgFileWriter.cs" />
+    <Compile Include="InitialConditions\InitialVelocity.cs" />
     <Compile Include="InitialConditions\InitialTemperature.cs" />
     <Compile Include="InitialConditions\InitialCondition.cs" />
     <Compile Include="Materials\SlipWear.cs" />

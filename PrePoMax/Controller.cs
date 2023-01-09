@@ -349,7 +349,7 @@ namespace PrePoMax
             _form = form;
             _form.Controller = this;
             // Jobs
-            _jobs = new OrderedDictionary<string, AnalysisJob>("Analysis jobs");
+            _jobs = new OrderedDictionary<string, AnalysisJob>("Analysis jobs", StringComparer.OrdinalIgnoreCase);
             // Edges visibilitires
             _edgesVisibilities = new EdgesVisibilitiesCollection(this);
             // Section view
@@ -741,6 +741,44 @@ namespace PrePoMax
                 _modelChanged = true;
             }
         }
+        private void OpenNam(string fileName, bool redraw = true)
+        {
+            string[] nodeSetNames;
+            int[][] nodeIds;
+            FileInOut.Input.InpFileReader.ReadNam(fileName, out nodeSetNames, out nodeIds);
+            //
+            if (nodeSetNames == null || nodeSetNames.Length == 0)
+            {
+                MessageBoxes.ShowError("The file "+ fileName + " does not exist or is empty.");
+                return;
+            }
+            else
+            {
+                string name;
+                HashSet<string> existingNames = _allResults.CurrentResult.Mesh.NodeSets.Keys.ToHashSet();
+                Dictionary<string, FeNodeSet> nodeSets = new Dictionary<string, FeNodeSet>();
+                for (int i = 0; i < nodeSetNames.Length; i++)
+                {
+                    name = nodeSetNames[i];
+                    if (existingNames.Contains(name)) name = _allResults.CurrentResult.Mesh.NodeSets.GetNextNumberedKey(name);
+                    //
+                    nodeSets.Add(name, new FeNodeSet(name, nodeIds[i]));
+                }
+                _allResults.CurrentResult.Mesh.NodeSets.AddRange(nodeSets);
+                //
+                if (redraw)
+                {
+                    // Set the view but do not draw
+                    _currentView = ViewGeometryModelResults.Results;
+                    _form.SetCurrentView(_currentView);
+                    // Regenerate tree
+                    _form.RegenerateTree();
+
+                }
+                // Model changed
+                _modelChanged = true;
+            }
+        }
         private void OpenFoam(string fileName)
         {
             FeResults results = OpenFoamFileReader.Read(fileName);
@@ -807,6 +845,14 @@ namespace PrePoMax
                 string celFileName = Path.GetFileNameWithoutExtension(_allResults.CurrentResult.FileName) + ".cel";
                 celFileName = Path.Combine(Path.GetDirectoryName(_allResults.CurrentResult.FileName), celFileName);
                 if (File.Exists(celFileName)) OpenCel(celFileName, false);
+            }
+            // Open .nam file
+            if (_allResults.CurrentResult.FileName != null && _allResults.CurrentResult.FileName.Length > 0)
+            {
+                string namFileName = Path.GetFileNameWithoutExtension(_allResults.CurrentResult.FileName) +
+                                     "_WarnNodeMissTiedContact.nam";
+                namFileName = Path.Combine(Path.GetDirectoryName(_allResults.CurrentResult.FileName), namFileName);
+                if (File.Exists(namFileName)) OpenNam(namFileName, false);
             }
             // Open .dat file
             if (readDatFile)
@@ -1527,7 +1573,8 @@ namespace PrePoMax
                 newModel.Properties.ModelSpace = ModelSpaceEnum.ThreeD;
                 newModel.Mesh.AddPartsFromMesh(_allResults.CurrentResult.Mesh, partNames, null, false, false);
                 // Change result parts to mesh parts
-                OrderedDictionary<string, BasePart> meshParts = new OrderedDictionary<string, BasePart>("Base parts");
+                OrderedDictionary<string, BasePart> meshParts =
+                    new OrderedDictionary<string, BasePart>("Base parts", StringComparer.OrdinalIgnoreCase);
                 MeshPart meshPart;
                 foreach (var entry in newModel.Mesh.Parts)
                 {
@@ -6327,6 +6374,10 @@ namespace PrePoMax
                 {
                     results = it.GetPreview(_model.Mesh, initialConditionName, _model.UnitSystem.UnitSystemType);
                 }
+                else if (initialCondition is InitialVelocity iv)
+                {
+                    results = iv.GetPreview(_model.Mesh, initialConditionName, _model.UnitSystem.UnitSystemType);
+                }
                 else throw new CaeException("It is not possible to preview this initial condition type.");
                 //
                 SetResults(results);
@@ -6382,6 +6433,19 @@ namespace PrePoMax
                     initialCondition.RegionName = name;
                     initialCondition.RegionType = RegionTypeEnum.NodeSetName;
                 }
+                // Initial velocity
+                else if (initialCondition is InitialVelocity)
+                {
+                    name = FeMesh.GetNextFreeSelectionName(_model.Mesh.ElementSets, initialCondition.Name);
+                    // For
+                    FeElementSet elementSet = new FeElementSet(name, initialCondition.CreationIds, true);
+                    elementSet.CreationData = initialCondition.CreationData.DeepClone();
+                    elementSet.Internal = true;
+                    AddElementSet(elementSet);
+                    //
+                    initialCondition.RegionName = name;
+                    initialCondition.RegionType = RegionTypeEnum.ElementSetName;
+                }
                 else throw new NotSupportedException();
             }
             // Clear the creation data if not used
@@ -6397,7 +6461,10 @@ namespace PrePoMax
             InitialCondition initialCondition = GetInitialCondition(oldInitialConditionName);
             if (initialCondition.CreationData != null && initialCondition.RegionName != null)
             {
-                if (initialCondition is InitialTemperature) RemoveNodeSets(new string[] { initialCondition.RegionName });
+                if (initialCondition is InitialTemperature)
+                    RemoveNodeSets(new string[] { initialCondition.RegionName });
+                else if (initialCondition is InitialVelocity)
+                    RemoveElementSets(new string[] { initialCondition.RegionName });
                 else throw new NotSupportedException();
             }
         }
@@ -7457,12 +7524,15 @@ namespace PrePoMax
             ApplySettings();
             _form.UpdateTreeNode(ViewGeometryModelResults.Model, oldJobName, job, null);
         }
-        public bool PrepareAndRunJob(string inputFileName, AnalysisJob job)
+        public bool PrepareAndRunJob(string inputFileName, AnalysisJob job, bool onlyCheckModel)
         {
             if (File.Exists(job.Executable))
             {
                 if (CheckModelBeforeJobRun() && DeleteFilesBeforeJobRun(inputFileName)) // must be separete due to exception
                 {
+                    if (onlyCheckModel) _model.StepCollection.SetCheckModel();
+                    else _model.StepCollection.SetRunAnalysis();
+
                     if (_model.Properties.ModelType == ModelType.SlipWearModel)
                     {
                         return RunWearJob(inputFileName, job);
@@ -7573,9 +7643,11 @@ namespace PrePoMax
                                             Path.Combine(directory, inputFileNameWithoutExtension + ".cvg"),
                                             Path.Combine(directory, inputFileNameWithoutExtension + ".12d"),
                                             Path.Combine(directory, inputFileNameWithoutExtension + ".cel"), // contact elments
+                                            Path.Combine(directory, inputFileNameWithoutExtension +
+                                                         "._WarnNodeMissTiedContact.nam"), // missing contact nodes
                                             Path.Combine(directory, "ResultsForLastIterations.frd"),
                                             Path.Combine(directory, inputFileNameWithoutExtension + ".frd")
-                                            };
+                                           };
             try
             {
                 foreach (var fileName in files) File.Delete(fileName);
@@ -10348,6 +10420,17 @@ namespace PrePoMax
                 Color colorBorder = Color.Black;
                 //
                 double[][] coor = new double[][] { referencePoint.Coor() };
+                //
+                //vtkControl.vtkMaxActorData data = new vtkControl.vtkMaxActorData();
+                //data.Name = "Reference_point" + Globals.NameSeparator + referencePoint.Name;
+                //data.Color = color;
+                //data.BackfaceColor = colorBorder;
+                //data.Layer = layer;
+                //data.Geometry.Nodes.Coor = coor;
+                //data.Pickable = true;
+                //ApplyLighting(data);
+                //_form.AddSphereActor(data, 2 * nodeSize);
+                //
                 DrawNodes(referencePoint.Name + Globals.NameSeparator + "Border", coor, colorBorder, layer, nodeSize,
                           false, false);
                 DrawNodes(referencePoint.Name, coor, color, layer, nodeSize - 3, false, false);
@@ -11416,7 +11499,7 @@ namespace PrePoMax
                     if (nodeSet == null) nodeSet = _model.Mesh.GetNodeSetFromPartOrElementSetName(bFlux.RegionName, false);
                     //
                     if (nodeSet.Labels.Length > 0)
-                        DrawBodyFluxymbol(prefixName, bFlux, nodeSet.CenterOfGravity, color, symbolSize, symbolLayer);
+                        DrawBodyFluxSymbol(prefixName, bFlux, nodeSet.CenterOfGravity, color, symbolSize, symbolLayer);
                 }
                 else if (load is FilmHeatTransfer filmHeatTransfer)
                 {
@@ -11927,7 +12010,7 @@ namespace PrePoMax
                 _form.AddOrientedArrowsActor(data, symbolSize, translate);
             }
         }
-        public void DrawBodyFluxymbol(string prefixName, BodyFlux bFlux, double[] symbolCoor, Color color,
+        public void DrawBodyFluxSymbol(string prefixName, BodyFlux bFlux, double[] symbolCoor, Color color,
                                       int symbolSize, vtkControl.vtkRendererLayer layer)
         {
             double[][] normals = new double[][] { new double[] { 1, 0, 0 } };
@@ -12222,7 +12305,7 @@ namespace PrePoMax
             data.Layer = layer;
             data.DrawOnGeometry = drawOnGeometry;
             data.Geometry.Nodes.Coor = nodeCoor;
-            data.UseSecondaryHighightColor = useSecondaryHighlightColor;            
+            data.UseSecondaryHighightColor = useSecondaryHighlightColor;
             //
             ApplyLighting(data);
             _form.Add3DNodes(data);
@@ -12318,8 +12401,6 @@ namespace PrePoMax
                 bool onlyVisible = false;
                 count += DrawItemsByGeometryIds(ids, prefixName, elementSet.Name, color, layer, 5, backfaceCulling,
                                                 useSecondaryHighlightColor, onlyVisible);
-                // Nodes
-
             }
             else
             {
@@ -12657,9 +12738,14 @@ namespace PrePoMax
                     }
                     else if (obj is InitialCondition ic)
                     {
-                        if (ic.RegionType == RegionTypeEnum.NodeSetName)
+                        if (ic.RegionType == RegionTypeEnum.PartName)
+                            HighlightModelParts(new string[] { ic.RegionName });
+                        else if (ic.RegionType == RegionTypeEnum.NodeSetName)
                             HighlightNodeSets(new string[] { ic.RegionName });
-                        else if (ic.RegionType == RegionTypeEnum.SurfaceName) HighlightSurfaces(new string[] { ic.RegionName });
+                        else if (ic.RegionType == RegionTypeEnum.ElementSetName)
+                            HighlightElementSets(new string[] { ic.RegionName });
+                        else if (ic.RegionType == RegionTypeEnum.SurfaceName)
+                            HighlightSurfaces(new string[] { ic.RegionName });
                         else if (ic.RegionType == RegionTypeEnum.Selection) { }
                         else throw new NotSupportedException();
                     }
@@ -12897,7 +12983,6 @@ namespace PrePoMax
             FeElementSet elementSet;
             foreach (var elementSetName in elementSetsToSelect)
             {
-
                 if (_model.Mesh.ElementSets.TryGetValue(elementSetName, out elementSet))
                 {
                     count += DrawElementSet("Highlight", elementSet, Color.Red,

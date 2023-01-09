@@ -82,10 +82,8 @@ namespace PrePoMax.Forms
             // Check for errors with constructor
             var tmp = new ContactPair(cp.Name, cp.SurfaceInteractionName, cp.MasterRegionName, cp.MasterRegionType,
                                       cp.SlaveRegionName, cp.SlaveRegionType);
-            //
-            if ((_contactPairToEditName == null && _contactPairNames.Contains(cp.Name)) ||      // named to existing name
-                (cp.Name != _contactPairToEditName && _contactPairNames.Contains(cp.Name)))     // renamed to existing name
-                throw new CaeException("The selected contact pair name already exists.");
+            // Check if the name exists
+            CheckName(_contactPairToEditName, cp.Name, _contactPairNames, "contact pair");
             // Create
             if (_contactPairToEditName == null)
             {

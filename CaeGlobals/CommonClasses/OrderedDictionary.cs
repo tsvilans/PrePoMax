@@ -45,6 +45,7 @@ namespace CaeGlobals
     public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {
         // Variables                                                                                                                
+        private static StringComparer _comparer = StringComparer.OrdinalIgnoreCase;
         private string _name;                               //ISerializable
         private List<TKey> _list;                           //ISerializable
         private Dictionary<TKey, TValue> _dictionary;       //ISerializable

@@ -161,12 +161,8 @@ namespace PrePoMax.Forms
             if (BoundaryCondition.RegionType == RegionTypeEnum.Selection &&
                 (BoundaryCondition.CreationIds == null || BoundaryCondition.CreationIds.Length == 0))
                 throw new CaeException("The boundary condition must contain at least one item.");
-            //
-            if ((_boundaryConditionToEditName == null && 
-                 _boundaryConditionNames.Contains(BoundaryCondition.Name)) ||   // named to existing name
-                (BoundaryCondition.Name != _boundaryConditionToEditName && 
-                 _boundaryConditionNames.Contains(BoundaryCondition.Name)))     // renamed to existing name
-                throw new CaeException("The selected boundary condition name already exists.");
+            // Check if the name exists
+            CheckName(_boundaryConditionToEditName, BoundaryCondition.Name, _boundaryConditionNames, "boundary condition");
             //
             if (BoundaryCondition is DisplacementRotation dr)
             {
