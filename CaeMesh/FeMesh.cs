@@ -1082,7 +1082,7 @@ namespace CaeMesh
             int[][] cells = part.Visualization.Cells;
             // Get all edges
             Dictionary<int[], CellEdgeData> allEdges;
-            allEdges = part.Visualization.GetCellEdgeData3(GetVisualizationEdgeCells);
+            allEdges = part.Visualization.GetCellEdgeData(GetVisualizationEdgeCells);
             // Get only edges where cells meet at an angle > input angle
             // Get free surface edges
             double phi;
