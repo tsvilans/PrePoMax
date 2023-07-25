@@ -49,12 +49,12 @@ namespace CaeMesh
         }
         public OrderedDictionary<string, MeshingParameters> MeshingParameters
         {
-            set { _elements = value; }
+            get { return _meshingParameters; }
+            set { _meshingParameters = value; }
         }
         public Dictionary<int, FeMaterialOrientation> ElementOrientations
         {
             get { return _elementOrientations; }
-            get { return _meshingParameters; }
         }
         public OrderedDictionary<string, FeMeshRefinement> MeshRefinements
         {
