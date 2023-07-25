@@ -15,6 +15,7 @@ namespace CaeMesh
         // Variables                                                                                                                
         [NonSerialized] private Dictionary<int, FeNode> _nodes;
         [NonSerialized] private Dictionary<int, FeElement> _elements;
+        [NonSerialized] private Dictionary<int, FeMaterialOrientation> _elementOrientations;
         [NonSerialized] private Octree.PointOctree<int> _octree;
         [NonSerialized] private Dictionary<string, double[]> _partOffsets;
 
@@ -24,6 +25,8 @@ namespace CaeMesh
         private OrderedDictionary<string, FeNodeSet> _nodeSets;                 //ISerializable
         private OrderedDictionary<string, FeElementSet> _elementSets;           //ISerializable
         private OrderedDictionary<string, FeSurface> _surfaces;                 //ISerializable
+        private OrderedDictionary<string, FeDistribution> _distributions;       //ISerializable
+        private OrderedDictionary<string, FeOrientation> _orientations;         //ISerializable
         private OrderedDictionary<string, FeReferencePoint> _referencePoints;   //ISerializable
         private int _maxNodeId;                                                 //ISerializable
         private int _maxElementId;                                              //ISerializable
@@ -41,6 +44,11 @@ namespace CaeMesh
             get { return _elements; }
             set { _elements = value; }
         }
+        public Dictionary<int, FeMaterialOrientation> ElementOrientations
+        {
+            get { return _elementOrientations; }
+            set { _elementOrientations = value; }
+        }
         public OrderedDictionary<string, FeMeshRefinement> MeshRefinements
         {
             get { return _meshRefinements; }
@@ -57,6 +65,14 @@ namespace CaeMesh
         public OrderedDictionary<string, FeElementSet> ElementSets
         {
             get { return _elementSets; }
+        }
+        public OrderedDictionary<string, FeDistribution> Distributions
+        {
+            get { return _distributions; }
+        }
+        public OrderedDictionary<string, FeOrientation> Orientations
+        {
+            get { return _orientations; }
         }
         public OrderedDictionary<string, FeSurface> Surfaces
         {
@@ -120,12 +136,16 @@ namespace CaeMesh
                 id = ids[i];
                 _elements.Add(id, elements[id]);
             }
+            _elementOrientations = new Dictionary<int, FeMaterialOrientation>();
             //
             _meshRepresentation = representation;
             //
             StringComparer sc = StringComparer.OrdinalIgnoreCase;
             _nodeSets = new OrderedDictionary<string, FeNodeSet>("Node sets", sc);
             _elementSets = new OrderedDictionary<string, FeElementSet>("Element sets", sc);
+            //
+            _distributions = new OrderedDictionary<string, FeDistribution>("Distributions", sc);
+            _orientations = new OrderedDictionary<string, FeOrientation>("Orientations", sc);
             //
             _surfaces = new OrderedDictionary<string, FeSurface>("Surfaces", sc);
             _referencePoints = new OrderedDictionary<string, FeReferencePoint>("Reference points", sc);
@@ -169,6 +189,10 @@ namespace CaeMesh
             {
                 _elements.Add(elementId, mesh.Elements[elementId].DeepCopy());
             }
+            _elementOrientations = new Dictionary<int, FeMaterialOrientation>();
+            //
+            _distributions = new OrderedDictionary<string, FeDistribution>("Distributions", sc);
+            _orientations = new OrderedDictionary<string, FeOrientation>("Orientations", sc);
             //
             _nodeSets = new OrderedDictionary<string, FeNodeSet>("Node sets", sc);
             _elementSets = new OrderedDictionary<string, FeElementSet>("Element sets", sc);

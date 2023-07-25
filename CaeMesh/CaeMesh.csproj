@@ -79,6 +79,9 @@
     <Compile Include="Enums\MeshRepresentation.cs" />
     <Compile Include="ContactSearch\ContactSearch.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FeDistribution.cs" />
+    <Compile Include="FeMaterialOrientation.cs" />
+    <Compile Include="FeOrientation.cs" />
     <Compile Include="FeReferencePoint.cs" />
     <Compile Include="Elements\3D\FeElement3D.cs" />
     <Compile Include="Elements\2D\FeElement2D.cs" />

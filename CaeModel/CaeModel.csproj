@@ -75,8 +75,11 @@
     <Compile Include="Contact\Surface interaction\SurfaceInteractionProperty.cs" />
     <Compile Include="FileInOut\Input\Mmg\MmgFileReader.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalAmplitude.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalDistribution.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalPhysicalConstants.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalOrientation.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\InitialConditions\CalInitialVelocity.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Material\CalEngineeringConstants.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Material\CalSlipWear.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalMembraneSection.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalLinearSpringSection.cs" />
@@ -117,6 +120,7 @@
     <Compile Include="InitialConditions\InitialVelocity.cs" />
     <Compile Include="InitialConditions\InitialTemperature.cs" />
     <Compile Include="InitialConditions\InitialCondition.cs" />
+    <Compile Include="Materials\EngineeringConstants.cs" />
     <Compile Include="Materials\SlipWear.cs" />
     <Compile Include="Materials\SpecificHeat.cs" />
     <Compile Include="Materials\ThermalConductivity.cs" />

@@ -5,40 +5,44 @@ using System.Text;
 using System.Threading.Tasks;
 using CaeModel;
 using CaeMesh;
-using CaeGlobals;
 
 namespace FileInOut.Output.Calculix
 {
     [Serializable]
-    internal class CalSolidSection : CalculixKeyword
+    internal class CalOrientation : CalculixKeyword
     {
         // Variables                                                                                                                
-        private SolidSection _section;
+        private FeOrientation _orientation;
+
+        public FeOrientation Orientation
+        {
+            get { return _orientation; }
+            set { _orientation = value; }
+        }
+
 
         // Properties                                                                                                               
 
 
         // Constructor                                                                                                              
-        public CalSolidSection(SolidSection section)
+        public CalOrientation(FeOrientation orientation)
         {
-            _section = section;
+            _orientation = orientation;
         }
 
 
         // Methods                                                                                                                  
         public override string GetKeywordString()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("*Solid section, Elset={0}, Material={1}", _section.RegionName,
-                            _section.MaterialName);
-            if (_section.Orientation != null) sb.AppendFormat(", Orientation={0}", _section.Orientation.Name);
-            sb.AppendLine();
-            return sb.ToString();
+            //
+            return string.Format("*Orientation, Name={0}{1}", _orientation.Name, Environment.NewLine, _orientation.Distribution.Name, Environment.NewLine);
         }
         public override string GetDataString()
         {
-            if (_section.TwoD) return string.Format("{0}{1}", _section.Thickness.ToCalculiX16String(), Environment.NewLine);
-            else return "";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("{0}{1}", _orientation.Distribution.Name, Environment.NewLine);
+
+            return sb.ToString();
         }
     }
 }

@@ -131,6 +131,14 @@ namespace FileInOut.Output
             title = new CalTitle("Elements", "");
             keywords.Add(title);
             AppendElements(model, springElements, title);
+            // Distributions
+            title = new CalTitle("Distributions", "");
+            keywords.Add(title);
+            AppendDistributions(model, null, title);
+            // Orientations
+            title = new CalTitle("Orientations", "");
+            keywords.Add(title);
+            AppendOrientations(model, null, title);
             // Node sets
             title = new CalTitle("Node sets", "");
             keywords.Add(title);
@@ -561,6 +569,41 @@ namespace FileInOut.Output
                     parent.AddKeyword(additionalElementSet);
             }
         }
+
+        static private void AppendDistributions(FeModel model, List<CalDistribution> additionalDistributions, CalculixKeyword parent)
+        {
+            if (model.Mesh != null)
+            {
+                CalDistribution distribution;
+                foreach (var entry in model.Mesh.Distributions)
+                {
+                    distribution = new CalDistribution(entry.Value, model);
+                    parent.AddKeyword(distribution);
+                }
+
+                if (additionalDistributions != null)
+                    foreach (var additionalDistribution in additionalDistributions)
+                        parent.AddKeyword(additionalDistribution);
+            }
+        }
+
+        static private void AppendOrientations(FeModel model, List<CalOrientation> additionalOrientations, CalculixKeyword parent)
+        {
+            if (model.Mesh != null)
+            {
+                CalOrientation orientation;
+                foreach(var entry in model.Mesh.Orientations)
+                {
+                    orientation = new CalOrientation(entry.Value);
+                    parent.AddKeyword(orientation);
+                }
+
+                if (additionalOrientations != null)
+                    foreach (var additionalOrientation in additionalOrientations)
+                        parent.AddKeyword(additionalOrientation);
+
+            }
+        }
         static private void AppendSurfaces(FeModel model, CalculixKeyword parent)
         {
             if (model.Mesh != null)
@@ -615,6 +658,10 @@ namespace FileInOut.Output
                             //
                             Elastic elastic = new Elastic(new double[][] { new double[] { ewd.YoungsModulus, ewd.PoissonsRatio } });
                             material.AddKeyword(new CalElastic(elastic, entry.Value.TemperatureDependent));
+                        }
+                        else if (property is EngineeringConstants eng)
+                        {
+                            material.AddKeyword(new CalEngineeringConstants(eng, entry.Value.TemperatureDependent));
                         }
                         else if (property is Plastic pl)
                         {

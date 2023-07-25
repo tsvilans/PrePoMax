@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CaeGlobals;
+using CaeMesh;
 
 namespace CaeModel
 {
@@ -19,10 +20,12 @@ namespace CaeModel
     {
         // Variables                                                                                                                
         private double _thickness;
+        private FeOrientation _orientation = null;
 
 
         // Properties                                                                                                               
         public double Thickness { get { return _thickness; } set { _thickness = value; } }
+        public FeOrientation Orientation { get { return _orientation; } set { _orientation = value; } }
 
 
         // Constructors                                                                                                             
