@@ -13,19 +13,16 @@ namespace CaeMesh
         // Variables                                                                                                                
         private RegionTypeEnum _regionType;
         string _regionName;
-        private Selection _creationData;
-        private int[] _creationIds;
 
 
         // Properties                                                                                                               
         public RegionTypeEnum RegionType { get { return _regionType; } set { _regionType = value; } }
         public string RegionName { get { return _regionName; } set { _regionName = value; } }
-        public Selection CreationData { get { return _creationData; } set { _creationData = value; } }
-        public int[] CreationIds { get { return _creationIds; } set { _creationIds = value; } }
 
 
         // Constructors                                                                                                             
         public RemeshingParameters(string regionName, RegionTypeEnum regionType)
+            : base ("RemeshingParameters")
         {
             UseMmg = true;
             //

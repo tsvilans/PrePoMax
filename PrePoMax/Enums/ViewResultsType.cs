@@ -3,7 +3,7 @@
 namespace PrePoMax
 {
     [Serializable]
-    public enum ViewResultsType
+    public enum ViewResultsTypeEnum
     {
         Undeformed,
         Deformed,

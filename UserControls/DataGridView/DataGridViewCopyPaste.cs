@@ -16,13 +16,13 @@ namespace UserControls
         // Variables                                                                                                                
         private int _xColIndex;
         //
-        private System.Windows.Forms.ContextMenuStrip cmsCopyPaste;
-        private System.ComponentModel.IContainer components;
-        private System.Windows.Forms.ToolStripMenuItem tsmiCut;
-        private System.Windows.Forms.ToolStripMenuItem tsmiCopy;
-        private System.Windows.Forms.ToolStripMenuItem tsmiPaste;
-        private System.Windows.Forms.ToolStripSeparator tssDivider1;
-        private System.Windows.Forms.ToolStripMenuItem tsmiPlot;
+        private ContextMenuStrip cmsCopyPaste;
+        private IContainer components;
+        private ToolStripMenuItem tsmiCut;
+        private ToolStripMenuItem tsmiCopy;
+        private ToolStripMenuItem tsmiPaste;
+        private ToolStripSeparator tssDivider1;
+        private ToolStripMenuItem tsmiPlot;
         private FrmDiagramView frmDiagramView;
 
 
@@ -38,6 +38,7 @@ namespace UserControls
         }
         public bool EnableCutMenu { get { return tsmiCut.Enabled; } set { tsmiCut.Enabled = value; } }
         public bool EnablePasteMenu { get { return tsmiPaste.Enabled; } set { tsmiPaste.Enabled = value; } }
+        public bool EnablePlotMenu { get { return tsmiPlot.Enabled; } set { tsmiPlot.Enabled = value; } }
         public bool StartPlotAtZero
         {
             get { return frmDiagramView.StartPlotAtZero; }
@@ -54,34 +55,6 @@ namespace UserControls
             //
             frmDiagramView = new FrmDiagramView();
         }
-
-        private void DataGridViewCopyPaste_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control)
-            {
-                if (e.KeyCode == Keys.C)
-                {
-                    tsmiCopy_Click(null, null);
-                }
-                else if (e.KeyCode == Keys.X)
-                {
-                    tsmiCut_Click(null, null);
-                }
-                else if (e.KeyCode == Keys.V)
-                {
-                    tsmiPaste_Click(null, null);
-                }
-                else if (e.KeyCode == Keys.P)
-                {
-                    tsmiPlot_Click(null, null);
-                }
-            }
-        }
-
-        private void DataGridViewCopyPaste_KeyPress(object sender, KeyPressEventArgs e)
-        {
-        }
-
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -158,7 +131,33 @@ namespace UserControls
         }
 
 
-        // Event handlers - context menu                                                                                            
+        // Event handlers                                                                                                           
+        private void DataGridViewCopyPaste_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                if (e.KeyCode == Keys.C)
+                {
+                    tsmiCopy_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.X)
+                {
+                    tsmiCut_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.V)
+                {
+                    tsmiPaste_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.P)
+                {
+                    tsmiPlot_Click(null, null);
+                }
+            }
+        }
+        private void DataGridViewCopyPaste_KeyPress(object sender, KeyPressEventArgs e)
+        {
+        }
+        // Context menu
         private void dgvData_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
@@ -262,7 +261,7 @@ namespace UserControls
                                 if (i == 0)
                                 {
                                     yData[yIndex] = new double[values.Count];
-                                    yNames[yIndex] = Columns[colIndices[j]].HeaderText;
+                                    yNames[yIndex] = Columns[colIndices[j]].HeaderText.Replace("\n", " ");
                                 }
                                 // Get y data
                                 yData[yIndex][i] = rowValues[colIndices[j]];                                
@@ -283,8 +282,15 @@ namespace UserControls
             }
             catch (Exception ex)
             {
-                CaeGlobals.ExceptionTools.Show(this, ex);
+                MessageBoxes.ShowError(ex.Message);
             }
+        }
+
+
+        // Overrides                                                                                                                
+        protected override void OnDataError(bool displayErrorDialogIfNoHandler, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBoxes.ShowError(e.Exception.Message);
         }
 
 
@@ -456,5 +462,6 @@ namespace UserControls
             //
             return copyValues;
         }
+        
     }
 }

@@ -27,12 +27,19 @@ namespace PrePoMax
         [Id(3, 2)]
         public string SurfaceName { get { return _dLoad.SurfaceName; } set {_dLoad.SurfaceName = value;} }
         //
-        [CategoryAttribute("Magnitude")]
-        [OrderedDisplayName(0, 10, "Pressure")]
-        [DescriptionAttribute("Value of the pressure load.")]
+        [CategoryAttribute("Pressure magnitude")]
+        [OrderedDisplayName(0, 10, "Magnitude")]
+        [DescriptionAttribute("Value of the pressure load magnitude.")]
         [TypeConverter(typeof(StringPressureConverter))]
         [Id(1, 3)]
         public double Magnitude { get { return _dLoad.Magnitude; } set { _dLoad.Magnitude = value; } }
+        //
+        [CategoryAttribute("Pressure phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the pressure phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 4)]
+        public double Phase { get { return _dLoad.PhaseDeg; } set { _dLoad.PhaseDeg = value; } }
         //
         public override string AmplitudeName { get { return _dLoad.AmplitudeName; } set { _dLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _dLoad.Color; } set { _dLoad.Color = value; } }
@@ -49,6 +56,8 @@ namespace PrePoMax
             //
             SetBase(_dLoad, regionTypePropertyNamePairs);
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(_dLoad.Complex);
         }
 
 

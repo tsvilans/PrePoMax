@@ -8,6 +8,7 @@ using CaeGlobals;
 using DynamicTypeDescriptor;
 using System.Drawing.Design;
 using System.Drawing;
+using CaeModel;
 
 namespace PrePoMax
 {
@@ -15,8 +16,8 @@ namespace PrePoMax
     public class ViewTie : ViewConstraint
     {
         // Variables                                                                                                                        
-        private CaeModel.Tie _tie;
-        
+        private Tie _tie;
+
 
         // Properties                                                                                                                      
         public override string Name { get { return _tie.Name; } set { _tie.Name = value; } }
@@ -34,6 +35,14 @@ namespace PrePoMax
         [DescriptionAttribute("Set adjust to No to prevent the projection of the slave nodes on the master surface.")]
         [Id(3, 1)]
         public bool Adjust { get { return _tie.Adjust; } set { _tie.Adjust = value; } }
+
+        //[CategoryAttribute("Data")]
+        //[OrderedDisplayName(3, 10, "Test")]
+        //[DescriptionAttribute("Set adjust to No to prevent the projection of the slave nodes on the master surface.")]
+        //[TypeConverter(typeof(StringStringLengthDefaultConverter))]
+        //[Id(4, 1)]
+        //public string Equation { get { return _container.Equation; } set { _container.Equation = value; } }
+
         // MASTER ------------------------------------------------------------------------------------------------------------------
         [CategoryAttribute("Master Region")]
         [OrderedDisplayName(0, 10, "Master region type")]
@@ -75,7 +84,7 @@ namespace PrePoMax
 
 
         // Constructors                                                                                                             
-        public ViewTie(CaeModel.Tie tie)
+        public ViewTie(Tie tie)
         {
             _tie = tie;
             // Master
@@ -97,7 +106,7 @@ namespace PrePoMax
 
 
         // Methods                                                                                                                  
-        public override CaeModel.Constraint GetBase()
+        public override Constraint GetBase()
         {
             return _tie;
         }

@@ -23,7 +23,7 @@ namespace CaeGlobals
                 if (valueString.StartsWith("="))
                 {
                     valueString = valueString.Substring(1, valueString.Length - 1);
-                    NCalc.Expression e = MyNCalc.GetExpression(valueString);
+                    Expression e = GetExpression(valueString);
                     if (!e.HasErrors())
                     {
                         object result = e.Evaluate();
@@ -43,13 +43,17 @@ namespace CaeGlobals
         static public Expression GetExpression(string expression)
         {
             Expression e = new Expression(expression, EvaluateOptions.IgnoreCase);
-            e.EvaluateParameter += EvaluateParameter;
+            // Add constants
+            e.Parameters.Add("Pi", Math.PI);
+            // Add parameters
+            //e.Parameters.Add("a", 15);
+            //e.EvaluateParameter += EvaluateParameter;
             return e;
         }
 
         static public void EvaluateParameter(string name, ParameterArgs args)
         {
-            if (name == "Pi") args.Result = Math.PI;
+            //if (name == "Pi") args.Result = Math.PI;
         }
 }
 }

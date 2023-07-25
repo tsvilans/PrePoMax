@@ -34,7 +34,17 @@ namespace FileInOut.Output.Calculix
         }
         public override string GetDataString()
         {
-            string data = string.Format("{0}{1}", _step.NumOfFrequencies, Environment.NewLine);
+            string upperFrequency = double.IsNaN(_step.UpperFrequency) ? "" : ", " + _step.UpperFrequency.ToCalculiX16String();
+            string lowerFrequency;
+            if (double.IsNaN(_step.LowerFrequency))
+            {
+                if (upperFrequency == "") lowerFrequency = "";
+                else lowerFrequency = ", 0";
+            }
+            else lowerFrequency = ", " + _step.LowerFrequency.ToCalculiX16String();
+            //
+            string data = string.Format("{0}{1}{2}{3}", _step.NumOfFrequencies, lowerFrequency, upperFrequency,
+                                        Environment.NewLine);
             if (!_step.RunAnalysis) data += "*No Analysis" + Environment.NewLine;
             return data;
         }

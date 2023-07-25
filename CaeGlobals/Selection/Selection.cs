@@ -17,6 +17,7 @@ namespace CaeGlobals
         private int _maxNumberOfIds;                        //ISerializable
         private bool _limitSelectionToFirstPart;            //ISerializable
         private bool _limitSelectionToFirstGeometryType;    //ISerializable
+        private bool _limitSelectionToFirstMesherType;      //ISerializable
         private bool _limitSelectionToShellEdges;           //ISerializable
         private bool _enableShellEdgeFaceSelection;         //ISerializable
         
@@ -40,7 +41,11 @@ namespace CaeGlobals
             set
             {
                 _limitSelectionToFirstPart = value;
-                if (_limitSelectionToFirstPart) _limitSelectionToFirstGeometryType = false;
+                if (_limitSelectionToFirstPart)
+                {
+                    _limitSelectionToFirstGeometryType = false;
+                    _limitSelectionToFirstMesherType = false;
+                }
             } 
         }
         public bool LimitSelectionToFirstGeometryType
@@ -49,7 +54,24 @@ namespace CaeGlobals
             set
             {
                 _limitSelectionToFirstGeometryType = value;
-                if (_limitSelectionToFirstGeometryType) _limitSelectionToFirstPart = false;
+                if (_limitSelectionToFirstGeometryType)
+                {
+                    _limitSelectionToFirstPart = false;
+                    _limitSelectionToFirstMesherType = false;
+                }
+            }
+        }
+        public bool LimitSelectionToFirstMesherType
+        {
+            get { return _limitSelectionToFirstMesherType; }
+            set
+            {
+                _limitSelectionToFirstMesherType = value;
+                if (_limitSelectionToFirstMesherType)
+                {
+                    _limitSelectionToFirstPart = false;
+                    _limitSelectionToFirstGeometryType = false;
+                }
             }
         }
         public bool LimitSelectionToShellEdges
@@ -73,6 +95,7 @@ namespace CaeGlobals
             _maxNumberOfIds = -1;
             _limitSelectionToFirstPart = false;
             _limitSelectionToFirstGeometryType = false;
+            _limitSelectionToFirstMesherType = false;
             _limitSelectionToShellEdges = false;
             _enableShellEdgeFaceSelection = false;
             //
@@ -103,6 +126,8 @@ namespace CaeGlobals
                         _limitSelectionToFirstPart = (bool)entry.Value; break;
                     case "_limitSelectionToFirstGeometryType":
                         _limitSelectionToFirstGeometryType = (bool)entry.Value; break;
+                    case "_limitSelectionToFirstMesherType":
+                        _limitSelectionToFirstMesherType = (bool)entry.Value; break;
                     case "_limitSelectionToShellEdges":
                         _limitSelectionToShellEdges = (bool)entry.Value; break;
                     case "_enableShellEdgeFaceSelection":
@@ -186,6 +211,7 @@ namespace CaeGlobals
             info.AddValue("_maxNumberOfIds", _maxNumberOfIds, typeof(int));
             info.AddValue("_limitSelectionToFirstPart", _limitSelectionToFirstPart, typeof(bool));
             info.AddValue("_limitSelectionToFirstGeometryType", _limitSelectionToFirstGeometryType, typeof(bool));
+            info.AddValue("_limitSelectionToFirstMesherType", _limitSelectionToFirstMesherType, typeof(bool));
             info.AddValue("_limitSelectionToShellEdges", _limitSelectionToShellEdges, typeof(bool));
             info.AddValue("_enableShellEdgeFaceSelection", _enableShellEdgeFaceSelection, typeof(bool));
         }

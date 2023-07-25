@@ -35,7 +35,6 @@ namespace PrePoMax.Forms
             propertyGrid.SelectedObject = _sectionViewParameters;
             _pause = false;
             //
-            propertyGrid.SetParent(this);   // for the Tab key to work
             propertyGrid.SetLabelColumnWidth(1.75);
         }
 

@@ -112,7 +112,7 @@ namespace PrePoMax.Forms
             _translateParameters = (TranslateParameters)propertyGrid.SelectedObject;
             //
             double[] translateVector = TranslateVector;
-            _controller.TranlsateModelPartsCommand(_partNames, translateVector, _translateParameters.Copy);
+            _controller.TranslateModelPartsCommand(_partNames, translateVector, _translateParameters.Copy);
             //
             HighlightNodes();
         }

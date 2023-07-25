@@ -245,6 +245,7 @@ namespace CaeGlobals
                 return StringPowerPerVolumeConverter.GetUnitAbbreviation(_powerUnit, _volumeUnit, _powerPerVolumeUnit);
             }
         }
+        // Frequency units
         public string FrequencyUnitAbbreviation 
         { 
             get 
@@ -252,6 +253,67 @@ namespace CaeGlobals
                 if ((int)_frequencyUnit == MyUnit.NoUnit) return "";
                 else return Frequency.GetAbbreviation(_frequencyUnit); 
             } 
+        }
+        public string EigenvalueUnitAbbreviation
+        {
+            get
+            {
+                string unit = RotationalSpeedUnitAbbreviation;
+                if (unit != null)
+                {
+                    unit = unit.Replace("/", "²/");
+                    unit += "²";
+                }
+                return unit;
+            }
+        }
+        public string TransParticipationFactorUnitAbbreviation
+        {
+            get
+            {
+                if ((int)_massUnit == MyUnit.NoUnit) return "";
+                else
+                {
+                    string unit = "√(" + MassUnitAbbreviation + ")·" + LengthUnitAbbreviation;
+                    return unit;
+                }
+            }
+        }
+        public string RotParticipationFactorUnitAbbreviation
+        {
+            get
+            {
+                if ((int)_massUnit == MyUnit.NoUnit) return "";
+                else
+                {
+                    string unit = "√(" + MassUnitAbbreviation + ")·" + AngleUnitAbbreviation;
+                    return unit;
+                }
+            }
+        }
+        public string TransEffectiveMassUnitAbbreviation
+        {
+            get
+            {
+                if ((int)_massUnit == MyUnit.NoUnit) return "";
+                else
+                {
+                    string unit = MassUnitAbbreviation + "·" + LengthUnitAbbreviation + "²";
+                    return unit;
+                }
+            }
+        }
+        public string RotEffectiveMassUnitAbbreviation
+        {
+            get
+            {
+                if ((int)_massUnit == MyUnit.NoUnit) return "";
+                else
+                {
+                    string unit = MassUnitAbbreviation + "·" + AngleUnitAbbreviation + "²";
+                    return unit;
+                }
+            }
         }
         // Thermal units
         public string ThermalExpansionUnitAbbreviation
@@ -553,6 +615,8 @@ namespace CaeGlobals
                 StringPowerPerVolumeConverter.SetPowerUnit = PowerUnitAbbreviation;
                 StringPowerPerVolumeConverter.SetVolumeUnit = VolumeUnitAbbreviation;
             }
+            StringFrequencyConverter.SetUnit = FrequencyUnitAbbreviation;
+            StringReciprocalTimeConverter.SetUnit = TimeUnitAbbreviation;
             // Contact
             StringForcePerVolumeConverter.SetForceUnit = ForceUnitAbbreviation;
             StringForcePerVolumeConverter.SetVolumeUnit = VolumeUnitAbbreviation;

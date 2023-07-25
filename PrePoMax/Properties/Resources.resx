@@ -214,8 +214,8 @@
   <data name="ZoomToFit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\View\ZoomToFit.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Element_set" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Mesh\Element_set.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Preview_initial_condition" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Initial conditions\Preview_initial_condition.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Left_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Common\Left_arrow.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -268,8 +268,14 @@
   <data name="Deformed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Results\Deformed.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Element_set" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Mesh\Element_set.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Animate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Results\Animate.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\File\Export.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Back" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\View\Back.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -294,9 +300,6 @@
   </data>
   <data name="NoResult" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Analysis\NoResult.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Preview_initial_condition" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Initial conditions\Preview_initial_condition.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Warning" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Analysis\Warning.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -334,13 +337,16 @@
   <data name="First" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Results\First.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Export" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\File\Export.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Common\Search.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Preview_defined_field" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Step\Preview_defined_field.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ElementEdges" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\View\ElementEdges.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Preview_defined_field" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Step\Preview_defined_field.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Meshing_parameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Geometry\Meshing_parameters.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

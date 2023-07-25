@@ -46,7 +46,7 @@
             this.gbProperties.Size = new System.Drawing.Size(510, 358);
             this.gbProperties.TabIndex = 0;
             this.gbProperties.TabStop = false;
-            this.gbProperties.Text = "Data";
+            this.gbProperties.Text = "Properties";
             // 
             // propertyGrid
             // 
@@ -58,6 +58,7 @@
             this.propertyGrid.LineColor = System.Drawing.SystemColors.Control;
             this.propertyGrid.Location = new System.Drawing.Point(6, 22);
             this.propertyGrid.Name = "propertyGrid";
+            this.propertyGrid.ReadOnly = false;
             this.propertyGrid.Size = new System.Drawing.Size(498, 330);
             this.propertyGrid.TabIndex = 3;
             this.propertyGrid.ToolbarVisible = false;

@@ -29,7 +29,7 @@ namespace PrePoMax.Commands
         // Methods                                                                                                                  
         public override bool Execute(Controller receiver)
         {
-            receiver.RemoveGeometryParts(_partNames);
+            receiver.RemoveGeometryParts(_partNames, false);
             return true;
         }
 

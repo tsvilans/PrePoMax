@@ -127,9 +127,12 @@
     <Compile Include="Command\0030_Geometry\CFindEdgesByAngleForGeometryParts.cs" />
     <Compile Include="Command\0030_Geometry\CSplitAFaceUsingTwoPoints.cs" />
     <Compile Include="Command\0030_Geometry\CFlipFaceOrientations.cs" />
+    <Compile Include="Command\0040_Mesh\CAddMeshingParameters.cs" />
     <Compile Include="Command\0040_Mesh\CAddMeshRefinement.cs" />
     <Compile Include="Command\0040_Mesh\CCreateMesh.cs" />
+    <Compile Include="Command\0040_Mesh\CRemoveMeshingParameters.cs" />
     <Compile Include="Command\0040_Mesh\CRemoveMeshRefinements.cs" />
+    <Compile Include="Command\0040_Mesh\CReplaceMeshingParameters.cs" />
     <Compile Include="Command\0040_Mesh\CReplaceMeshRefinement.cs" />
     <Compile Include="Command\0040_Mesh\CSetMeshingParameters.cs" />
     <Compile Include="Command\0050_Model\01_Properties\CReplaceModelProperties.cs" />
@@ -163,6 +166,7 @@
     <Compile Include="Command\0050_Model\CSetNewModelProperties.cs" />
     <Compile Include="Command\0050_Model\CCreateBoundaryLayer.cs" />
     <Compile Include="Command\0061_Material\CDuplicateMaterial.cs" />
+    <Compile Include="Command\0071_Constraint\CDuplicateConstraints.cs" />
     <Compile Include="Command\0071_Constraint\CMergeByMasterSlaveConstraints.cs" />
     <Compile Include="Command\0071_Constraint\CSwapMasterSlaveConstraints.cs" />
     <Compile Include="Command\0072_SurfaceInteraction\CAddSurfaceInteraction.cs" />
@@ -359,6 +363,15 @@
     </Compile>
     <Compile Include="Forms\37_Amplitude\ViewAmplitude.cs" />
     <Compile Include="Forms\37_Amplitude\ViewAmplitudeTabular.cs" />
+    <Compile Include="Forms\41_Step\DampingRatiosAndValuesUIEditor.cs" />
+    <Compile Include="Forms\41_Step\FrmGetDampingRatios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\41_Step\FrmGetDampingRatios.Designer.cs">
+      <DependentUpon>FrmGetDampingRatios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\41_Step\ViewModalDynamics.cs" />
+    <Compile Include="Forms\41_Step\ViewSteadyStateDynamics.cs" />
     <Compile Include="Forms\41_Step\ViewCoupledTempDispStep.cs" />
     <Compile Include="Forms\41_Step\ViewDynamicStep.cs" />
     <Compile Include="Forms\41_Step\ViewSlipWearStep.cs" />
@@ -399,21 +412,35 @@
     <Compile Include="Annotations\ElementAnnotation.cs" />
     <Compile Include="Annotations\NodeAnnotation.cs" />
     <Compile Include="Annotations\AnnotationBase.cs" />
-    <Compile Include="Forms\72_ResultHistoryOutput\FrmResultHistoryOutput.cs">
+    <Compile Include="Forms\53_Find\FrmFind.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\72_ResultHistoryOutput\ViewResultHistoryOutputFromField.cs" />
-    <Compile Include="Forms\72_ResultHistoryOutput\ViewResultHistoryOutput.cs" />
-    <Compile Include="Forms\73_Transformation\FrmTransformation.cs">
+    <Compile Include="Forms\53_Find\FrmFind.Designer.cs">
+      <DependentUpon>FrmFind.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\72_ResultFieldOutput\LimitPartDataPoint.cs" />
+    <Compile Include="Forms\72_ResultFieldOutput\LimitElementSetDataPoint.cs" />
+    <Compile Include="Forms\72_ResultFieldOutput\FrmResultFieldOutput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\73_Transformation\FrmTransformation.Designer.cs">
+    <Compile Include="Forms\72_ResultFieldOutput\ViewResultFieldOutput.cs" />
+    <Compile Include="Forms\72_ResultFieldOutput\ViewResultFieldOutputEnvelope.cs" />
+    <Compile Include="Forms\72_ResultFieldOutput\ViewResultFieldOutputLimit.cs" />
+    <Compile Include="Forms\73_ResultHistoryOutput\FrmResultHistoryOutput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\73_ResultHistoryOutput\ViewResultHistoryOutputFromField.cs" />
+    <Compile Include="Forms\73_ResultHistoryOutput\ViewResultHistoryOutput.cs" />
+    <Compile Include="Forms\74_Transformation\FrmTransformation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\74_Transformation\FrmTransformation.Designer.cs">
       <DependentUpon>FrmTransformation.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\73_Transformation\ViewCircularPattern.cs" />
-    <Compile Include="Forms\73_Transformation\ViewLinearPattern.cs" />
-    <Compile Include="Forms\73_Transformation\ViewTransformation.cs" />
-    <Compile Include="Forms\73_Transformation\ViewSymetry.cs" />
+    <Compile Include="Forms\74_Transformation\ViewCircularPattern.cs" />
+    <Compile Include="Forms\74_Transformation\ViewLinearPattern.cs" />
+    <Compile Include="Forms\74_Transformation\ViewTransformation.cs" />
+    <Compile Include="Forms\74_Transformation\ViewSymetry.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewFriction.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewSurfaceInteractionProperty.cs" />
     <Compile Include="Forms\34_SurfaceInteraction\ViewSurfaceBehavior.cs" />
@@ -474,11 +501,11 @@
     <Compile Include="Forms\45_Load\FrmLoad.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\61_Analysis\EnvVarsUIEditor.cs" />
-    <Compile Include="Forms\72_ResultHistoryOutput\FrmViewResultHistoryOutput.cs">
+    <Compile Include="Forms\51_Settings\EnvVarsUIEditor.cs" />
+    <Compile Include="Forms\73_ResultHistoryOutput\FrmViewResultHistoryOutput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\72_ResultHistoryOutput\FrmViewResultHistoryOutput.Designer.cs">
+    <Compile Include="Forms\73_ResultHistoryOutput\FrmViewResultHistoryOutput.Designer.cs">
       <DependentUpon>FrmViewResultHistoryOutput.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\IFormHighlight.cs" />
@@ -616,7 +643,6 @@
     <Compile Include="Settings\PostSettings.cs" />
     <Compile Include="Settings\ISettings.cs" />
     <Compile Include="Settings\CalculixSettings.cs" />
-    <Compile Include="Tools.cs" />
     <Compile Include="Enums\UpdateModelType.cs" />
     <Compile Include="Annotations\AnnotationContainer.cs" />
     <EmbeddedResource Include="Forms\00_Common\FrmSelectGeometry.resx">
@@ -675,6 +701,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\37_Amplitude\FrmAmplitude.resx">
       <DependentUpon>FrmAmplitude.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\41_Step\FrmGetDampingRatios.resx">
+      <DependentUpon>FrmGetDampingRatios.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\42_HistoryOutput\FrmHistoryOutput.resx">
       <DependentUpon>FrmHistoryOutput.cs</DependentUpon>
@@ -736,6 +765,9 @@
     <EmbeddedResource Include="Forms\52_Query\FrmQuery.resx">
       <DependentUpon>FrmQuery.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\53_Find\FrmFind.resx">
+      <DependentUpon>FrmFind.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\61_Analysis\FrmAnalysis.resx">
       <DependentUpon>FrmAnalysis.cs</DependentUpon>
     </EmbeddedResource>
@@ -745,13 +777,16 @@
     <EmbeddedResource Include="Forms\71_Animation\FrmAnimation.resx">
       <DependentUpon>FrmAnimation.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\72_ResultHistoryOutput\FrmResultHistoryOutput.resx">
+    <EmbeddedResource Include="Forms\72_ResultFieldOutput\FrmResultFieldOutput.resx">
+      <DependentUpon>FrmResultFieldOutput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\73_ResultHistoryOutput\FrmResultHistoryOutput.resx">
       <DependentUpon>FrmResultHistoryOutput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\72_ResultHistoryOutput\FrmViewResultHistoryOutput.resx">
+    <EmbeddedResource Include="Forms\73_ResultHistoryOutput\FrmViewResultHistoryOutput.resx">
       <DependentUpon>FrmViewResultHistoryOutput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\73_Transformation\FrmTransformation.resx">
+    <EmbeddedResource Include="Forms\74_Transformation\FrmTransformation.resx">
       <DependentUpon>FrmTransformation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmMain.resx">
@@ -894,6 +929,8 @@
     <None Include="Icons\Section\Section.ico" />
     <None Include="Icons\Initial conditions\Preview_initial_condition.ico" />
     <None Include="Icons\Step\Preview_defined_field.ico" />
+    <None Include="Icons\Common\Search.ico" />
+    <None Include="Icons\Geometry\Meshing_parameters.ico" />
     <Content Include="main.ico" />
   </ItemGroup>
   <ItemGroup>

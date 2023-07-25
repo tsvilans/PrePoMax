@@ -58,7 +58,7 @@ namespace PrePoMax
         [DescriptionAttribute("Value of the force load magnitude per node.")]
         [TypeConverter(typeof(StringForceConverter))]
         [Id(1, 4)]        
-        public double Flength
+        public double Magnitude
         {
             get { return Math.Sqrt(_cLoad.F1 * _cLoad.F1 + _cLoad.F2 * _cLoad.F2 + _cLoad.F3 * _cLoad.F3); }
             set
@@ -75,6 +75,13 @@ namespace PrePoMax
                 _cLoad.F3 *= r;
             }
         }
+        //
+        [CategoryAttribute("Force phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the force phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 5)]
+        public double Phase { get { return _cLoad.PhaseDeg; } set { _cLoad.PhaseDeg = value; } }
         //
         public override string AmplitudeName { get { return _cLoad.AmplitudeName; } set { _cLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _cLoad.Color; } set { _cLoad.Color = value; } }
@@ -95,6 +102,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             // 2D
             DynamicCustomTypeDescriptor.GetProperty(nameof(F3)).SetIsBrowsable(!cLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(_cLoad.Complex);
         }
 
 

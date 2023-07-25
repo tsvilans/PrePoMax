@@ -43,8 +43,6 @@ namespace PrePoMax.Forms
             _controller = controller;
             _viewAmplitude = null;
             //
-            propertyGrid.SetParent(this);   // for the Tab key to work
-            //
             int i = 0;
             _pages = new TabPage[tcProperties.TabPages.Count];
             foreach (TabPage tabPage in tcProperties.TabPages)
@@ -86,10 +84,6 @@ namespace PrePoMax.Forms
             // propertyGrid
             // 
             this.propertyGrid.Size = new System.Drawing.Size(296, 278);
-            //
-            // dgvData
-            //
-            this.dgvData.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvData_DataError);
             // 
             // FrmAmplitude
             // 
@@ -126,10 +120,6 @@ namespace PrePoMax.Forms
         private void Binding_ListChanged(object sender, ListChangedEventArgs e)
         {
             _propertyItemChanged = true;
-        }
-        private void dgvData_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            MessageBoxes.ShowError(e.Exception.Message);
         }
 
 
@@ -174,7 +164,7 @@ namespace PrePoMax.Forms
                 _controller.AddAmplitudeCommand(Amplitude);
             }
             // Replace
-            else if(_propertyItemChanged)
+            else if (_propertyItemChanged)
             {
                 _controller.ReplaceAmplitudeCommand(_amplitudeToEditName, Amplitude);
             }

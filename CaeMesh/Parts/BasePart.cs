@@ -8,7 +8,7 @@ using CaeGlobals;
 namespace CaeMesh
 {
     [Serializable]
-    public class BasePart : FeGroup
+    public class BasePart : FeGroup, IComparable<BasePart>
     {
         // Variables                                                                                                                
         protected int _partId;
@@ -165,6 +165,15 @@ namespace CaeMesh
         public virtual void RenumberVisualizationEdges(int[] orderedEdgesIds)
         {
             _visualization.RenumberEdges(orderedEdgesIds);
+        }
+        // Added for usage in graphs
+        public int CompareTo(BasePart other)
+        {
+            if (_boundingBox.GetDiagonal() < other._boundingBox.GetDiagonal()) return 1;
+            else if (_boundingBox.GetDiagonal() > other._boundingBox.GetDiagonal()) return -1;
+            else return 0;
+            //if (System.Diagnostics.Debugger.IsAttached) throw new NotImplementedException();
+            //else return 0;
         }
     }
 }

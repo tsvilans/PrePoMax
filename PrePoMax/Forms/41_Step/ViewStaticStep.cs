@@ -20,11 +20,13 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(3, 10, "Nlgeom")]
         [DescriptionAttribute("Enable/disable the nonlinear effects of large deformations and large displacements.")]
+        [Id(4, 1)]
         public bool Nlgeom { get { return _staticStep.Nlgeom; } set { _staticStep.Nlgeom = value; } }
         //
         [CategoryAttribute("Incrementation")]
         [OrderedDisplayName(0, 10, "Type")]
         [DescriptionAttribute("Select the incrementation type.")]
+        [Id(1, 2)]
         public CaeModel.IncrementationTypeEnum IncrementationType
         { 
             get { return _staticStep.IncrementationType; }
@@ -38,23 +40,28 @@ namespace PrePoMax
         [CategoryAttribute("Incrementation")]
         [OrderedDisplayName(1, 10, "Direct")]
         [DescriptionAttribute("By using the 'Direct' keyword automatic incrementation of nonlinear step is switched off.")]
+        [Id(2, 2)]
         public bool Direct { get { return _staticStep.Direct; } set { _staticStep.Direct = value; } }
         //
         [CategoryAttribute("Incrementation")]
         [OrderedDisplayName(2, 10, "Max increments")]
         [DescriptionAttribute("The maximum number of increments in the step.")]
+        [TypeConverter(typeof(StringIntegerConverter))]
+        [Id(3, 2)]
         public int MaxIncrements { get { return _staticStep.MaxIncrements; } set { _staticStep.MaxIncrements = value; } }
         //
         [CategoryAttribute("Incrementation")]
         [OrderedDisplayName(3, 10, "Time period")]
         [DescriptionAttribute("Time period of the step.")]
         [TypeConverter(typeof(StringTimeConverter))]
+        [Id(4, 2)]
         public double TimePeriod { get { return _staticStep.TimePeriod; } set { _staticStep.TimePeriod = value; } }
         //
         [CategoryAttribute("Incrementation")]
         [OrderedDisplayName(4, 10, "Initial time increment")]
         [DescriptionAttribute("Initial time increment of the step.")]
         [TypeConverter(typeof(StringTimeConverter))]
+        [Id(5, 2)]
         public double InitialTimeIncrement
         {
             get { return _staticStep.InitialTimeIncrement; }
@@ -65,6 +72,7 @@ namespace PrePoMax
         [OrderedDisplayName(5, 10, "Min time increment")]
         [DescriptionAttribute("Minimum time increment allowed.")]
         [TypeConverter(typeof(StringTimeConverter))]
+        [Id(6, 2)]
         public double MinTimeIncrement
         {
             get { return _staticStep.MinTimeIncrement; }
@@ -75,6 +83,7 @@ namespace PrePoMax
         [OrderedDisplayName(6, 10, "Max time increment")]
         [DescriptionAttribute("Maximum time increment allowed.")]
         [TypeConverter(typeof(StringTimeConverter))]
+        [Id(7, 2)]
         public double MaxTimeIncrement
         {
             get { return _staticStep.MaxTimeIncrement; }

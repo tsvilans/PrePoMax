@@ -1127,7 +1127,8 @@ namespace vtkControl
                 string pickedActorName = GetActorName(pickedActor);                
                 vtkMaxActor maxActor;
                 //
-                if (!(_actors.TryGetValue(pickedActorName, out maxActor) && maxActor.FrustumCellLocator != null))
+                if (pickedActorName == null || 
+                    !(_actors.TryGetValue(pickedActorName, out maxActor) && maxActor.FrustumCellLocator != null))
                 {
                     // Actor has no locator
                 }
@@ -1644,12 +1645,13 @@ namespace vtkControl
             _renderWindow.LineSmoothingOn();
             //_renderWindow.PolygonSmoothingOn();
             _renderWindow.SetMultiSamples(2);
-            //Camera is located at (0, 0, 1), the camera is looking at (0, 0, 0), and up is (0, 1, 0).
+            // Camera lights are defined in camera coordinate system where:
+            // camera is located at (0, 0, 1), the camera is looking at (0, 0, 0), and up is (0, 1, 0).
             _light1 = vtkLight.New();
             _light1.SetPosition(-1, 1, 1);
             _light1.SetFocalPoint(0, 0, 0);
             _light1.SetColor(1, 1, 1);
-            _light1.SetIntensity(0.5);
+            _light1.SetIntensity(0.4);
             _light1.SetLightTypeToCameraLight();
             _renderer.AddLight(_light1);
             _overlayRenderer.AddLight(_light1);
@@ -1659,7 +1661,7 @@ namespace vtkControl
             _light2.SetPosition(1, 1, 1);
             _light2.SetFocalPoint(0, 0, 0);
             _light2.SetColor(1, 1, 1);
-            _light2.SetIntensity(0.5);
+            _light2.SetIntensity(0.4);
             _light2.SetLightTypeToCameraLight();
             _renderer.AddLight(_light2);
             _overlayRenderer.AddLight(_light2);
@@ -1669,11 +1671,11 @@ namespace vtkControl
             _light3.SetPosition(0, -1, 0);
             _light3.SetFocalPoint(0, 0, 0);
             _light3.SetColor(1, 1, 1);
-            _light3.SetSpecularColor(0, 0, 0);
-            _light3.SetIntensity(0.3);
+            _light3.SetIntensity(0.4);
             _light3.SetLightTypeToCameraLight();
-            _light3.SwitchOff();
             _renderer.AddLight(_light3);
+            _overlayRenderer.AddLight(_light3);
+            _selectionRenderer.AddLight(_light3);
             // Coordinate system
             vtkAxesActor axes = vtkAxesActor.New();
             axes.GetXAxisTipProperty().SetColor(0.706, 0.016, 0.150);
@@ -3263,6 +3265,7 @@ namespace vtkControl
             // Actor
             data.Name += Globals.NameSeparator + "arrow";
             vtkMaxActor actor = new vtkMaxActor(data, mapper);
+            actor.Color = Color.Blue;
             actor.GeometryProperty.SetRepresentationToSurface();
             // Add
             ApplySymbolFormatingToActor(actor);
@@ -3755,8 +3758,6 @@ namespace vtkControl
             if (actor.ElementEdges != null) AddActorEdges(actor, false, layer);
             // Add modelEdges
             if (actor.ModelEdges != null) AddActorEdges(actor, true, layer);
-            // Turn on light3 for parts colored by elements
-            if (actor.ColorTable != null) _light3.SwitchOn();
         }
         private void AddActorGeometry(vtkMaxActor actor, vtkRendererLayer layer)
         {
@@ -4806,9 +4807,10 @@ namespace vtkControl
         {
             _scalarBarWidget.SetLabelFormat(numberFormat);
         }
-        public void SetScalarBarText(string fieldName, string componentName, string unitAbbreviation, string minMaxType)
+        public void SetScalarBarText(string fieldName, string componentName, string unitAbbreviation, string complexComponent,
+                                     string minMaxType)
         {
-            _scalarBarWidget.SetText(fieldName, componentName, unitAbbreviation, minMaxType);
+            _scalarBarWidget.SetText(fieldName, componentName, unitAbbreviation, complexComponent, minMaxType);
             //
             UpdateScalarFormatting();
         }
@@ -4884,7 +4886,7 @@ namespace vtkControl
             else _statusBlockWidget.BorderVisibilityOff();
         }
         public void SetStatusBlock(string name, DateTime dateTime, float analysisTimeOrFrequency, string unit,
-                                   string deformationVariable, float scaleFactor, DataFieldType fieldType, int stepNumber,
+                                   string deformationVariable, float scaleFactor, vtkMaxFieldDataType fieldType, int stepNumber,
                                    int incrementNumber)
         {
             if (_statusBlockWidget == null) return;
@@ -5456,13 +5458,14 @@ namespace vtkControl
 
         #region Animation ##########################################################################################################
         public void SetAnimationFrameData(float[] time, int[] stepId, int[] stepIncrementId, float[] scale,
-                                          double[] allFramesScalarRange)
+                                          double[] allFramesScalarRange, vtkMaxAnimationType animationType)
         {
             _animationFrameData.Time = time;
             _animationFrameData.StepId = stepId;
             _animationFrameData.StepIncrementId = stepIncrementId;
             _animationFrameData.ScaleFactor = scale;
             _animationFrameData.AllFramesScalarRange = allFramesScalarRange;
+            _animationFrameData.AnimationType = animationType;
         }
         //
         public void SetAnimationFrame(int frameNumber, bool scalarRangeFromAllFrames)
@@ -5480,6 +5483,7 @@ namespace vtkControl
                 _statusBlockWidget.IncrementNumber = _animationFrameData.StepIncrementId[frameNumber];
                 _statusBlockWidget.AnalysisTime = _animationFrameData.Time[frameNumber];
                 _statusBlockWidget.AnimationScaleFactor = _animationFrameData.ScaleFactor[frameNumber];
+                _statusBlockWidget.AnimationType = _animationFrameData.AnimationType;
             }
             //
             List<string> visibleActors = new List<string>();
@@ -5548,6 +5552,7 @@ namespace vtkControl
                 _statusBlockWidget.IncrementNumber = _animationFrameData.StepIncrementId[frameNumber];
                 _statusBlockWidget.AnalysisTime = _animationFrameData.Time[frameNumber];
                 _statusBlockWidget.AnimationScaleFactor = _animationFrameData.ScaleFactor[frameNumber];
+                _statusBlockWidget.AnimationType = _animationFrameData.AnimationType;
             }
             //
             bool visible;
@@ -5691,8 +5696,6 @@ namespace vtkControl
         {
             if (_sectionView) RemoveSectionView();
             _transforms.Clear();
-            //
-            _light3.SwitchOff();
             //
             foreach (var entry in _actors)
             {

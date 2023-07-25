@@ -17,5 +17,10 @@ namespace CaeResults
         /// ComponentNames [0 ... num. of ids/values][0...num. of components] -> value
         /// </summary>
         public double[][] Values;
+
+        public string GetHashKey()
+        {
+            return FieldName + "_" + SetName + "_" + Time;
+        }
     }
 }

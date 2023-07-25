@@ -7,6 +7,8 @@ using System.ComponentModel;
 using DynamicTypeDescriptor;
 using CaeGlobals;
 using CaeModel;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using CaeResults;
 
 namespace PrePoMax
 {
@@ -22,7 +24,7 @@ namespace PrePoMax
         {
             get { return "Elastic"; }
         }
-
+        //
         [Browsable(false)]
         public override MaterialProperty Base
         {
@@ -99,5 +101,7 @@ namespace PrePoMax
 
 
         // Methods                                                                                                                  
+
+
     }
 }

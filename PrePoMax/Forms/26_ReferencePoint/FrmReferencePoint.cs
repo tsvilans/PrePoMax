@@ -259,7 +259,7 @@ namespace PrePoMax.Forms
         }
         private string GetReferencePointName()
         {
-            return _referencePointNames.GetNextNumberedKey("Reference_point");
+            return _referencePointNames.GetNextNumberedKey("Reference_Point");
         }
         private void HighlightReferencePoint()
         {

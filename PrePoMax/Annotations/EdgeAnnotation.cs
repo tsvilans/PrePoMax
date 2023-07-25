@@ -95,7 +95,7 @@ namespace PrePoMax
                     length += segLen;
                 }
                 //
-                if (Controller.ViewResultsType == ViewResultsType.ColorContours)
+                if (Controller.ViewResultsType == ViewResultsTypeEnum.ColorContours)
                 {
                     results = true;
                     // Values

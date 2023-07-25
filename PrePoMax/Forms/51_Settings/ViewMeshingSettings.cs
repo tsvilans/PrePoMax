@@ -26,8 +26,14 @@ namespace PrePoMax.Settings
         {
             _meshingSettings = meshingSettings;
             //
+            _settingsView = true;
+            UpdateVisibility(); // apply settings view
+            //
+            _dctd.GetProperty(nameof(AdvancedView)).SetIsBrowsable(false);
+            _dctd.GetProperty(nameof(Name)).SetIsBrowsable(false);
             _dctd.GetProperty(nameof(MaxH)).SetIsBrowsable(false);
             _dctd.GetProperty(nameof(MinH)).SetIsBrowsable(false);
+            _dctd.GetProperty(nameof(Hausdorff)).SetIsBrowsable(false);
         }
 
 
@@ -39,6 +45,7 @@ namespace PrePoMax.Settings
         public void Reset()
         {
             _meshingSettings.Reset();
+            UpdateVisibility(); // apply settings view
         }
     }
 }

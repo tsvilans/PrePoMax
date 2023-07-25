@@ -39,7 +39,7 @@ namespace CaeModel
         // Variables                                                                                                                
         protected OrderedDictionary<string, HistoryOutput> _historyOutputs;             //ISerializable
         protected OrderedDictionary<string, FieldOutput> _fieldOutputs;                 //ISerializable
-        protected OrderedDictionary<string, BoundaryCondition> _boundayConditions;      //ISerializable
+        protected OrderedDictionary<string, BoundaryCondition> _boundaryConditions;     //ISerializable
         protected OrderedDictionary<string, Load> _loads;                               //ISerializable
         protected OrderedDictionary<string, DefinedField> _definedFields;               //ISerializable
         protected bool _runAnalysis;                                                    //ISerializable
@@ -48,12 +48,13 @@ namespace CaeModel
         protected int _maxIncrements;                                                   //ISerializable
         protected IncrementationTypeEnum _incrementationType;                           //ISerializable
         protected SolverTypeEnum _solverType;                                           //ISerializable
+        protected int _outputFrequency;                                                 //ISerializable
 
 
         // Properties                                                                                                               
         public OrderedDictionary<string, HistoryOutput> HistoryOutputs { get { return _historyOutputs; } }
         public OrderedDictionary<string, FieldOutput> FieldOutputs { get { return _fieldOutputs; } }
-        public OrderedDictionary<string, BoundaryCondition> BoundaryConditions { get { return _boundayConditions; } }
+        public OrderedDictionary<string, BoundaryCondition> BoundaryConditions { get { return _boundaryConditions; } }
         public OrderedDictionary<string, Load> Loads { get { return _loads; } }
         public OrderedDictionary<string, DefinedField> DefinedFields { get { return _definedFields; } }
         public bool RunAnalysis { get { return _runAnalysis; } set { _runAnalysis = value; } }
@@ -62,6 +63,15 @@ namespace CaeModel
         public int MaxIncrements { get { return _maxIncrements; } set { _maxIncrements = Math.Max(value, 1); } }
         public IncrementationTypeEnum IncrementationType { get { return _incrementationType; } set { _incrementationType = value; } }
         public SolverTypeEnum SolverType { get { return _solverType; } set { _solverType = value; } }
+        public int OutputFrequency
+        {
+            get { return _outputFrequency; }
+            set
+            {
+                if (value != int.MinValue && value < 0) throw new Exception("The frequency value must be larger or equal to 0.");
+                _outputFrequency = value;
+            }
+        }
 
 
         // Constructors                                                                                                             
@@ -74,17 +84,17 @@ namespace CaeModel
         {
             StringComparer sc = StringComparer.OrdinalIgnoreCase;
             //
-            _historyOutputs = new OrderedDictionary<string, HistoryOutput>("History outputs", sc);
-            _fieldOutputs = new OrderedDictionary<string, FieldOutput>("Field outputs", sc);
-            _boundayConditions = new OrderedDictionary<string, BoundaryCondition>("Boundary conditions", sc);
+            _historyOutputs = new OrderedDictionary<string, HistoryOutput>("History Outputs", sc);
+            _fieldOutputs = new OrderedDictionary<string, FieldOutput>("Field Outputs", sc);
+            _boundaryConditions = new OrderedDictionary<string, BoundaryCondition>("Boundary Conditions", sc);
             _loads = new OrderedDictionary<string, Load>("Loads", sc);
-            _definedFields = new OrderedDictionary<string, DefinedField>("Defined fields", sc);
+            _definedFields = new OrderedDictionary<string, DefinedField>("Defined Fields", sc);
             _runAnalysis = true;
             _perturbation = false;
             _nlgeom = false;
             _maxIncrements = 100;
             _incrementationType = IncrementationTypeEnum.Default;
-            
+            _outputFrequency = int.MinValue;
         }
         public Step(SerializationInfo info, StreamingContext context)
             :base(info, context)
@@ -92,6 +102,7 @@ namespace CaeModel
             _incrementationType = IncrementationTypeEnum.Automatic;         // Compatibility for version v.0.9.0
             // Compatibility for version v.1.3.5
             _runAnalysis = true;
+            _outputFrequency = int.MinValue;
             //
             foreach (SerializationEntry entry in info)
             {
@@ -101,8 +112,9 @@ namespace CaeModel
                         _historyOutputs = (OrderedDictionary<string, HistoryOutput>)entry.Value; break;
                     case "_fieldOutputs":
                         _fieldOutputs = (OrderedDictionary<string, FieldOutput>)entry.Value; break;
-                    case "_boundayConditions":
-                        _boundayConditions = (OrderedDictionary<string, BoundaryCondition>)entry.Value; break;
+                    case "_boundayConditions":  // Compatibility for version v.1.3.5
+                    case "_boundaryConditions":
+                        _boundaryConditions = (OrderedDictionary<string, BoundaryCondition>)entry.Value; break;
                     case "_loads":
                         _loads = (OrderedDictionary<string, Load>)entry.Value; break;
                     case "_definedFields":
@@ -119,13 +131,15 @@ namespace CaeModel
                         _incrementationType = (IncrementationTypeEnum)entry.Value; break;
                     case "_solverType":
                         _solverType = (SolverTypeEnum)entry.Value; break;
+                    case "_outputFrequency":
+                        _outputFrequency = (int)entry.Value; break;
                         //default:
                         //    throw new NotSupportedException();
                 }
             }
             // Compatibility for version v.1.0.0
             if (_definedFields == null)
-                _definedFields = new OrderedDictionary<string, DefinedField>("Defined fields", StringComparer.OrdinalIgnoreCase);
+                _definedFields = new OrderedDictionary<string, DefinedField>("Defined Fields", StringComparer.OrdinalIgnoreCase);
         }
 
 
@@ -139,24 +153,57 @@ namespace CaeModel
             _fieldOutputs.Add(fieldOutput.Name, fieldOutput);
         }
         public abstract bool IsBoundaryConditionSupported(BoundaryCondition boundaryCondition);
-        public void AddBoundaryCondition(BoundaryCondition boundaryCondition)
+        public bool AddBoundaryCondition(BoundaryCondition boundaryCondition)
         {
             if (IsBoundaryConditionSupported(boundaryCondition))
-                _boundayConditions.Add(boundaryCondition.Name, boundaryCondition);
+            {
+                boundaryCondition.Complex = this is SteadyStateDynamicsStep;
+                _boundaryConditions.Add(boundaryCondition.Name, boundaryCondition);
+                return true;
+            }
+            return false;
+        }
+        public bool ReplaceBoundaryCondition(string oldBoundaryConditionName, BoundaryCondition boundaryCondition)
+        {
+            if (IsBoundaryConditionSupported(boundaryCondition))
+            {
+                boundaryCondition.Complex = this is SteadyStateDynamicsStep;
+                _boundaryConditions.Replace(oldBoundaryConditionName, boundaryCondition.Name, boundaryCondition);
+                return true;
+            }
+            return false;
         }
         public bool IsLoadSupported(Load load)
         {
             return IsLoadTypeSupported(load.GetType());
         }
         public abstract bool IsLoadTypeSupported(Type loadType);
-        public void AddLoad(Load load)
+        public bool AddLoad(Load load)
         {
-            if (IsLoadSupported(load)) _loads.Add(load.Name, load);
+            if (IsLoadSupported(load))
+            {
+                load.Complex = this is SteadyStateDynamicsStep;
+                _loads.Add(load.Name, load);
+                return true;
+            }
+            return false;
+        }
+        public bool ReplaceLoad(string oldLoadName, Load load)
+        {
+            if (IsLoadSupported(load))
+            {
+                load.Complex = this is SteadyStateDynamicsStep;
+                _loads.Replace(oldLoadName, load.Name, load);
+                return true;
+            }
+            return false;
         }
         public abstract bool IsDefinedFieldSupported(DefinedField definedField);
         public void AddDefinedField(DefinedField definedField)
         {
-            if (IsDefinedFieldSupported(definedField)) _definedFields.Add(definedField.Name, definedField);
+            if (!IsDefinedFieldSupported(definedField)) definedField.Active = false;
+            //
+            _definedFields.Add(definedField.Name, definedField);
         }
 
         // ISerialization
@@ -167,7 +214,7 @@ namespace CaeModel
             //
             info.AddValue("_historyOutputs", _historyOutputs, typeof(OrderedDictionary<string, HistoryOutput>));
             info.AddValue("_fieldOutputs", _fieldOutputs, typeof(OrderedDictionary<string, FieldOutput>));
-            info.AddValue("_boundayConditions", _boundayConditions, typeof(OrderedDictionary<string, BoundaryCondition>));
+            info.AddValue("_boundaryConditions", _boundaryConditions, typeof(OrderedDictionary<string, BoundaryCondition>));
             info.AddValue("_loads", _loads, typeof(OrderedDictionary<string, Load>));
             info.AddValue("_definedFields", _definedFields, typeof(OrderedDictionary<string, DefinedField>));
             info.AddValue("_runAnalysis", _runAnalysis, typeof(bool));
@@ -176,6 +223,7 @@ namespace CaeModel
             info.AddValue("_maxIncrements", _maxIncrements, typeof(int));
             info.AddValue("_incrementationType", _incrementationType, typeof(IncrementationTypeEnum));
             info.AddValue("_solverType", _solverType, typeof(SolverTypeEnum));
+            info.AddValue("_outputFrequency", _outputFrequency, typeof(int));
         }
     }
 }

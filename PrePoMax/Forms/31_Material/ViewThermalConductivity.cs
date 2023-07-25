@@ -19,7 +19,7 @@ namespace PrePoMax
         // Properties                                                                                                               
         public override string Name
         {
-            get { return "Thermal conductivity"; }
+            get { return "Thermal Conductivity"; }
         }
         //
         [Browsable(false)]

@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="ContactSearch\GeometryFilterEnum.cs" />
     <Compile Include="ContactSearch\NodeData.cs" />
     <Compile Include="ContactSearch\ContactGraph.cs" />
     <Compile Include="ContactSearch\Node.cs" />

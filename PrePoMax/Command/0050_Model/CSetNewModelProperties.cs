@@ -19,6 +19,11 @@ namespace PrePoMax.Commands
         private UnitSystemType _unitSystemType;
 
 
+        // Properties                                                                                                               
+        public ModelSpaceEnum ModelSpace { get { return _modelSpace; } }
+        public UnitSystemType UnitSystemType { get { return _unitSystemType; } }
+
+
         // Constructor                                                                                                              
         public CSetNewModelProperties(ModelSpaceEnum modelSpace, UnitSystemType unitSystemType)
             : base("Set new model properties")

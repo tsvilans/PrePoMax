@@ -97,15 +97,22 @@ namespace PrePoMax
         [Id(1, 5)]
         public double RotationalSpeed { get { return _cenLoad.RotationalSpeed; } set { _cenLoad.RotationalSpeed = value; } }
         //
+        [CategoryAttribute("Rotational speed phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the rotational speed phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 6)]
+        public double Phase { get { return _cenLoad.PhaseDeg; } set { _cenLoad.PhaseDeg = value; } }
+        //
         public override string AmplitudeName { get { return _cenLoad.AmplitudeName; } set { _cenLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _cenLoad.Color; } set { _cenLoad.Color = value; } }
 
 
         // Constructors                                                                                                             
-        public ViewCentrifLoad(CaeModel.CentrifLoad cLoad)
+        public ViewCentrifLoad(CaeModel.CentrifLoad cenLoad)
         {
             // The order is important
-            _cenLoad = cLoad;
+            _cenLoad = cenLoad;
             //
             Dictionary<RegionTypeEnum, string> regionTypePropertyNamePairs = new Dictionary<RegionTypeEnum, string>();
             regionTypePropertyNamePairs.Add(RegionTypeEnum.Selection, nameof(SelectionHidden));
@@ -118,10 +125,12 @@ namespace PrePoMax
             _centerPointItemSetData = new ItemSetData(); // needed to display ItemSetData.ToString()
             _centerPointItemSetData.ToStringType = ItemSetDataToStringType.SelectSinglePoint;
             //
-            DynamicCustomTypeDescriptor.GetProperty(nameof(Z)).SetIsBrowsable(!cLoad.TwoD);
-            DynamicCustomTypeDescriptor.GetProperty(nameof(N1)).SetIsBrowsable(!cLoad.TwoD);
-            DynamicCustomTypeDescriptor.GetProperty(nameof(N2)).SetIsBrowsable(!cLoad.TwoD);
-            DynamicCustomTypeDescriptor.GetProperty(nameof(N3)).SetIsBrowsable(!cLoad.TwoD);
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Z)).SetIsBrowsable(!cenLoad.TwoD);
+            DynamicCustomTypeDescriptor.GetProperty(nameof(N1)).SetIsBrowsable(!cenLoad.TwoD);
+            DynamicCustomTypeDescriptor.GetProperty(nameof(N2)).SetIsBrowsable(!cenLoad.TwoD);
+            DynamicCustomTypeDescriptor.GetProperty(nameof(N3)).SetIsBrowsable(!cenLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(_cenLoad.Complex);
         }
 
 

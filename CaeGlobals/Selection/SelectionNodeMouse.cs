@@ -54,7 +54,7 @@ namespace CaeGlobals
             _partIds = null;            // Compatibility for version v0.9.0
             _precision = -1;            // Compatibility for version v0.5.2
             _selectionDirection = null; // Compatibility for version v0.9.0
-            _partOffsets = null; // Compatibility for version v0.9.0
+            _partOffsets = null;        // Compatibility for version v0.9.0
             //
             foreach (SerializationEntry entry in info)
             {

@@ -105,7 +105,7 @@ namespace PrePoMax.Forms
             if (_viewSection == null) throw new CaeException("No section was selected.");
             //
             if (Section.RegionType == RegionTypeEnum.Selection && (Section.CreationIds == null || Section.CreationIds.Length == 0))
-                throw new CaeException("The section must contain at least one item.");
+                throw new CaeException("The section selection must contain at least one item.");
             //
             if (!CheckSectionElementTypes())
                 throw new CaeException("The section type and the section region are not compatible.");
@@ -120,7 +120,7 @@ namespace PrePoMax.Forms
                 _controller.AddSectionCommand(Section);
             }
             // Replace
-            else if(_propertyItemChanged)
+            else if (_propertyItemChanged)
             {
                 _controller.ReplaceSectionCommand(_sectionToEditName, Section);
             }
@@ -245,7 +245,7 @@ namespace PrePoMax.Forms
             ListViewItem item;
             bool twoD = _controller.Model.Properties.ModelSpace.IsTwoD();
             // Solid section
-            item = new ListViewItem("Solid section");
+            item = new ListViewItem("Solid Section");
             if (materialNames.Length > 0)
             {
                 bool showThickness = _controller.Model.Properties.ModelSpace == ModelSpaceEnum.PlaneStress ||
@@ -259,7 +259,7 @@ namespace PrePoMax.Forms
             else item.Tag = new ViewError("There is no material defined for the solid section definition.");
             lvTypes.Items.Add(item);
             // Shell section
-            item = new ListViewItem("Shell section");
+            item = new ListViewItem("Shell Section");
             if (materialNames.Length > 0)
             {
                 ShellSection ss = new ShellSection(GetSectionName("Shell"), materialNames[0], "",
@@ -271,7 +271,7 @@ namespace PrePoMax.Forms
             else item.Tag = new ViewError("There is no material defined for the shell section definition.");
             lvTypes.Items.Add(item);
             // Membrane section
-            item = new ListViewItem("Membrane section");
+            item = new ListViewItem("Membrane Section");
             if (materialNames.Length > 0)
             {
                 MembraneSection ms = new MembraneSection(GetSectionName("Membrane"), materialNames[0], "",
@@ -285,7 +285,7 @@ namespace PrePoMax.Forms
         }
         private string GetSectionName(string name)
         {
-            return _sectionNames.GetNextNumberedKey(name + "_section");
+            return _sectionNames.GetNextNumberedKey(name + "_Section");
         }
         private bool CheckSectionElementTypes()
         {

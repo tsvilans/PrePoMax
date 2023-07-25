@@ -39,8 +39,9 @@ namespace CaeModel
 
 
         // Constructors                                                                                                             
-        public DisplacementRotation(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : base(name, regionName, regionType, twoD)
+        public DisplacementRotation(string name, string regionName, RegionTypeEnum regionType, bool twoD,
+                                    bool complex, double phaseDeg)
+            : base(name, regionName, regionType, twoD, complex, phaseDeg)
         {
             U1 = double.NaN;
             U2 = double.NaN;

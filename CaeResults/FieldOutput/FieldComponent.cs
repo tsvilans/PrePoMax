@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CaeMesh;
 using CaeGlobals;
+using System.Security.Cryptography;
 
 namespace CaeResults
 {
@@ -23,27 +24,20 @@ namespace CaeResults
         {
             _checkName = false;
             Name = name;
-
+            //
             Values = values;
-
+            //
             Invariant = invariant;
-
-            Max = new IDValuePair { Id = 0, Value = values[0] };
-            Min = new IDValuePair { Id = 0, Value = values[0] };
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                if (values[i] > Max.Value)
-                {
-                    Max.Value = values[i];
-                    Max.Id = i;
-                }
-                else if (values[i] < Min.Value)
-                {
-                    Min.Value = values[i];
-                    Min.Id = i;
-                }
-            }
+            //
+            UpdateMaxMin();
+        }
+        public FieldComponent(FieldComponent component)
+            : base(component)
+        {
+            if (component.Values != null) Values = component.Values.ToArray();
+            Invariant = component.Invariant;
+            Max = component.Max;
+            Min = component.Min;
         }
 
         
@@ -65,10 +59,39 @@ namespace CaeResults
             float[] values = new float[numValues];
             for (int i = 0; i < numValues; i++)
                 values[i] = br.ReadSingle();
-
+            //
             return new FieldComponent(name, values, invariant);
         }
-
+        public void UpdateMaxMin()
+        {
+            if (Values != null)
+            {
+                Max = new IDValuePair { Id = 0, Value = Values[0] };
+                Min = new IDValuePair { Id = 0, Value = Values[0] };
+                //
+                for (int i = 0; i < Values.Length; i++)
+                {
+                    if (Values[i] > Max.Value)
+                    {
+                        Max.Value = Values[i];
+                        Max.Id = i;
+                    }
+                    else if (Values[i] < Min.Value)
+                    {
+                        Min.Value = Values[i];
+                        Min.Id = i;
+                    }
+                }
+            }
+        }
+        public void SetValuesToZero()
+        {
+            for (int i = 0; i < Values.Length; i++) Values[i] = 0;
+        }
+        public void SetValuesTo(float value)
+        {
+            for (int i = 0; i < Values.Length; i++) Values[i] = value;
+        }
 
     }
 }

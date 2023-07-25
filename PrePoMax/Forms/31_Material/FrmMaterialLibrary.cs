@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CaeModel;
 using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PrePoMax.Forms
 {
@@ -347,9 +348,11 @@ namespace PrePoMax.Forms
 
                     parentNode.Expand();
                     cltvLibrary.SelectedNode = node;
+                    cltvLibrary.SelectedNode.EnsureVisible();
                     ApplyFormatingRecursive(node);
                     cltvLibrary.Focus();
 
+                    tbCategoryName.Text = node.Name;
                     tbCategoryName.Focus();
 
                     LibraryChanged();
@@ -362,10 +365,17 @@ namespace PrePoMax.Forms
         }
         private void btnDeleteFromLibrary_Click(object sender, EventArgs e)
         {
-            if (cltvLibrary.SelectedNode != null && cltvLibrary.SelectedNode.Parent != null)
+            TreeNode parent = cltvLibrary.SelectedNode.Parent;
+            if (cltvLibrary.SelectedNode != null && parent != null)
             {
-                cltvLibrary.SelectedNode.Parent.Nodes.Remove(cltvLibrary.SelectedNode);
+                int selectedId = cltvLibrary.SelectedNode.Index;                
+                //
+                parent.Nodes.Remove(cltvLibrary.SelectedNode);
                 LibraryChanged();
+                //
+                if (selectedId == parent.Nodes.Count) selectedId--;
+                if (selectedId >= 0) cltvLibrary.SelectedNode = parent.Nodes[selectedId];
+                else cltvLibrary.SelectedNode = parent;
             }
         }
         private void btnRename_Click(object sender, EventArgs e)
@@ -420,8 +430,11 @@ namespace PrePoMax.Forms
                 if (lvModelMaterials.SelectedItems.Count == 1 && cltvLibrary.SelectedNode != null)
                 {
                     TreeNode categoryNode;
-                    if (cltvLibrary.SelectedNode.Tag == null) categoryNode = cltvLibrary.SelectedNode;    // Category
-                    else categoryNode = cltvLibrary.SelectedNode.Parent;                                 // Material
+                    if (cltvLibrary.SelectedNode.Tag == null) categoryNode = cltvLibrary.SelectedNode;  // Category
+                    else categoryNode = cltvLibrary.SelectedNode.Parent;                                // Material
+                    //
+                    if (categoryNode == null)
+                        throw new CaeException("Please select a library category to which the material should be added.");
                     //
                     string materialName = lvModelMaterials.SelectedItems[0].Text;
                     int count = 1;

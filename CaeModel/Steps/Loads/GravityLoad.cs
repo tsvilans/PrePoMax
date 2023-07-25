@@ -25,19 +25,20 @@ namespace CaeModel
 
 
         // Constructors                                                                                                             
-        public GravityLoad(string name, string regionName, RegionTypeEnum regionType, double f1, double f2, double f3, bool twoD)
-            : base(name, twoD) 
+        public GravityLoad(string name, string regionName, RegionTypeEnum regionType, bool twoD, bool complex, double phaseDeg)
+            : this(name, regionName, regionType, 0, 0, 0, twoD, complex, phaseDeg)
+        {
+        }
+        public GravityLoad(string name, string regionName, RegionTypeEnum regionType, double f1, double f2, double f3, bool twoD,
+                           bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg) 
         {
             _regionName = regionName;
             RegionType = regionType;
-
+            //
             F1 = f1;
             F2 = f2;
             F3 = f3;
-        }
-        public GravityLoad(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : this(name, regionName, regionType, 0, 0, 0, twoD)
-        {
         }
         
         

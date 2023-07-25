@@ -64,7 +64,7 @@ namespace PrePoMax
         [Id(4, 3)]
         public double Z1 { get { return _hpLoad.FirstPointCoor[2]; } set { _hpLoad.FirstPointCoor[2] = value; } }
         //                                                                                                              
-        [CategoryAttribute("First point pressure")]
+        [CategoryAttribute("First point pressure magnitude")]
         [OrderedDisplayName(0, 10, "Magnitude")]
         [DescriptionAttribute("Pressure magnitude at the first point.")]
         [TypeConverter(typeof(StringPressureConverter))]
@@ -111,7 +111,7 @@ namespace PrePoMax
         [Id(4, 5)]
         public double Z2 { get { return _hpLoad.SecondPointCoor[2]; } set { _hpLoad.SecondPointCoor[2] = value; } }
         //                                                                                                                          
-        [CategoryAttribute("Second point pressure")]        // must be a different name than for the first point !!!
+        [CategoryAttribute("Second point pressure magnitude")]        // must be a different name than for the first point !!!
         [OrderedDisplayName(0, 10, "Magnitude ")]
         [DescriptionAttribute("Pressure magnitude at the second point.")]
         [TypeConverter(typeof(StringPressureConverter))]
@@ -122,7 +122,7 @@ namespace PrePoMax
             set { _hpLoad.SecondPointPressure = value; }
         }
         //                                                                                                                          
-        [Category("Pressure direction")]
+        [Category("Pressure change direction")]
         [OrderedDisplayName(0, 10, "By selection  ")]    // must be a different name than for the first point !!!
         [DescriptionAttribute("Use selection for the definition of the pressure direction.")]
         [EditorAttribute(typeof(SinglePointDataEditor), typeof(UITypeEditor))]
@@ -137,26 +137,33 @@ namespace PrePoMax
             }
         }
         //
-        [CategoryAttribute("Pressure direction")]
+        [CategoryAttribute("Pressure change direction")]
         [OrderedDisplayName(0, 10, "N1")]
         [DescriptionAttribute("Direction component in the direction of the first axis.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(2, 7)]
         public double N1 { get { return _hpLoad.N1; } set { _hpLoad.N1 = value; } }
         //
-        [CategoryAttribute("Pressure direction")]
+        [CategoryAttribute("Pressure change direction")]
         [OrderedDisplayName(1, 10, "N2")]
         [DescriptionAttribute("Direction component in the direction of the second axis.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(3, 7)]
         public double N2 { get { return _hpLoad.N2; } set { _hpLoad.N2 = value; } }
         //
-        [CategoryAttribute("Pressure direction")]
+        [CategoryAttribute("Pressure change direction")]
         [OrderedDisplayName(2, 10, "N3")]
         [DescriptionAttribute("Direction component in the direction of the third axis.")]
         [TypeConverter(typeof(StringLengthConverter))]
         [Id(4, 7)]
         public double N3 { get { return _hpLoad.N3; } set { _hpLoad.N3 = value; } }
+        //
+        [CategoryAttribute("Pressure phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the pressure phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 8)]
+        public double Phase { get { return _hpLoad.PhaseDeg; } set { _hpLoad.PhaseDeg = value; } }
         //
         public override string AmplitudeName { get { return _hpLoad.AmplitudeName; } set { _hpLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _hpLoad.Color; } set { _hpLoad.Color = value; } }
@@ -183,6 +190,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor.GetProperty(nameof(Z1)).SetIsBrowsable(!hpLoad.TwoD);
             DynamicCustomTypeDescriptor.GetProperty(nameof(Z2)).SetIsBrowsable(!hpLoad.TwoD);
             DynamicCustomTypeDescriptor.GetProperty(nameof(N3)).SetIsBrowsable(!hpLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(hpLoad.Complex);
         }
 
 

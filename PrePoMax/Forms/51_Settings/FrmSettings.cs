@@ -79,7 +79,6 @@ namespace PrePoMax.Forms
             _previousSettings = null;
             _viewSettings = null;
             //
-            propertyGrid.SetParent(this);   // for the Tab key to work
             propertyGrid.SetLabelColumnWidth(_labelRatio);
         }
 

@@ -130,7 +130,7 @@ namespace PrePoMax.Forms
                 // Empty selection
                 if (dt.Type == DefinedTemperatureTypeEnum.ByValue && DefinedField.RegionType == RegionTypeEnum.Selection &&
                     (DefinedField.CreationIds == null || DefinedField.CreationIds.Length == 0))
-                    throw new CaeException("The defined field must contain at least one item.");
+                    throw new CaeException("The defined field selection must contain at least one item.");
                 // Empty file name
                 else if (dt.Type == DefinedTemperatureTypeEnum.FromFile && dt.FileName == null && dt.FileName.Length == 0)
                     throw new CaeException("The file name to read the temperature from is missing.");
@@ -252,7 +252,7 @@ namespace PrePoMax.Forms
         }
         private string GetDefinedFieldName(string name)
         {
-            if (name == null || name == "") name = "Defined field";
+            if (name == null || name == "") name = "Defined Field";
             name = name.Replace(' ', '_');
             name = _definedFieldNames.GetNextNumberedKey(name);
             return name;

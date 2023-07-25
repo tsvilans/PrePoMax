@@ -95,7 +95,7 @@ namespace CaeMesh
         public GeometryPart(GeometryPart part)
             : base((BasePart)part)
         {
-            _meshingParameters = part.MeshingParameters != null ? part.MeshingParameters.DeepClone() : null;
+            _meshingParameters = part._meshingParameters != null ? part._meshingParameters.DeepClone() : null;
             _elementTypeEnums = part._elementTypeEnums != null ? part._elementTypeEnums.ToList() : null;
             _freeEdgeCellIds = part.FreeEdgeCellIds != null ? part.FreeEdgeCellIds.ToArray() : null;
             _errorEdgeCellIds = part.ErrorEdgeCellIds != null ? part.ErrorEdgeCellIds.ToArray() : null;

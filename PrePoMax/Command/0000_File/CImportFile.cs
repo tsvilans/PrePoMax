@@ -19,6 +19,11 @@ namespace PrePoMax.Commands
         private bool _onlyMaterials;
 
 
+        // Properties                                                                                                               
+        public string FileName { get { return _fileName; } }
+        public bool OnlyMaterials { get { return _onlyMaterials; } }
+
+
         // Constructor                                                                                                              
         public CImportFile(string fileName, bool onlyMaterials)
             :base("Import file")

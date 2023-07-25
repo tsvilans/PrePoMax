@@ -57,6 +57,7 @@ namespace PrePoMax
         public ViewAmplitudeTabular(AmplitudeTabular amplitudeTabular)
         {
             _amplitudeTabular = amplitudeTabular;
+            //
             _points = new List<AmplitudeDataPoint>();
             for (int i = 0; i < amplitudeTabular.TimeAmplitude.Length; i++)
             {

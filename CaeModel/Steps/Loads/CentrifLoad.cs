@@ -48,13 +48,13 @@ namespace CaeModel
 
 
         // Constructors                                                                                                             
-        public CentrifLoad(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : this(name, regionName, regionType, new double[] { 0, 0, 0 }, new double[] { 0, 0, 0 }, 0, twoD)
+        public CentrifLoad(string name, string regionName, RegionTypeEnum regionType, bool twoD, bool complex, double phaseDeg)
+            : this(name, regionName, regionType, new double[] { 0, 0, 0 }, new double[] { 0, 0, 0 }, 0, twoD, complex, phaseDeg)
         {
         }
         public CentrifLoad(string name, string regionName, RegionTypeEnum regionType, double[] point, double[] normal,
-                           double rotationalSpeed2, bool twoD)
-            : base(name, twoD)
+                           double rotationalSpeed2, bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _regionName = regionName;
             RegionType = regionType;

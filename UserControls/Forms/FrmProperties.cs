@@ -42,10 +42,7 @@ namespace UserControls
             _hideOnClose = true;
             _addNew = true;
             //
-            propertyGrid.SetParent(this);   // for the Tab key to work
             propertyGrid.SetLabelColumnWidth(labelRatio);
-            //
-            
         }
 
 
@@ -172,7 +169,8 @@ namespace UserControls
             // Named to existing name
             if ((nameToEdit == null && existingNames.Contains(name, StringComparer.OrdinalIgnoreCase)) ||
             // Renamed to existing name
-            (name != nameToEdit && existingNames.Contains(name, StringComparer.OrdinalIgnoreCase)))
+            ((nameToEdit != null && name.ToLower() != nameToEdit.ToLower()) &&
+             name != nameToEdit && existingNames.Contains(name, StringComparer.OrdinalIgnoreCase)))
             // Exception
             throw new CaeException("The selected "+ messageName + " name already exists. " +
                 "Uppercase and lowercase letters are regarded as equal.");

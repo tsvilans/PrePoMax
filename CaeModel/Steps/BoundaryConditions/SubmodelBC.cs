@@ -41,7 +41,7 @@ namespace CaeModel
 
         // Constructors                                                                                                             
         public SubmodelBC(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : base(name, regionName, regionType, twoD) 
+            : base(name, regionName, regionType, twoD, false, 0) 
         {
             _stepNumber = 1;
             U1 = false;

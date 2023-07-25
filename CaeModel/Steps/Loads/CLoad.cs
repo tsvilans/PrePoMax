@@ -37,8 +37,9 @@ namespace CaeModel
 
 
         // Constructors                                                                                                             
-        public CLoad(string name, string regionName, RegionTypeEnum regionType, double f1, double f2, double f3, bool twoD)
-            : base(name, twoD) 
+        public CLoad(string name, string regionName, RegionTypeEnum regionType, double f1, double f2, double f3,
+                     bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _regionName = regionName;
             RegionType = regionType;
@@ -48,8 +49,8 @@ namespace CaeModel
             _f2 = f2;
             F3 = f3;    // account for 2D
         }
-        public CLoad(string name, int nodeId, double f1, double f2, double f3, bool twoD)
-            : base(name, twoD)
+        public CLoad(string name, int nodeId, double f1, double f2, double f3, bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _regionName = null;
             RegionType = RegionTypeEnum.NodeId;

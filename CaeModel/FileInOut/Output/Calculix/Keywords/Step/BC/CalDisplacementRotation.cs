@@ -16,6 +16,7 @@ namespace FileInOut.Output.Calculix
         private DisplacementRotation _displacementRotation;
         private Dictionary<string, int[]> _referencePointsNodeIds;
         private string _nodeSetNameOfSurface;
+        private ComplexLoadTypeEnum _complexLoadType;
 
 
         // Properties                                                                                                               
@@ -23,11 +24,12 @@ namespace FileInOut.Output.Calculix
 
         // Constructor                                                                                                              
         public CalDisplacementRotation(DisplacementRotation displacementRotation, Dictionary<string, int[]> referencePointsNodeIds,
-                                       string nodeSetNameOfSurface)
+                                       string nodeSetNameOfSurface, ComplexLoadTypeEnum complexLoadType)
         {
             _displacementRotation = displacementRotation;
             _referencePointsNodeIds = referencePointsNodeIds;
             _nodeSetNameOfSurface = nodeSetNameOfSurface;
+            _complexLoadType = complexLoadType;
         }
 
 
@@ -42,7 +44,9 @@ namespace FileInOut.Output.Calculix
             if (_displacementRotation.AmplitudeName != BoundaryCondition.DefaultAmplitudeName)
                 amplitude = ", Amplitude=" + _displacementRotation.AmplitudeName;
             //
-            sb.AppendFormat("*Boundary{0}{1}{2}", fixedBc, amplitude, Environment.NewLine);
+            string loadCase = GetComplexLoadCase(_complexLoadType);
+            //
+            sb.AppendFormat("*Boundary{0}{1}{2}{3}", fixedBc, amplitude, loadCase, Environment.NewLine);
             //
             return sb.ToString();
         }
@@ -64,9 +68,11 @@ namespace FileInOut.Output.Calculix
                 directions = _displacementRotation.GetConstrainedDirections();
             }
             //
+            double ratio = GetComplexRatio(_complexLoadType, _displacementRotation.PhaseDeg);
+            //
             double[] values = _displacementRotation.GetConstrainValues();
             string[] stringValues = new string[values.Length];
-            for (int i = 0; i < values.Length; i++) stringValues[i] = values[i].ToCalculiX16String();
+            for (int i = 0; i < values.Length; i++) stringValues[i] = (ratio * values[i]).ToCalculiX16String();
             // Node set
             if (_displacementRotation.RegionType == RegionTypeEnum.NodeSetName)
             {

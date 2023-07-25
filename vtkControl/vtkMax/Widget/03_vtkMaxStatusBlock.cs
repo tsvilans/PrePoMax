@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CaeGlobals;
 using Kitware.VTK;
+using static Kitware.VTK.vtkMultiThreshold;
 
 namespace vtkControl
 {
@@ -19,12 +21,13 @@ namespace vtkControl
         private float _animationScaleFactor;
         private float _deformationScaleFactor;
         private string _deformationVariable;
-        private DataFieldType _fieldType;
+        private vtkMaxFieldDataType _fieldType;
+        private vtkMaxAnimationType _animationType;
         private int _stepNumber;
         private int _incrementNumber;
         private bool _deformationScaleFactorTextClicked;
         private System.Drawing.Rectangle _deformationScaleFactorRect;
-
+        private StringAngleDegConverter _stringAngleDegConverter;
 
 
         // Properties                                                                                                               
@@ -43,7 +46,8 @@ namespace vtkControl
             get { return _animationScaleFactor; } 
             set { _animationScaleFactor = value; SetText(); } 
         }
-        public DataFieldType FieldType { get { return _fieldType; } set { _fieldType = value; SetText(); } }
+        public vtkMaxFieldDataType FieldType { get { return _fieldType; } set { _fieldType = value; SetText(); } }
+        public vtkMaxAnimationType AnimationType { get { return _animationType; } set { _animationType = value; SetText(); } }
         public int StepNumber { get { return _stepNumber; } set { _stepNumber = value; SetText(); } }
         public int IncrementNumber { get { return _incrementNumber; } set { _incrementNumber = value; SetText(); } }
         public bool DeformationScaleFactorTextClicked
@@ -63,7 +67,9 @@ namespace vtkControl
             _analysisTimeUnit = "";
             _animationScaleFactor = -1;
             _deformationScaleFactor = 1;
-            _fieldType = DataFieldType.Static;
+            _fieldType = vtkMaxFieldDataType.Static;
+            _animationType = vtkMaxAnimationType.ScaleFactor;
+            _stringAngleDegConverter = new StringAngleDegConverter();
         }
 
 
@@ -81,27 +87,32 @@ namespace vtkControl
             line1 = "Name: " + _name + "   ";
             line1 += "Date: " + _dateTime.ToString(sysUIFormat) + "   Time: " + _dateTime.ToString("HH:mm:ss");
             //
-            if (_fieldType == DataFieldType.Static)
+            if (_fieldType == vtkMaxFieldDataType.Static)
             {
                 line2 = "Step: #" + _stepNumber + "   Increment: #" + _incrementNumber +
                         "   Analysis time: " + _analysisTime.ToString() + " " + _analysisTimeUnit;
             }
-            else if (_fieldType == DataFieldType.Frequency)
+            else if (_fieldType == vtkMaxFieldDataType.Frequency)
             {
                 line2 = "Step: #" + _stepNumber + "   Mode: #" + _incrementNumber + "   Frequency: " +
                         _analysisTime.ToString() + " " + _analysisTimeUnit;
             }
-            else if (_fieldType == DataFieldType.FrequencySensitivity)
+            else if (_fieldType == vtkMaxFieldDataType.FrequencySensitivity)
             {
                 // subtract 1 since first increment contains only normals
                 line2 = "Step: #" + _stepNumber + "   Mode: #" + _incrementNumber + "   Frequency: " +
                         _analysisTime.ToString() + " " + _analysisTimeUnit;
             }
-            else if (_fieldType == DataFieldType.Buckling)
+            else if (_fieldType == vtkMaxFieldDataType.Buckling)
             {
                 line2 = "Step: #" + _stepNumber + "   Buckling factor: " + _analysisTime.ToString();
             }
-            else if (_fieldType == DataFieldType.LastIterations)
+            else if (_fieldType == vtkMaxFieldDataType.SteadyStateDynamic)
+            {
+                line2 = "Step: #" + _stepNumber + "   Data point: #" + _incrementNumber + "   Frequency: " +
+                        _analysisTime.ToString() + " " + _analysisTimeUnit;
+            }
+            else if (_fieldType == vtkMaxFieldDataType.LastIterations)
             {
                 line2 = "Increment: #" + _stepNumber + "   Iteration: #" + _incrementNumber +
                         "   Analysis time: " + _analysisTime.ToString() + " " + _analysisTimeUnit;
@@ -113,7 +124,15 @@ namespace vtkControl
             //
             if (_animationScaleFactor >= 0)
             {
-                line4 = "Animation scale factor: " + _animationScaleFactor.ToString();
+                if (_animationType == vtkMaxAnimationType.ScaleFactor)
+                {
+                    line4 = "Animation scale factor: " + _animationScaleFactor.ToString();
+                }
+                else if (_animationType == vtkMaxAnimationType.TimeIncrements) { }
+                else if (_animationType == vtkMaxAnimationType.Harmonic)
+                {
+                    line4 = "Complex angle: " + _stringAngleDegConverter.ConvertToString(_animationScaleFactor);
+                }
             }
             //
             _text = line1 + Environment.NewLine + line2 + Environment.NewLine + line3fix + line3factor;

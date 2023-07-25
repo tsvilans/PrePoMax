@@ -26,11 +26,13 @@ namespace PrePoMax.Commands
         // Properties                                                                                                               
         public int Count { get { return _commands.Count(); } }
         public int CurrPositionIndex { get { return _currPositionIndex; } }
+        public List<Command> Commands { get { return _commands; } }
 
 
         // Callbacks                                                                                                                
         [NonSerialized] public Action<string> WriteOutput;
         [NonSerialized] public Action ModelChanged_ResetJobStatus;
+
 
         // Events                                                                                                                   
         public event Action<string, string> EnableDisableUndoRedo;
@@ -121,20 +123,19 @@ namespace PrePoMax.Commands
         }
         public void ExecuteAllCommands()
         {
-            ExecuteAllCommands(false, false, null);
+            ExecuteAllCommands(false, null);
         }
-        public void ExecuteAllCommands(bool showImportDialog, bool showMeshParametersDialog)
+        public void ExecuteAllCommands(bool showImportDialog)
         {
-            ExecuteAllCommands(showImportDialog, showMeshParametersDialog, null);
+            ExecuteAllCommands(showImportDialog, null);
         }
         public void ExecuteAllCommandsFromLastSave(CSaveToPmx lastSave)
         {
-            ExecuteAllCommands(false, false, lastSave);
+            ExecuteAllCommands(false, lastSave);
         }
-        public void ExecuteAllCommands(bool showImportDialog, bool showMeshParametersDialog, CSaveToPmx lastSave)
+        public void ExecuteAllCommands(bool showImportDialog, CSaveToPmx lastSave)
         {
             int count = 0;
-            bool showDialogs = showImportDialog || showMeshParametersDialog;
             _history.Clear();
             List<string> errors = new List<string>();
             //
@@ -158,11 +159,9 @@ namespace PrePoMax.Commands
                         else
                         {
                             // Execute with dialog
-                            if (showDialogs && command is ICommandWithDialog icwd &&
-                                ((showImportDialog && command is CImportFile) ||
-                                 (showMeshParametersDialog && command is CSetMeshingParameters)))
+                            if (showImportDialog && command is CImportFile cif)
                             {
-                                icwd.ExecuteWithDialogs(_controller);
+                                cif.ExecuteWithDialogs(_controller);
                             }
                             // Execute without dialog
                             else command.Execute(_controller);

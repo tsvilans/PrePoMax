@@ -15,10 +15,12 @@ namespace CaeModel
         // Must start at 1 for the UI to work
         RF = 1,
         U = 2,
-        V = 4,
+        PU = 4,
+        V = 8,
         // Thermal
-        NT = 8,
-        RFL = 16
+        NT = 16,
+        PNT = 32,
+        RFL = 64
     }
 
     [Serializable]

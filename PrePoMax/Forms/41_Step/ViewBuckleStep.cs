@@ -20,11 +20,13 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(4, 10, "Perturbation")]
         [DescriptionAttribute("Perturbation parameter set to On applies preloads from the previous step if it exists.")]
+        [Id(5, 1)]
         public bool Perturbation { get { return _buckleStep.Perturbation; } set { _buckleStep.Perturbation = value; } }
         //
         [CategoryAttribute("Data")]
         [OrderedDisplayName(5, 10, "Num. of buckling factors")]
         [DescriptionAttribute("Number of buckling factors desired (default: 1).")]
+        [Id(6, 1)]
         public int NumBucklingFactors
         {
             get { return _buckleStep.NumOfBucklingFactors; }
@@ -34,6 +36,7 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(6, 10, "Accuracy")]
         [DescriptionAttribute("Accuracy desired (default: 0.01).")]
+        [Id(7, 1)]
         [TypeConverter(typeof(StringDoubleConverter))]
         public double Accuracy { get { return _buckleStep.Accuracy; } set { _buckleStep.Accuracy = value; } }
 

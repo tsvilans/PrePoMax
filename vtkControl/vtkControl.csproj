@@ -117,6 +117,7 @@
     <Compile Include="vtkMax\ColorSpectrum\vtkMaxColorSpectrum.cs" />
     <Compile Include="vtkMax\Widget\02_vtkMaxScaleWidget.cs" />
     <Compile Include="vtkMax\Widget\03_vtkMaxColorBarWidget.cs" />
+    <Compile Include="vtkMax\Widget\AnimationType.cs" />
     <Compile Include="vtkMax\Widget\DataFieldType.cs" />
     <Compile Include="vtkMax\Widget\01_vtkMaxBorderWidget.cs" />
     <Compile Include="vtkMax\Actor\vtkMaxActorData.cs" />

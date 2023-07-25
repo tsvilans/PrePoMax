@@ -12,7 +12,8 @@ namespace PrePoMax
     {
         Check = 1,
         DrawModel = 2,
-        ResetCamera = 4,
-        RedrawSymbols = 8
+        DrawResults = 4,
+        ResetCamera = 8,
+        RedrawSymbols = 16
     }
 }

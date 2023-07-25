@@ -160,7 +160,7 @@ namespace PrePoMax.Forms
             //
             if (BoundaryCondition.RegionType == RegionTypeEnum.Selection &&
                 (BoundaryCondition.CreationIds == null || BoundaryCondition.CreationIds.Length == 0))
-                throw new CaeException("The boundary condition must contain at least one item.");
+                throw new CaeException("The boundary condition selection must contain at least one item.");
             // Check if the name exists
             CheckName(_boundaryConditionToEditName, BoundaryCondition.Name, _boundaryConditionNames, "boundary condition");
             //
@@ -346,6 +346,7 @@ namespace PrePoMax.Forms
             Step step = _controller.GetStep(_stepName);
             System.Drawing.Color color = _controller.Settings.Pre.BoundaryConditionSymbolColor;
             bool twoD = _controller.Model.Properties.ModelSpace.IsTwoD();
+            bool complex = step is SteadyStateDynamicsStep;
             // Populate list view
             ListViewItem item;
             // Fixed
@@ -361,8 +362,8 @@ namespace PrePoMax.Forms
             }
             // Displacement/Rotation
             item = new ListViewItem("Displacement/Rotation");
-            DisplacementRotation displacementRotation = new DisplacementRotation(GetBoundaryConditionName("Displacement_rotation"),
-                                                                                 "", RegionTypeEnum.Selection, twoD);
+            DisplacementRotation displacementRotation = new DisplacementRotation(GetBoundaryConditionName("Displacement_Rotation"),
+                                                                                 "", RegionTypeEnum.Selection, twoD, complex, 0);
             if (step.IsBoundaryConditionSupported(displacementRotation))
             {
                 ViewDisplacementRotation vdr = new ViewDisplacementRotation(displacementRotation);

@@ -100,7 +100,7 @@ namespace PrePoMax.Forms
                 _controller.AddFieldOutputCommand(_stepName, FieldOutput);
             }
             // Replace
-            else if(_propertyItemChanged)
+            else if (_propertyItemChanged)
             {
                 _controller.ReplaceFieldOutputCommand(_stepName, _fieldOutputToEditName, FieldOutput);
             }
@@ -157,20 +157,20 @@ namespace PrePoMax.Forms
             // Populate list view
             ListViewItem item;
             // Node
-            item = new ListViewItem("Node output");
+            item = new ListViewItem("Node Output");
             ViewNodalFieldOutput vnfo = new ViewNodalFieldOutput(new NodalFieldOutput(GetFieldOutputName("N"),
                                                                                       NodalFieldVariable.U));
             item.Tag = vnfo;
             lvTypes.Items.Add(item);
             // Element
-            item = new ListViewItem("Element output");
+            item = new ListViewItem("Element Output");
             ViewElementFieldOutput vefo = new ViewElementFieldOutput(new ElementFieldOutput(GetFieldOutputName("E"),
                                                                                             ElementFieldVariable.S |
                                                                                             ElementFieldVariable.E));
             item.Tag = vefo;
             lvTypes.Items.Add(item);
             // Contact
-            item = new ListViewItem("Contact output");
+            item = new ListViewItem("Contact Output");
             Step step = _controller.Model.StepCollection.GetStep(_stepName);
             ViewContactFieldOutput vcfo = new ViewContactFieldOutput(new ContactFieldOutput(GetFieldOutputName("C"),
                                                                                             ContactFieldVariable.CDIS |
@@ -180,7 +180,7 @@ namespace PrePoMax.Forms
         }
         private string GetFieldOutputName(string prefix)
         {
-            return _fieldOutputNames.GetNextNumberedKey(prefix + "F_output");
+            return _fieldOutputNames.GetNextNumberedKey(prefix + "F_Output");
         }
     }
 }

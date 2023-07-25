@@ -93,9 +93,9 @@ namespace UserControls
                                              ClientRectangle.Width, ClientRectangle.Height - _halfTextHeight);
             GroupBoxRenderer.DrawGroupBox(g, bounds, Enabled ? GroupBoxState.Normal : GroupBoxState.Disabled);
             //
-            int pad = 6;
+            int pad = 21;
             //
-            g.DrawLine(SystemPens.Control, pad + 1, _halfTextHeight, _textWidth + pad - 2, _halfTextHeight);
+            g.DrawLine(SystemPens.Control, pad + 1, _halfTextHeight, _textWidth + pad , _halfTextHeight);
             //
             Point p = new Point(pad, 0);
             TextRenderer.DrawText(g, Text, this.Font, p, ForeColor);
@@ -103,7 +103,7 @@ namespace UserControls
         private void DrawButton(Graphics g)
         {
             Rectangle background = _buttonRectangle;
-
+            //
             background.Inflate(2, 2);
             g.FillRectangle(SystemBrushes.Control, background);
             //g.DrawRectangle(SystemPens.ActiveBorder, background);
@@ -165,7 +165,7 @@ namespace UserControls
         private void UpdatebuttonPosition()
         {
             _buttonRectangle.Y = _halfTextHeight - _buttonRectangle.Height / 2;
-            _buttonRectangle.X = Width - 20;
+            _buttonRectangle.X = 9;
         }
     }
 }

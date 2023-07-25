@@ -61,10 +61,24 @@ namespace CaeResults
             _planeBc = new Plane(EdgeBc.A, Vec3D.CrossProduct(TriNorm, EdgeBc.Delta));
             _planeCa = new Plane(EdgeCa.A, Vec3D.CrossProduct(TriNorm, EdgeCa.Delta));
         }
+        public Triangle(Triangle triangle)
+        {
+            Id = triangle.Id;
+            EdgeAb = triangle.EdgeAb.DeepCopy();
+            EdgeBc = triangle.EdgeBc.DeepCopy();
+            EdgeCa = triangle.EdgeCa.DeepCopy();
+            TriNorm = triangle.TriNorm.DeepCopy();
+            _triPlane = triangle._triPlane.DeepCopy();
+            _planeAb = triangle._planeAb.DeepCopy();
+            _planeBc = triangle._planeBc.DeepCopy();
+            _planeCa = triangle._planeCa.DeepCopy();
+            _va = triangle._va;
+            _vb = triangle._vb;
+            _vc = triangle._vc;
+        }
 
 
         // Methods                                                                                                                  
-       
         public Vec3D ClosestPointTo(Vec3D p)
         {
             // Find the projection of the point onto the edge
@@ -213,6 +227,11 @@ namespace CaeResults
             }
             //
             return (1 - g - h) *_va + g * _vb + h * _vc;
+        }
+        //
+        public Triangle DeepCopy()
+        {
+            return new Triangle(this);
         }
     }
 }

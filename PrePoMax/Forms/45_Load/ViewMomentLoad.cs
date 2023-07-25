@@ -79,6 +79,13 @@ namespace PrePoMax
             }
         }
         //
+        [CategoryAttribute("Moment phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the moment phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 5)]
+        public double Phase { get { return _momentLoad.PhaseDeg; } set { _momentLoad.PhaseDeg = value; } }
+        //
         public override string AmplitudeName
         {
             get { return _momentLoad.AmplitudeName; }
@@ -100,9 +107,11 @@ namespace PrePoMax
             //
             SetBase(_momentLoad, regionTypePropertyNamePairs);
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
-            //
+            // 2D
             DynamicCustomTypeDescriptor.GetProperty(nameof(M1)).SetIsBrowsable(!momentLoad.TwoD);
             DynamicCustomTypeDescriptor.GetProperty(nameof(M2)).SetIsBrowsable(!momentLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(momentLoad.Complex);
         }
 
 

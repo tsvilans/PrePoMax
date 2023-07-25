@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CaeGlobals;
+using CaeMesh;
+using CaeMesh.ContactSearchNamespace;
 
 namespace PrePoMax.Forms
 {
-    public partial class FrmSearchContactPairs : Form
+    public partial class FrmSearchContactPairs : Form, IFormHighlight
     {
         // Variables                                                                                                                
         private Controller _controller;
@@ -121,36 +123,43 @@ namespace PrePoMax.Forms
             try
             {
                 Clear();
-                // Group by
-                CaeMesh.GroupContactPairsByEnum groupBy;
-                if (cbGroupBy.SelectedIndex == 0) groupBy = CaeMesh.GroupContactPairsByEnum.None;
-                else if (cbGroupBy.SelectedIndex == 1) groupBy = CaeMesh.GroupContactPairsByEnum.ByParts;
+                // Search parameters
+                double distance = tbDistance.Value;
+                double angleDeg = tbAngle.Value;
+                GroupContactPairsByEnum groupBy;
+                if (cbGroupBy.SelectedIndex == 0) groupBy = GroupContactPairsByEnum.None;
+                else if (cbGroupBy.SelectedIndex == 1) groupBy = GroupContactPairsByEnum.ByParts;
                 else throw new NotSupportedException();
-                // Type
+                // Geometry filters
+                GeometryFilterEnum filter = GeometryFilterEnum.None; 
+                if (cbSolid.Checked) filter |= GeometryFilterEnum.Solid;
+                if (cbShell.Checked) filter |= GeometryFilterEnum.Shell;
+                if (cbShellEdge.Checked) filter |= GeometryFilterEnum.ShellEdge;
+                if (cbIgnoreHiddenParts.Checked) filter |= GeometryFilterEnum.IgnoreHidden;
+                // Contact pair parameters
                 SearchContactPairType type;
                 if (cbType.SelectedIndex == 0) type = SearchContactPairType.Tie;
                 else if (cbType.SelectedIndex == 1) type = SearchContactPairType.Contact;
                 else throw new NotSupportedException();
-                // Adjust
-                bool adjust = cbAbjustMesh.SelectedIndex == 0;
-                //
-                double distance = tbDistance.Value;
-                double angleDeg = tbAngle.Value;
                 string[] surfaceInteracionNames = _controller.GetSurfaceInteractionNames();
                 if (surfaceInteracionNames.Length == 0) surfaceInteracionNames = new string[] { missing };
+                bool adjust = cbAbjustMesh.SelectedIndex == 0;
+                // Resolve
+                bool tryResolve = type == SearchContactPairType.Tie;
                 // Search
-                _controller.SuppressExplodedViews();
+                _controller.SuppressExplodedView();
                 if (_contactSearch == null)
-                    _contactSearch = new CaeMesh.ContactSearch(_controller.Model.Mesh, _controller.Model.Geometry);
+                    _contactSearch = new ContactSearch(_controller.Model.Mesh, _controller.Model.Geometry);
                 _contactSearch.GroupContactPairsBy = groupBy;
-                List<CaeMesh.MasterSlaveItem> masterSlaveItems = _contactSearch.FindContactPairs(distance,
-                                                                                                 angleDeg,
-                                                                                                 type == SearchContactPairType.Tie);
+                List<MasterSlaveItem> masterSlaveItems = _contactSearch.FindContactPairs(distance,
+                                                                                        angleDeg,
+                                                                                        filter,
+                                                                                        tryResolve);
                 _controller.ResumeExplodedViews(false);
                 // Fill data
                 SearchContactPair contactPair;
                 List<SearchContactPair> contactPairs = new List<SearchContactPair>();
-                foreach (CaeMesh.MasterSlaveItem masterSlaveItem in masterSlaveItems)
+                foreach (MasterSlaveItem masterSlaveItem in masterSlaveItems)
                 {
                     contactPair = new SearchContactPair(masterSlaveItem.Name, adjust, distance);
                     contactPair.Type = type;
@@ -410,6 +419,16 @@ namespace PrePoMax.Forms
             else _controller.ClearAllSelection();
         }
 
+        // IFormHighlight
+        public void Highlight()
+        {
+            HighlightContactPairs();
+        }
 
+        private void FrmSearchContactPairs_Activated(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString() + " Activated");
+            HighlightContactPairs();
+        }
     }
 }

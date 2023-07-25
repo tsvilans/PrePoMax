@@ -37,7 +37,15 @@ namespace CaeResults
 
 
         // Methods                                                                                                                  
-       
+        public void AppendSets(HistoryResults historyResults)
+        {
+            HistoryResultSet set;
+            foreach (var entry in historyResults.Sets)
+            {
+                if (_sets.TryGetValue(entry.Key, out set)) set.AppendFields(entry.Value);
+                else _sets.Add(entry.Key, entry.Value);
+            }
+        }
 
     }
 }

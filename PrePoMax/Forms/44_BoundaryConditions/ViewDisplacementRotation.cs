@@ -28,42 +28,97 @@ namespace PrePoMax
         [DescriptionAttribute("Displacement in the direction of the first axis.")]
         [TypeConverter(typeof(StringLengthDOFConverter))]
         [Id(1, 3)]
-        public double U1 { get { return _displacementRotation.U1; } set { _displacementRotation.U1 = value; } }
+        public double U1
+        {
+            get { return _displacementRotation.U1; }
+            set
+            {
+                _displacementRotation.U1 = value;
+                UpdateVisibility();
+            }
+        }
         //
         [CategoryAttribute("DOF")]
         [OrderedDisplayName(1, 10, "U2")]        
         [DescriptionAttribute("Displacement in the direction of the second axis.")]
         [TypeConverter(typeof(StringLengthDOFConverter))]
         [Id(2, 3)]
-        public double U2 { get { return _displacementRotation.U2; } set { _displacementRotation.U2 = value; } }
+        public double U2
+        {
+            get { return _displacementRotation.U2; }
+            set
+            {
+                _displacementRotation.U2 = value;
+                UpdateVisibility();
+            }
+        }
         //
         [CategoryAttribute("DOF")]
         [OrderedDisplayName(2, 10, "U3")]
         [DescriptionAttribute("Displacement in the direction of the third axis.")]
         [TypeConverter(typeof(StringLengthDOFConverter))]
         [Id(3, 3)]
-        public double U3 { get { return _displacementRotation.U3; } set { _displacementRotation.U3 = value; } }
+        public double U3
+        {
+            get { return _displacementRotation.U3; }
+            set
+            {
+                _displacementRotation.U3 = value;
+                UpdateVisibility();
+            }
+        }
         //
         [CategoryAttribute("DOF")]
         [OrderedDisplayName(3, 10, "UR1")]
         [DescriptionAttribute("Rotation around the first axis.")]
         [TypeConverter(typeof(StringAngleDOFConverter))]
         [Id(4, 3)]
-        public double UR1 { get { return _displacementRotation.UR1; } set { _displacementRotation.UR1 = value; } }
+        public double UR1
+        {
+            get { return _displacementRotation.UR1; }
+            set
+            {
+                _displacementRotation.UR1 = value;
+                UpdateVisibility();
+            }
+        }
         //
         [CategoryAttribute("DOF")]
         [OrderedDisplayName(4, 10, "UR2")]
         [DescriptionAttribute("Rotation around the second axis.")]
         [TypeConverter(typeof(StringAngleDOFConverter))]
         [Id(5, 3)]
-        public double UR2 { get { return _displacementRotation.UR2; } set { _displacementRotation.UR2 = value; } }
+        public double UR2
+        {
+            get { return _displacementRotation.UR2; }
+            set
+            {
+                _displacementRotation.UR2 = value;
+                UpdateVisibility();
+            }
+        }
         //
         [CategoryAttribute("DOF")]
         [OrderedDisplayName(5, 10, "UR3")]
         [DescriptionAttribute("Rotation around the third axis.")]
         [TypeConverter(typeof(StringAngleDOFConverter))]
         [Id(6, 3)]
-        public double UR3 { get { return _displacementRotation.UR3; } set { _displacementRotation.UR3 = value; } }
+        public double UR3
+        {
+            get { return _displacementRotation.UR3; }
+            set
+            {
+                _displacementRotation.UR3 = value;
+                UpdateVisibility();
+            }
+        }
+        //
+        [CategoryAttribute("Phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the boundary condition phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 4)]
+        public double Phase { get { return _displacementRotation.PhaseDeg; } set { _displacementRotation.PhaseDeg = value; } }
         //
         public override string AmplitudeName
         {
@@ -91,6 +146,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor.GetProperty(nameof(U3)).SetIsBrowsable(!_displacementRotation.TwoD);
             DynamicCustomTypeDescriptor.GetProperty(nameof(UR1)).SetIsBrowsable(!_displacementRotation.TwoD);
             DynamicCustomTypeDescriptor.GetProperty(nameof(UR2)).SetIsBrowsable(!_displacementRotation.TwoD);
+            // Phase
+            UpdateVisibility();
         }
 
 
@@ -110,6 +167,11 @@ namespace PrePoMax
             PopulateDropDownLists(regionTypeListItemsPairs);
             //
             PopulateAmplitudeNames(amplitudeNames);
+        }
+        private void UpdateVisibility()
+        {
+            bool visible = _displacementRotation.Complex && !_displacementRotation.IsFreeFixedOrZero();
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(visible);
         }
     }
 

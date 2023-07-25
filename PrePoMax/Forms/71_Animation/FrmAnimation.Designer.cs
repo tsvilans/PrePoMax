@@ -30,11 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lNumberOfAngles = new System.Windows.Forms.Label();
+            this.numNumberOfAngles = new System.Windows.Forms.NumericUpDown();
+            this.rbHarmonic = new System.Windows.Forms.RadioButton();
             this.numIncrementStep = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lIncrementStep = new System.Windows.Forms.Label();
+            this.lNumberOfFrames = new System.Windows.Forms.Label();
             this.rbTimeIncrements = new System.Windows.Forms.RadioButton();
-            this.numNumOfFrames = new System.Windows.Forms.NumericUpDown();
+            this.numNumberOfFrames = new System.Windows.Forms.NumericUpDown();
             this.rbScaleFactor = new System.Windows.Forms.RadioButton();
             this.tbarFrameSelector = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
@@ -42,7 +45,7 @@
             this.rbOnce = new System.Windows.Forms.RadioButton();
             this.rbLoop = new System.Windows.Forms.RadioButton();
             this.rbSwing = new System.Windows.Forms.RadioButton();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lCurrent = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnMoreLess = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -56,9 +59,9 @@
             this.rbLimitsCurrentFrame = new System.Windows.Forms.RadioButton();
             this.rbLimitsAllFrames = new System.Windows.Forms.RadioButton();
             this.numLastFrame = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lLast = new System.Windows.Forms.Label();
             this.numFirstFrame = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lFirst = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -68,8 +71,9 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cbGraphicsRam = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numNumberOfAngles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numIncrementStep)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numNumOfFrames)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numNumberOfFrames)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbarFrameSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFramesPerSecond)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -87,18 +91,68 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.lNumberOfAngles);
+            this.groupBox1.Controls.Add(this.numNumberOfAngles);
+            this.groupBox1.Controls.Add(this.rbHarmonic);
             this.groupBox1.Controls.Add(this.numIncrementStep);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.lIncrementStep);
+            this.groupBox1.Controls.Add(this.lNumberOfFrames);
             this.groupBox1.Controls.Add(this.rbTimeIncrements);
-            this.groupBox1.Controls.Add(this.numNumOfFrames);
+            this.groupBox1.Controls.Add(this.numNumberOfFrames);
             this.groupBox1.Controls.Add(this.rbScaleFactor);
             this.groupBox1.Location = new System.Drawing.Point(12, 133);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(281, 76);
+            this.groupBox1.Size = new System.Drawing.Size(281, 101);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Animation type";
+            this.groupBox1.Text = "Animation Type";
+            // 
+            // lNumberOfAngles
+            // 
+            this.lNumberOfAngles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lNumberOfAngles.AutoSize = true;
+            this.lNumberOfAngles.Location = new System.Drawing.Point(120, 74);
+            this.lNumberOfAngles.Name = "lNumberOfAngles";
+            this.lNumberOfAngles.Size = new System.Drawing.Size(102, 15);
+            this.lNumberOfAngles.TabIndex = 9;
+            this.lNumberOfAngles.Text = "Number of angles";
+            // 
+            // numNumberOfAngles
+            // 
+            this.numNumberOfAngles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numNumberOfAngles.Location = new System.Drawing.Point(228, 72);
+            this.numNumberOfAngles.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.numNumberOfAngles.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numNumberOfAngles.Name = "numNumberOfAngles";
+            this.numNumberOfAngles.Size = new System.Drawing.Size(45, 23);
+            this.numNumberOfAngles.TabIndex = 8;
+            this.numNumberOfAngles.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numNumberOfAngles.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numNumberOfAngles.ValueChanged += new System.EventHandler(this.numNumberOfAngles_ValueChanged);
+            // 
+            // rbHarmonic
+            // 
+            this.rbHarmonic.AutoSize = true;
+            this.rbHarmonic.Location = new System.Drawing.Point(6, 72);
+            this.rbHarmonic.Name = "rbHarmonic";
+            this.rbHarmonic.Size = new System.Drawing.Size(78, 19);
+            this.rbHarmonic.TabIndex = 7;
+            this.rbHarmonic.TabStop = true;
+            this.rbHarmonic.Text = "Harmonic";
+            this.rbHarmonic.UseVisualStyleBackColor = true;
+            this.rbHarmonic.CheckedChanged += new System.EventHandler(this.AnimationType_CheckedChanged);
             // 
             // numIncrementStep
             // 
@@ -125,25 +179,25 @@
             0});
             this.numIncrementStep.ValueChanged += new System.EventHandler(this.NumIncrementStep_ValueChanged);
             // 
-            // label6
+            // lIncrementStep
             // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(137, 49);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(86, 15);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Increment step";
+            this.lIncrementStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lIncrementStep.AutoSize = true;
+            this.lIncrementStep.Location = new System.Drawing.Point(137, 49);
+            this.lIncrementStep.Name = "lIncrementStep";
+            this.lIncrementStep.Size = new System.Drawing.Size(86, 15);
+            this.lIncrementStep.TabIndex = 5;
+            this.lIncrementStep.Text = "Increment step";
             // 
-            // label2
+            // lNumberOfFrames
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(119, 24);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 15);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Number of frames";
+            this.lNumberOfFrames.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lNumberOfFrames.AutoSize = true;
+            this.lNumberOfFrames.Location = new System.Drawing.Point(119, 24);
+            this.lNumberOfFrames.Name = "lNumberOfFrames";
+            this.lNumberOfFrames.Size = new System.Drawing.Size(104, 15);
+            this.lNumberOfFrames.TabIndex = 4;
+            this.lNumberOfFrames.Text = "Number of frames";
             // 
             // rbTimeIncrements
             // 
@@ -155,31 +209,32 @@
             this.rbTimeIncrements.TabStop = true;
             this.rbTimeIncrements.Text = "Time increments";
             this.rbTimeIncrements.UseVisualStyleBackColor = true;
+            this.rbTimeIncrements.CheckedChanged += new System.EventHandler(this.AnimationType_CheckedChanged);
             // 
-            // numNumOfFrames
+            // numNumberOfFrames
             // 
-            this.numNumOfFrames.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numNumOfFrames.Location = new System.Drawing.Point(228, 22);
-            this.numNumOfFrames.Maximum = new decimal(new int[] {
+            this.numNumberOfFrames.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numNumberOfFrames.Location = new System.Drawing.Point(228, 22);
+            this.numNumberOfFrames.Maximum = new decimal(new int[] {
             9999,
             0,
             0,
             0});
-            this.numNumOfFrames.Minimum = new decimal(new int[] {
+            this.numNumberOfFrames.Minimum = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.numNumOfFrames.Name = "numNumOfFrames";
-            this.numNumOfFrames.Size = new System.Drawing.Size(45, 23);
-            this.numNumOfFrames.TabIndex = 3;
-            this.numNumOfFrames.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numNumOfFrames.Value = new decimal(new int[] {
+            this.numNumberOfFrames.Name = "numNumberOfFrames";
+            this.numNumberOfFrames.Size = new System.Drawing.Size(45, 23);
+            this.numNumberOfFrames.TabIndex = 3;
+            this.numNumberOfFrames.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numNumberOfFrames.Value = new decimal(new int[] {
             15,
             0,
             0,
             0});
-            this.numNumOfFrames.ValueChanged += new System.EventHandler(this.numNumOfFrames_ValueChanged);
+            this.numNumberOfFrames.ValueChanged += new System.EventHandler(this.numNumberOfFrames_ValueChanged);
             // 
             // rbScaleFactor
             // 
@@ -279,15 +334,15 @@
             this.rbSwing.UseVisualStyleBackColor = true;
             this.rbSwing.CheckedChanged += new System.EventHandler(this.rbAnimationStyle_CheckedChanged);
             // 
-            // label3
+            // lCurrent
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(92, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 15);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Current";
+            this.lCurrent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lCurrent.AutoSize = true;
+            this.lCurrent.Location = new System.Drawing.Point(92, 19);
+            this.lCurrent.Name = "lCurrent";
+            this.lCurrent.Size = new System.Drawing.Size(47, 15);
+            this.lCurrent.TabIndex = 14;
+            this.lCurrent.Text = "Current";
             // 
             // groupBox2
             // 
@@ -298,12 +353,12 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.rbSwing);
             this.groupBox2.Controls.Add(this.rbLoop);
-            this.groupBox2.Location = new System.Drawing.Point(11, 215);
+            this.groupBox2.Location = new System.Drawing.Point(11, 240);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(281, 51);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Animation style";
+            this.groupBox2.Text = "Animation Style";
             // 
             // btnMoreLess
             // 
@@ -408,12 +463,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbColorSpectrumLimits.Controls.Add(this.rbLimitsCurrentFrame);
             this.gbColorSpectrumLimits.Controls.Add(this.rbLimitsAllFrames);
-            this.gbColorSpectrumLimits.Location = new System.Drawing.Point(11, 272);
+            this.gbColorSpectrumLimits.Location = new System.Drawing.Point(12, 297);
             this.gbColorSpectrumLimits.Name = "gbColorSpectrumLimits";
             this.gbColorSpectrumLimits.Size = new System.Drawing.Size(281, 51);
             this.gbColorSpectrumLimits.TabIndex = 19;
             this.gbColorSpectrumLimits.TabStop = false;
-            this.gbColorSpectrumLimits.Text = "Automatic color spectrum limits";
+            this.gbColorSpectrumLimits.Text = "Automatic Color Spectrum Limits";
             // 
             // rbLimitsCurrentFrame
             // 
@@ -464,15 +519,15 @@
             0});
             this.numLastFrame.ValueChanged += new System.EventHandler(this.numLastFrame_ValueChanged);
             // 
-            // label5
+            // lLast
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(197, 19);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(28, 15);
-            this.label5.TabIndex = 22;
-            this.label5.Text = "Last";
+            this.lLast.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lLast.AutoSize = true;
+            this.lLast.Location = new System.Drawing.Point(197, 19);
+            this.lLast.Name = "lLast";
+            this.lLast.Size = new System.Drawing.Size(28, 15);
+            this.lLast.TabIndex = 22;
+            this.lLast.Text = "Last";
             // 
             // numFirstFrame
             // 
@@ -499,26 +554,26 @@
             0});
             this.numFirstFrame.ValueChanged += new System.EventHandler(this.numFirstFrame_ValueChanged);
             // 
-            // label4
+            // lFirst
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 19);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(29, 15);
-            this.label4.TabIndex = 20;
-            this.label4.Text = "First";
+            this.lFirst.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lFirst.AutoSize = true;
+            this.lFirst.Location = new System.Drawing.Point(6, 19);
+            this.lFirst.Name = "lFirst";
+            this.lFirst.Size = new System.Drawing.Size(29, 15);
+            this.lFirst.TabIndex = 20;
+            this.lFirst.Text = "First";
             // 
             // groupBox5
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.lFirst);
             this.groupBox5.Controls.Add(this.numLastFrame);
-            this.groupBox5.Controls.Add(this.label3);
+            this.groupBox5.Controls.Add(this.lCurrent);
             this.groupBox5.Controls.Add(this.numCurrFrame);
             this.groupBox5.Controls.Add(this.numFirstFrame);
-            this.groupBox5.Controls.Add(this.label5);
+            this.groupBox5.Controls.Add(this.lLast);
             this.groupBox5.Location = new System.Drawing.Point(12, 81);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(281, 46);
@@ -531,12 +586,12 @@
             this.groupBox6.Controls.Add(this.btnClose);
             this.groupBox6.Controls.Add(this.cbSaveAsImages);
             this.groupBox6.Controls.Add(this.cbEncoderOptions);
-            this.groupBox6.Location = new System.Drawing.Point(11, 383);
+            this.groupBox6.Location = new System.Drawing.Point(11, 408);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(281, 73);
             this.groupBox6.TabIndex = 21;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Movie options";
+            this.groupBox6.Text = "Movie Options";
             // 
             // btnClose
             // 
@@ -575,7 +630,7 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.cbGraphicsRam);
-            this.groupBox4.Location = new System.Drawing.Point(11, 329);
+            this.groupBox4.Location = new System.Drawing.Point(11, 354);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(281, 48);
             this.groupBox4.TabIndex = 22;
@@ -598,7 +653,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(304, 466);
+            this.ClientSize = new System.Drawing.Size(304, 486);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -618,8 +673,9 @@
             this.VisibleChanged += new System.EventHandler(this.FrmAnimation_VisibleChanged);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numNumberOfAngles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numIncrementStep)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numNumOfFrames)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numNumberOfFrames)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbarFrameSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFramesPerSecond)).EndInit();
             this.groupBox2.ResumeLayout(false);
@@ -643,9 +699,9 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lNumberOfFrames;
         private System.Windows.Forms.RadioButton rbTimeIncrements;
-        private System.Windows.Forms.NumericUpDown numNumOfFrames;
+        private System.Windows.Forms.NumericUpDown numNumberOfFrames;
         private System.Windows.Forms.RadioButton rbScaleFactor;
         private System.Windows.Forms.Button btnPlayBackward;
         private System.Windows.Forms.TrackBar tbarFrameSelector;
@@ -656,7 +712,7 @@
         private System.Windows.Forms.RadioButton rbOnce;
         private System.Windows.Forms.RadioButton rbLoop;
         private System.Windows.Forms.RadioButton rbSwing;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lCurrent;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnMoreLess;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -667,18 +723,21 @@
         private System.Windows.Forms.RadioButton rbLimitsAllFrames;
         private System.Windows.Forms.Button btnSaveMovieAs;
         private System.Windows.Forms.NumericUpDown numFirstFrame;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lFirst;
         private System.Windows.Forms.NumericUpDown numLastFrame;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lLast;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.CheckBox cbEncoderOptions;
         private System.Windows.Forms.NumericUpDown numIncrementStep;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lIncrementStep;
         private System.Windows.Forms.CheckBox cbSaveAsImages;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox cbGraphicsRam;
         private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Label lNumberOfAngles;
+        private System.Windows.Forms.NumericUpDown numNumberOfAngles;
+        private System.Windows.Forms.RadioButton rbHarmonic;
     }
 }

@@ -23,8 +23,8 @@ namespace CaeModel
         
 
         // Constructors                                                                                                             
-        public VariablePressure(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : base(name, twoD)
+        public VariablePressure(string name, string regionName, RegionTypeEnum regionType, bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _surfaceName = regionName;
             _regionType = regionType;

@@ -17,6 +17,7 @@ namespace vtkControl
         public int[] StepIncrementId;
         public float[] ScaleFactor;
         public double[] AllFramesScalarRange;
+        public vtkMaxAnimationType AnimationType;
         public bool UseAllFrameData;
         public List<Dictionary<int, string>> AnimatedActorNames;
         public Dictionary<string, bool> ActorVisible;
@@ -25,17 +26,19 @@ namespace vtkControl
 
         // Constructors                                                                                                             
         public vtkMaxAnimationFrameData()
-            : this(null, null, null, null, null)
+            : this(null, null, null, null, null, vtkMaxAnimationType.ScaleFactor)
         {
         }
 
-        public vtkMaxAnimationFrameData(float[] time, int[] stepId, int[] stepIncrementId, float[] scale, double[] scalarRange)
+        public vtkMaxAnimationFrameData(float[] time, int[] stepId, int[] stepIncrementId, float[] scale, double[] scalarRange,
+                                        vtkMaxAnimationType animationType)
         {
             Time = time;
             StepId = stepId;
             StepIncrementId = stepIncrementId;
             ScaleFactor = scale;
             AllFramesScalarRange = scalarRange;
+            AnimationType = animationType;
             AnimatedActorNames = new List<Dictionary<int, string>>();
             ActorVisible = new Dictionary<string, bool>();
             InitializedActorNames = new HashSet<string>();

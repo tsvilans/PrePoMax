@@ -58,7 +58,7 @@ namespace PrePoMax
                 float scale = Controller.GetScale();
                 arrowVec = new Vec3D(Controller.GetScaledNode(scale, _nodeId).Coor); // for the arrow
                 //
-                if (Controller.ViewResultsType == ViewResultsType.ColorContours)
+                if (Controller.ViewResultsType == ViewResultsTypeEnum.ColorContours)
                 {
                     float fieldValue = Controller.GetNodalValue(_nodeId);
                     string fieldUnit = Controller.GetCurrentResultsUnitAbbreviation();

@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using Calculix = FileInOut.Output.Calculix;
 using System.IO;
 using System.Drawing;
+using System.Data;
 
 namespace CaeModel
 {
@@ -73,9 +74,9 @@ namespace CaeModel
             _materials = new OrderedDictionary<string, Material>("Materials", sc);
             _sections = new OrderedDictionary<string, Section>("Sections", sc);
             _constraints = new OrderedDictionary<string, Constraint>("Constraints", sc);
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions", sc);
-            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
-            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions", sc);
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface Tractions", sc);
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact Pairs", sc);
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial Conditions", sc);
             _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
             _stepCollection = new StepCollection();
             _properties = new ModelProperties();
@@ -87,14 +88,14 @@ namespace CaeModel
         {
             StringComparer sc = StringComparer.OrdinalIgnoreCase;
             // Compatibility for version v.0.6.0
-            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface tractions", sc);
-            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
+            _surfaceInteractions = new OrderedDictionary<string, SurfaceInteraction>("Suface Tractions", sc);
+            _contactPairs = new OrderedDictionary<string, ContactPair>("Contact Pairs", sc);
             // Compatibility for version v.0.7.0
             _unitSystem = new UnitSystem();
             // Compatibility for version v.0.8.0
             _hashName = Tools.GetRandomString(8);
             // Compatibility for version v.1.0.0
-            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial conditions", sc);
+            _initialConditions = new OrderedDictionary<string, InitialCondition>("Initial Conditions", sc);
             // Compatibility for version v.1.2.1
             _amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
             //
@@ -225,6 +226,7 @@ namespace CaeModel
             //
             List<string> invalidItems = new List<string>();
             bool valid = false;
+            invalidItems.AddRange(_geometry.CheckValidity(items));
             invalidItems.AddRange(_mesh.CheckValidity(items));
             // Sections
             Section section;
@@ -634,6 +636,21 @@ namespace CaeModel
             // Use the map
             elementIdMaterialId = new Dictionary<int, int>();
             foreach (var entry in elementIdSectionId) elementIdMaterialId.Add(entry.Key, sectionIdMaterialId[entry.Value]);
+        }
+        public void GetNodalSafetyFactorLimits()
+        {
+            Dictionary<int, int> elementIdMaterialId;
+            GetMaterialAssignments(out elementIdMaterialId);
+            //
+            int count = 0;
+            Dictionary<int, double> materialIdSafetyFactor = new Dictionary<int, double>();
+            foreach (var entry in _materials)
+            {
+                //if (safetyFactor != null) materialIdSafetyFactor.Add(count++, safetyFactor.SafetyFactorLimitValue);
+                //else materialIdSafetyFactor.Add(count++, double.NaN);
+            }
+            //
+            Dictionary<int, double> nodeIdSafetyFactorLimit = new Dictionary<int, double>();
         }
         public bool AreSlipWearCoefficientsDefined(out Dictionary<int, double> materialIdCoefficient)
         {
@@ -1127,7 +1144,8 @@ namespace CaeModel
                                       load.F1 / area * entry.Value,
                                       load.F2 / area * entry.Value,
                                       load.F3 / area * entry.Value,
-                                      load.TwoD);
+                                      load.TwoD, load.Complex,
+                                      load.PhaseDeg);
                     cLoad.AmplitudeName = load.AmplitudeName;
                     loads.Add(cLoad);
                 }
@@ -1192,10 +1210,10 @@ namespace CaeModel
                 }
             }
         }
-        public CLoad[] GetNodalLoadsFromVariablePressureLoad(VariablePressure load)
+        public CLoad[] GetNodalCLoadsFromVariablePressureLoad(VariablePressure load)
         {
             Dictionary<int, int> elementIdSectionId;
-            Dictionary<int, double> sectionIdThickness = new Dictionary<int, double>();
+            double[] sectionIdThickness = new double[_sections.Count];
             // Get element thicknesses
             GetSectionAssignments(out elementIdSectionId);
             //
@@ -1208,16 +1226,16 @@ namespace CaeModel
                 else if (entry.Value is ShellSection shell) thickness = shell.Thickness;
                 else throw new NotSupportedException();
                 //
-                sectionIdThickness.Add(sectionId++, thickness);
+                sectionIdThickness[sectionId++] = thickness;
             }
             // Surface
             FeSurface surface = _mesh.Surfaces[surfaceName];
             if (surface.ElementFaces == null) return null;
             //
-            int nodeId;
+            int nodeId = -1;
             int[] nodeIds;
             double A;
-            double k;
+            double sign;
             double pressure;
             double[] force;
             double[] nodalForce;
@@ -1228,59 +1246,155 @@ namespace CaeModel
             Dictionary<int, double> nodeIdPressure = new Dictionary<int, double>();
             Dictionary<int, double[]> nodeIdForce = new Dictionary<int, double[]>();
             //
+            int count;
+            FeFaceName faceName;
+            FeElement expandedElement;
+            int[] expandedNodeIds;
+            Dictionary<int, FeNode> expandedNodes;
+            //
             foreach (var entry in surface.ElementFaces)
             {
                 foreach (var elementId in _mesh.ElementSets[entry.Value].Labels)
                 {
                     element = _mesh.Elements[elementId];
+                    // Node ids
+                    nodeIds = element.GetNodeIdsFromFaceName(entry.Key);
                     //
                     _mesh.GetElementFaceCenterAndNormal(elementId, entry.Key, out double[] faceCenter, out faceNormal,
                                                         out bool shellElement);
-                    A = element.GetArea(entry.Key, _mesh.Nodes);
-                    // Account for 2D area when an edge is selected
-                    if (element is FeElement2D element2D && entry.Key != FeFaceName.S1 && entry.Key != FeFaceName.S2)
+                    //
+                    if (Properties.ModelSpace == ModelSpaceEnum.Axisymmetric)
                     {
-                        sectionId = elementIdSectionId[elementId];
-                        if (sectionId == -1) throw new CaeException("Missing section assignment at element " + elementId +
-                                                                    " from part " + _mesh.GetPartById(element.PartId) + ".");
-                        thickness = sectionIdThickness[sectionId];
-                        A *= thickness;
-                    }
-                    // Node ids
-                    nodeIds = element.GetNodeIdsFromFaceName(entry.Key);
-                    // Pressure
-                    nodalPressures = new double[nodeIds.Length];
-                    for (int i = 0; i < nodeIds.Length; i++)
-                    {
-                        nodeId = nodeIds[i];
-                        if (!nodeIdPressure.TryGetValue(nodeId, out pressure))
-                        {
-                            pressure = load.GetPressureForPoint(_mesh.Nodes[nodeId].Coor);
-                            nodeIdPressure.Add(nodeId, pressure);
-                        }
-                        nodalPressures[i] = pressure;
-                    }
-                    // Force magnitudes without area
-                    nodalForceMagnitudes = element.GetEquivalentForcesFromFaceName(entry.Key, nodalPressures);
-                    // Invert face normal in case of S1 or S2 shell face
-                    if (shellElement && (entry.Key == FeFaceName.S1 || entry.Key == FeFaceName.S2)) k = -1;
-                    else k = 1;
-                    // Force vectors
-                    for (int i = 0; i < nodeIds.Length; i++)
-                    {
-                        force = new double[] {
-                            k * A * nodalForceMagnitudes[i] * faceNormal[0],
-                            k * A * nodalForceMagnitudes[i] * faceNormal[1],
-                            k * A * nodalForceMagnitudes[i] * faceNormal[2]};
+                        GetExpandedAxisymmetricElementFromNodeIds(nodeIds, out expandedElement, out expandedNodes);
+                        expandedNodeIds = expandedElement.NodeIds;
+                        faceName = FeFaceName.S1;
                         //
-                        if (!nodeIdForce.TryGetValue(nodeIds[i], out nodalForce))
+                        A = expandedElement.GetArea(faceName, expandedNodes) * 180 / 0.01;
+                        // Pressure
+                        nodalPressures = new double[expandedNodeIds.Length];
+                        for (int i = 0; i < nodalPressures.Length; i++)
                         {
-                            nodalForce = new double[3];
-                            nodeIdForce.Add(nodeIds[i], nodalForce);
+                            nodeId = expandedNodeIds[i];
+                            pressure = load.GetPressureForPoint(expandedNodes[nodeId].Coor);
+                            nodalPressures[i] = pressure;
                         }
-                        nodalForce[0] += force[0];
-                        nodalForce[1] += force[1];
-                        nodalForce[2] += force[2];
+                        // Force magnitudes without area
+                        nodalForceMagnitudes = expandedElement.GetEquivalentForcesFromFaceName(faceName, nodalPressures);
+                        // Invert face normal in case of S1 or S2 shell face
+                        sign = 1;
+                        // Force vectors
+                        for (int i = 0; i < expandedNodeIds.Length; i++)
+                        {
+                            force = new double[] {
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[0],
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[1],
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[2]};
+                            //
+                            if (expandedElement.Id == 31)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[1];
+                            }
+                            else if (expandedElement.Id == 32)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[0];
+                            }
+                            else if (expandedElement.Id == 41)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 4) nodeId = nodeIds[0];
+                            }
+                            else if (expandedElement.Id == 61)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 4) nodeId = nodeIds[2];
+                                else if (expandedNodeIds[i] == 5) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 6) nodeId = nodeIds[2];
+                            }
+                            else if (expandedElement.Id == 62)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 4) nodeId = nodeIds[2];
+                                else if (expandedNodeIds[i] == 5) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 6) nodeId = nodeIds[2];
+                            }
+                            else if (expandedElement.Id == 81)
+                            {
+                                if (expandedNodeIds[i] == 1) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 2) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 3) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 4) nodeId = nodeIds[0];
+                                else if (expandedNodeIds[i] == 5) nodeId = nodeIds[2];
+                                else if (expandedNodeIds[i] == 6) nodeId = nodeIds[1];
+                                else if (expandedNodeIds[i] == 7) nodeId = nodeIds[2];
+                                else if (expandedNodeIds[i] == 8) nodeId = nodeIds[0];
+                            }
+                            //
+                            if (!nodeIdForce.TryGetValue(nodeId, out nodalForce))
+                            {
+                                nodalForce = new double[3];
+                                nodeIdForce.Add(nodeId, nodalForce);
+                            }
+                            nodalForce[0] += force[0];
+                            nodalForce[1] += force[1];
+                            nodalForce[2] += force[2];
+                        }
+                    }
+                    else
+                    {
+                        A = element.GetArea(entry.Key, _mesh.Nodes);
+                        // Account for 2D area when an edge is selected
+                        if (element is FeElement2D element2D && entry.Key != FeFaceName.S1 && entry.Key != FeFaceName.S2)
+                        {
+                            sectionId = elementIdSectionId[elementId];
+                            if (sectionId == -1) throw new CaeException("Missing section assignment at element " + elementId +
+                                                                        " from part " + _mesh.GetPartById(element.PartId) + ".");
+                            thickness = sectionIdThickness[sectionId];
+                            A *= thickness;
+                        }
+                        // Pressure
+                        nodalPressures = new double[nodeIds.Length];
+                        for (int i = 0; i < nodalPressures.Length; i++)
+                        {
+                            nodeId = nodeIds[i];
+                            if (!nodeIdPressure.TryGetValue(nodeId, out pressure))
+                            {
+                                pressure = load.GetPressureForPoint(_mesh.Nodes[nodeId].Coor);
+                                nodeIdPressure.Add(nodeId, pressure);
+                            }
+                            nodalPressures[i] = pressure;
+                        }
+                        // Force magnitudes without area
+                        nodalForceMagnitudes = element.GetEquivalentForcesFromFaceName(entry.Key, nodalPressures);
+                        // Invert face normal in case of S1 or S2 shell face
+                        if (shellElement && (entry.Key == FeFaceName.S1 || entry.Key == FeFaceName.S2)) sign = -1;
+                        else sign = 1;
+                        // Force vectors
+                        for (int i = 0; i < nodeIds.Length; i++)
+                        {
+                            force = new double[] {
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[0],
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[1],
+                                sign * A * nodalForceMagnitudes[i] * faceNormal[2]};
+                            //
+                            if (!nodeIdForce.TryGetValue(nodeIds[i], out nodalForce))
+                            {
+                                nodalForce = new double[3];
+                                nodeIdForce.Add(nodeIds[i], nodalForce);
+                            }
+                            nodalForce[0] += force[0];
+                            nodalForce[1] += force[1];
+                            nodalForce[2] += force[2];
+                        }
                     }
                 }
             }
@@ -1295,10 +1409,170 @@ namespace CaeModel
                                       entry.Value[0],
                                       entry.Value[1],
                                       entry.Value[2],
-                                      load.TwoD);
+                                      load.TwoD, load.Complex,
+                                      load.PhaseDeg);
                     cLoad.AmplitudeName = load.AmplitudeName;
                     loads.Add(cLoad);
                 }
+            }
+            //
+            return loads.ToArray();
+        }
+        public void GetExpandedAxisymmetricElementFromNodeIds(int[] nodeIds, out FeElement expandedElement,
+                                                             out Dictionary<int, FeNode> expandedNodes)
+        {
+            expandedElement = null;
+            expandedNodes = new Dictionary<int, FeNode>();
+            // Node coor
+            double[][] coor = new double[nodeIds.Length][];
+            for (int i = 0; i < nodeIds.Length; i++) coor[i] = _mesh.Nodes[nodeIds[i]].Coor;
+            //
+            double cos = Math.Cos(Math.PI / 180 * 0.01);
+            double sin = Math.Sin(Math.PI / 180 * 0.01);
+            //
+            if (nodeIds.Length == 2)
+            {
+                // Triangle
+                if (coor[0][0] == 0)
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[0]));
+                    expandedNodes.Add(2, new FeNode(2, coor[1][0] * cos, coor[1][1], coor[1][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[1][0] * cos, coor[1][1], -coor[1][0] * sin));
+                    expandedElement = new LinearTriangleElement(31, new int[] { 1, 2, 3 });
+                }
+                // Triangle
+                else if (coor[1][0] == 0)
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[1]));
+                    expandedNodes.Add(2, new FeNode(2, coor[0][0] * cos, coor[0][1], coor[0][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[0][0] * cos, coor[0][1], -coor[0][0] * sin));
+                    expandedElement = new LinearTriangleElement(32, new int[] { 1, 2, 3 });
+                }
+                // Quad
+                else
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[0][0] * cos, coor[0][1], coor[0][0] * sin));
+                    expandedNodes.Add(2, new FeNode(2, coor[1][0] * cos, coor[1][1], coor[1][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[1][0] * cos, coor[1][1], -coor[1][0] * sin));
+                    expandedNodes.Add(4, new FeNode(4, coor[0][0] * cos, coor[0][1], -coor[0][0] * sin));
+                    expandedElement = new LinearQuadrilateralElement(41, new int[] { 1, 2, 3, 4 });
+                }
+            }
+            else if (nodeIds.Length == 3)
+            {
+                // Triangle
+                if (coor[0][0] == 0)
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[0]));
+                    expandedNodes.Add(2, new FeNode(2, coor[1][0] * cos, coor[1][1], coor[1][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[1][0] * cos, coor[1][1], -coor[1][0] * sin));
+                    //
+                    expandedNodes.Add(4, new FeNode(4, coor[2][0] * cos, coor[2][1], coor[2][0] * sin));
+                    expandedNodes.Add(5, new FeNode(5, coor[1]));
+                    expandedNodes.Add(6, new FeNode(6, coor[2][0] * cos, coor[2][1], -coor[2][0] * sin));
+                    //
+                    expandedElement = new ParabolicTriangleElement(61, new int[] { 1, 2, 3, 4, 5, 6 });
+                }
+                // Triangle
+                else if (coor[1][0] == 0)
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[1]));
+                    expandedNodes.Add(2, new FeNode(2, coor[0][0] * cos, coor[0][1], coor[0][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[0][0] * cos, coor[0][1], -coor[0][0] * sin));
+                    //
+                    expandedNodes.Add(4, new FeNode(4, coor[2][0] * cos, coor[2][1], coor[2][0] * sin));
+                    expandedNodes.Add(5, new FeNode(5, coor[0]));
+                    expandedNodes.Add(6, new FeNode(6, coor[2][0] * cos, coor[2][1], -coor[2][0] * sin));
+                    //
+                    expandedElement = new ParabolicTriangleElement(62, new int[] { 1, 2, 3, 4, 5, 6 });
+                }
+                // Quad
+                else
+                {
+                    expandedNodes.Add(1, new FeNode(1, coor[0][0] * cos, coor[0][1], coor[0][0] * sin));
+                    expandedNodes.Add(2, new FeNode(2, coor[1][0] * cos, coor[1][1], coor[1][0] * sin));
+                    expandedNodes.Add(3, new FeNode(3, coor[1][0] * cos, coor[1][1], -coor[1][0] * sin));
+                    expandedNodes.Add(4, new FeNode(4, coor[0][0] * cos, coor[0][1], -coor[0][0] * sin));
+                    //
+                    expandedNodes.Add(5, new FeNode(5, coor[2][0] * cos, coor[2][1], coor[2][0] * sin));
+                    expandedNodes.Add(6, new FeNode(6, coor[1]));
+                    expandedNodes.Add(7, new FeNode(7, coor[2][0] * cos, coor[2][1], -coor[2][0] * sin));
+                    expandedNodes.Add(8, new FeNode(8, coor[0]));
+                    //
+                    expandedElement = new ParabolicQuadrilateralElement(81, new int[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+                }
+            }
+            else throw new NotSupportedException();
+        }
+        public DLoad[] GetNodalDLoadsFromVariablePressureLoad_(VariablePressure load)
+        {
+            // Surface
+            FeSurface surface = _mesh.Surfaces[load.SurfaceName];
+            if (surface.ElementFaces == null) return null;
+            //
+            double sign;
+            double pressure;
+            double[] faceNormal;
+            FeElement element;
+            DLoad dLoad;
+            List<DLoad> loads = new List<DLoad>();
+            //
+            foreach (var entry in surface.ElementFaces)
+            {
+                foreach (var elementId in _mesh.ElementSets[entry.Value].Labels)
+                {
+                    element = _mesh.Elements[elementId];
+                    //
+                    _mesh.GetElementFaceCenterAndNormal(elementId, entry.Key, out double[] faceCenter, out faceNormal,
+                                                        out bool shellElement);
+                    // Pressure
+                    pressure = load.GetPressureForPoint(faceCenter);
+                    // Pressure loads
+                    if (pressure != 0)
+                    {
+                        dLoad = new DLoad(entry.Key.ToString(), elementId.ToString(), RegionTypeEnum.ElementId,
+                                          pressure, load.TwoD, load.Complex, load.PhaseDeg);
+                        dLoad.AmplitudeName = load.AmplitudeName;
+                        loads.Add(dLoad);
+                    }
+                }
+            }
+            //
+            return loads.ToArray();
+        }
+        public DLoad[] GetNodalDLoadsFromVariablePressureLoad(VariablePressure load)
+        {
+            // Surface
+            FeSurface surface = _mesh.Surfaces[load.SurfaceName];
+            if (surface.ElementFaces == null) return null;
+            //
+            int elementCount = 0;
+            foreach (var entry in surface.ElementFaces) elementCount += _mesh.ElementSets[entry.Value].Labels.Length;
+            DLoad[] loads = new DLoad[elementCount];
+            //
+            elementCount = 0;
+            foreach (var entry in surface.ElementFaces) // this are faces S1, S2, ...
+            {
+                // Parallel
+                Parallel.For(0, _mesh.ElementSets[entry.Value].Labels.Length, i =>
+                //for (int i = 0; i < _mesh.ElementSets[entry.Value].Labels.Length; i++)
+                {
+                    int elementId = _mesh.ElementSets[entry.Value].Labels[i];
+                    _mesh.GetElementFaceCenterAndNormal(elementId, entry.Key, out double[] faceCenter, out double[] faceNormal,
+                                                        out bool shellElement);
+                    // Pressure
+                    double pressure = load.GetPressureForPoint(faceCenter);
+                    // Pressure loads
+                    if (pressure != 0)
+                    {
+                        DLoad dLoad = new DLoad(entry.Key.ToString(), elementId.ToString(), RegionTypeEnum.ElementId,
+                                          pressure, load.TwoD, load.Complex, load.PhaseDeg);
+                        dLoad.AmplitudeName = load.AmplitudeName;
+                        loads[elementCount + i] = dLoad;
+                    }
+                }
+                );
+                elementCount += _mesh.ElementSets[entry.Value].Labels.Length;
             }
             //
             return loads.ToArray();
@@ -1374,7 +1648,8 @@ namespace CaeModel
                     // Boundary condition
                     xyz = entry.Value;
                     name = staticStep.BoundaryConditions.GetNextNumberedKey("BDM-" + entry.Key);
-                    displacementRotation = new DisplacementRotation(name, nodeSet.Name, RegionTypeEnum.NodeSetName, twoD);
+                    displacementRotation = new DisplacementRotation(name, nodeSet.Name, RegionTypeEnum.NodeSetName, twoD,
+                                                                    false, 0);
                     if (xyz[0] != 0) displacementRotation.U1 = xyz[0];
                     if (xyz[1] != 0) displacementRotation.U2 = xyz[1];
                     if (xyz[2] != 0) displacementRotation.U3 = xyz[2];

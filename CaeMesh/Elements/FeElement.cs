@@ -26,7 +26,7 @@ namespace CaeMesh
         public int Id;
         public int PartId;
         public int[] NodeIds;
-
+        
 
         public FeElement(int id, int[] nodeIds)
             : this(id, -1, nodeIds)
@@ -156,6 +156,30 @@ namespace CaeMesh
                     b * (-4 * n[0] -3 * n[1] -3 * n[2] -4 * n[3] + 10 * n[4] + 16 * n[5] + 10 * n[6] +  8 * n[7]),
                     b * (-4 * n[0] -4 * n[1] -3 * n[2] -3 * n[3] +  8 * n[4] + 10 * n[5] + 16 * n[6] + 10 * n[7]),
                     b * (-3 * n[0] -4 * n[1] -4 * n[2] -3 * n[3] + 10 * n[4] +  8 * n[5] + 10 * n[6] + 16 * n[7])};
+            }
+            else if (elementType == typeof(LinearTetraElement))
+            {
+                double a = 1.0 / 120.0;
+                return new double[] { a * (2 * n[0] + 1 * n[1] + 1 * n[2] + 1 * n[3]),
+                                      a * (1 * n[0] + 2 * n[1] + 1 * n[2] + 1 * n[3]),
+                                      a * (1 * n[0] + 1 * n[1] + 2 * n[2] + 1 * n[3]),
+                                      a * (1 * n[0] + 1 * n[1] + 1 * n[2] + 2 * n[3])};
+            }
+            else if (elementType == typeof(ParabolicTetraElement))
+            {
+                double a = 1.0 / 2520;
+                double b = 1.0 / 1260;
+                return new double[] {
+                    -(6*n[8]+4*n[7]+4*n[6]+6*n[5]+4*n[4]-n[3]-n[2]-n[1]+6*n[9]-6*n[0])*a,
+                    -(4*n[8]+6*n[7]+6*n[6]+4*n[5]+4*n[4]-n[3]-n[2]-6*n[1]+6*n[9]-n[0])*a,
+                    -(6*n[8]+6*n[7]+4*n[6]+4*n[5]+6*n[4]-n[3]-6*n[2]-n[1]+4*n[9]-n[0])*a,
+                    -(4*n[8]+4*n[7]+6*n[6]+6*n[5]+6*n[4]-6*n[3]-n[2]-n[1]+4*n[9]-n[0])*a,
+                    (8*n[8]+8*n[7]+8*n[6]+8*n[5]+16*n[4]-3*n[3]-3*n[2]-2*n[1]+4*n[9]-2*n[0])*b,
+                    (8*n[8]+4*n[7]+8*n[6]+16*n[5]+8*n[4]-3*n[3]-2*n[2]-2*n[1]+8*n[9]-3*n[0])*b,
+                    (4*n[8]+8*n[7]+16*n[6]+8*n[5]+8*n[4]-3*n[3]-2*n[2]-3*n[1]+8*n[9]-2*n[0])*b,
+                    (8*n[8]+16*n[7]+8*n[6]+4*n[5]+8*n[4]-2*n[3]-3*n[2]-3*n[1]+8*n[9]-2*n[0])*b,
+                    (16*n[8]+8*n[7]+4*n[6]+8*n[5]+8*n[4]-2*n[3]-3*n[2]-2*n[1]+8*n[9]-3*n[0])*b,
+                    (8*n[8]+8*n[7]+8*n[6]+8*n[5]+4*n[4]-2*n[3]-2*n[2]-3*n[1]+16*n[9]-3*n[0])*b};
             }
             else throw new NotSupportedException();
         }

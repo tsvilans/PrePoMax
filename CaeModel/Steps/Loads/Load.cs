@@ -17,6 +17,8 @@ namespace CaeModel
         private Selection _creationData;
         protected bool _twoD;
         protected string _amplitudeName;
+        protected bool _complex;
+        protected double _phaseDeg;
         protected Color _color;
         public const string DefaultAmplitudeName = "Default";
 
@@ -40,6 +42,8 @@ namespace CaeModel
                 if (_amplitudeName == DefaultAmplitudeName) _amplitudeName = null;
             }
         }
+        public bool Complex { get { return _complex; } set { _complex = value; } }
+        public double PhaseDeg { get { return _phaseDeg; } set { _phaseDeg = Tools.GetPhase360(value); } }
         public Color Color
         {
             get
@@ -52,14 +56,20 @@ namespace CaeModel
             set { _color = value; }
         }
 
+
         // Constructors                                                                                                             
         public Load(string name, bool twoD)
+            : this(name, twoD, false, 0)
+        { }
+        public Load(string name, bool twoD, bool complex, double phaseDeg)
             : base(name) 
         {
             _creationIds = null;
             _creationData = null;
             _twoD = twoD;
             _amplitudeName = null;
+            _complex = complex;
+            PhaseDeg = phaseDeg;    // 360°
             _color = Color.RoyalBlue;
         }
 

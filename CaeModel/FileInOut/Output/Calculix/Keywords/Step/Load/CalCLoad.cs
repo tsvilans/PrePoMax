@@ -15,16 +15,18 @@ namespace FileInOut.Output.Calculix
         // Variables                                                                                                                
         private CLoad _load;
         private Dictionary<string, int[]> _referencePointsNodeIds;
+        private ComplexLoadTypeEnum _complexLoadType;
 
 
         // Properties                                                                                                               
 
 
         // Constructor                                                                                                              
-        public CalCLoad(CLoad load, Dictionary<string, int[]> referencePointsNodeIds)
+        public CalCLoad(CLoad load, Dictionary<string, int[]> referencePointsNodeIds, ComplexLoadTypeEnum complexLoadType)
         {
             _load = load;
             _referencePointsNodeIds = referencePointsNodeIds;
+            _complexLoadType = complexLoadType;
         }
 
 
@@ -33,10 +35,13 @@ namespace FileInOut.Output.Calculix
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("** Name: " + _load.Name);
-            string amplitude = "";
+            string amplitude;
             if (_load.AmplitudeName != Load.DefaultAmplitudeName) amplitude = ", Amplitude=" + _load.AmplitudeName;
+            else amplitude = "";
             //
-            sb.AppendFormat("*Cload{0}{1}", amplitude, Environment.NewLine);
+            string loadCase = GetComplexLoadCase(_complexLoadType);
+            //
+            sb.AppendFormat("*Cload{0}{1}{2}", amplitude, loadCase, Environment.NewLine);
             //
             return sb.ToString();
         }
@@ -52,14 +57,19 @@ namespace FileInOut.Output.Calculix
             if (_load.F2 != 0) directions.Add(2);
             if (_load.F3 != 0) directions.Add(3);
             //
+            double ratio = GetComplexRatio(_complexLoadType, _load.PhaseDeg);
+            //
             foreach (var dir in directions)
             {
                 if (_load.RegionType == RegionTypeEnum.NodeId)
-                    sb.AppendFormat("{0}, {1}, {2}", _load.NodeId, dir, _load.GetComponent(dir - 1).ToCalculiX16String());
-                else if (_load.RegionType == CaeGlobals.RegionTypeEnum.NodeSetName) // node set
-                    sb.AppendFormat("{0}, {1}, {2}", _load.RegionName, dir, _load.GetComponent(dir - 1).ToCalculiX16String());
-                else if (_load.RegionType == CaeGlobals.RegionTypeEnum.ReferencePointName) // reference point
-                    sb.AppendFormat("{0}, {1}, {2}", rpNodeIds[0], dir, _load.GetComponent(dir - 1).ToCalculiX16String());
+                    sb.AppendFormat("{0}, {1}, {2}", _load.NodeId, dir,
+                                    (ratio * _load.GetComponent(dir - 1)).ToCalculiX16String());
+                else if (_load.RegionType == RegionTypeEnum.NodeSetName) // node set
+                    sb.AppendFormat("{0}, {1}, {2}", _load.RegionName, dir,
+                                    (ratio * _load.GetComponent(dir - 1)).ToCalculiX16String());
+                else if (_load.RegionType == RegionTypeEnum.ReferencePointName) // reference point
+                    sb.AppendFormat("{0}, {1}, {2}", rpNodeIds[0], dir,
+                                    (ratio * _load.GetComponent(dir - 1)).ToCalculiX16String());
                 //
                 sb.AppendLine();
             }

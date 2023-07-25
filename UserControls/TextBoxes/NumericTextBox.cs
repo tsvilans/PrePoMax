@@ -10,11 +10,16 @@ using System.Windows.Forms;
 
 namespace UserControls
 {
+    public enum NumericTextBoxEnum
+    {
+        Integer,
+        Real
+    }
     public partial class NumericTextBox : TextBox
     {
         // Variables                                                                                                                
         private const int WM_PASTE = 0x0302;
-
+        private NumericTextBoxEnum _numericType;
 
         // Properties                                                                                                               
         public double Value
@@ -26,12 +31,23 @@ namespace UserControls
                 else return 0;
             }
         }
+        public NumericTextBoxEnum NumericType
+        {
+            get { return _numericType; }
+            set
+            {
+                _numericType = value;
+                UpdateValueOnTypeChanged();
+            }
+        }
 
 
         // Constructors                                                                                                             
         public NumericTextBox()
         {
             InitializeComponent();
+            //
+            _numericType = NumericTextBoxEnum.Real;
         }
 
 
@@ -57,14 +73,31 @@ namespace UserControls
         }
         private void NumTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
-                e.Handled = true;
+                if ( _numericType == NumericTextBoxEnum.Integer ||
+                    (_numericType == NumericTextBoxEnum.Real && e.KeyChar != '.'))
+                {
+                    // Cancel key press
+                    e.Handled = true;
+                }
             }
             // Only allow one decimal point
-            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            if (_numericType == NumericTextBoxEnum.Real && (e.KeyChar == '.') && Text.IndexOf('.') > -1)
             {
+                // Cancel key press
                 e.Handled = true;
+            }
+        }
+        private void UpdateValueOnTypeChanged()
+        {
+            if (_numericType == NumericTextBoxEnum.Integer)
+            {
+                int separatorPos = Text.IndexOf('.');
+                if (separatorPos > -1)
+                {
+                    Text = Text.Substring(0, Text.Length - separatorPos);
+                }
             }
         }
     }

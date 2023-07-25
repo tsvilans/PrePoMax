@@ -309,7 +309,7 @@ namespace PrePoMax.Forms
             //
             if (FELoad.RegionType == RegionTypeEnum.Selection &&
                 (FELoad.CreationIds == null || FELoad.CreationIds.Length == 0))
-                throw new CaeException("The load must contain at least one item.");
+                throw new CaeException("The load selection must contain at least one item.");
             //
             // check for 0 values
             if (FELoad is CLoad cl)
@@ -485,7 +485,7 @@ namespace PrePoMax.Forms
                 int selectedId;
                 if (_viewLoad is ViewCLoad vcl)
                 {
-                    selectedId = lvTypes.FindItemWithText("Concentrated force").Index;
+                    selectedId = lvTypes.FindItemWithText("Concentrated Force").Index;
                     // Check for deleted regions
                     if (vcl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vcl.RegionType == RegionTypeEnum.NodeSetName.ToFriendlyString())
@@ -515,7 +515,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = noEdgeSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Uniform pressure").Index;
+                    selectedId = lvTypes.FindItemWithText("Uniform Pressure").Index;
                     // Check for deleted regions
                     if (vdl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vdl.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -530,7 +530,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = elementBasedSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Hydrostatic pressure").Index;
+                    selectedId = lvTypes.FindItemWithText("Hydrostatic Pressure").Index;
                     // Check for deleted regions
                     if (vhpl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vhpl.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -545,7 +545,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = elementBasedSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Imported pressure").Index;
+                    selectedId = lvTypes.FindItemWithText("Imported Pressure").Index;
                     // Check for deleted regions
                     if (vipl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vipl.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -560,7 +560,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = elementBasedSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Surface traction").Index;
+                    selectedId = lvTypes.FindItemWithText("Surface Traction").Index;
                     // Check for deleted regions
                     if (vstl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vstl.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -571,7 +571,7 @@ namespace PrePoMax.Forms
                 }
                 else if (_viewLoad is ViewShellEdgeLoad vsel)
                 {
-                    selectedId = lvTypes.FindItemWithText("Normal shell edge load").Index;
+                    selectedId = lvTypes.FindItemWithText("Normal Shell Edge Load").Index;
                     // Check for deleted regions
                     if (vsel.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vsel.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -595,7 +595,7 @@ namespace PrePoMax.Forms
                 }
                 else if (_viewLoad is ViewCentrifLoad vcfl)
                 {
-                    selectedId = lvTypes.FindItemWithText("Centrifugal load").Index;
+                    selectedId = lvTypes.FindItemWithText("Centrifugal Load").Index;
                     // Check for deleted regions
                     if (vcfl.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vcfl.RegionType == RegionTypeEnum.PartName.ToFriendlyString())
@@ -620,7 +620,7 @@ namespace PrePoMax.Forms
                 // Thermal                                                                                                          
                 else if (_viewLoad is ViewCFlux vcf)
                 {
-                    selectedId = lvTypes.FindItemWithText("Concentrated flux").Index;
+                    selectedId = lvTypes.FindItemWithText("Concentrated Flux").Index;
                     // Check for deleted regions
                     if (vcf.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vcf.RegionType == RegionTypeEnum.NodeSetName.ToFriendlyString())
@@ -635,7 +635,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = noEdgeSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Surface flux").Index;
+                    selectedId = lvTypes.FindItemWithText("Surface Flux").Index;
                     // Check for deleted regions
                     if (vdf.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vdf.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -646,7 +646,7 @@ namespace PrePoMax.Forms
                 }
                 else if (_viewLoad is ViewBodyFlux vbf)
                 {
-                    selectedId = lvTypes.FindItemWithText("Body flux").Index;
+                    selectedId = lvTypes.FindItemWithText("Body Flux").Index;
                     // Check for deleted regions
                     if (vbf.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vbf.RegionType == RegionTypeEnum.PartName.ToFriendlyString())
@@ -663,7 +663,7 @@ namespace PrePoMax.Forms
                     if (twoD) surfaceNames = shellEdgeSurfaceNames.ToArray();
                     else surfaceNames = noEdgeSurfaceNames.ToArray();
                     //
-                    selectedId = lvTypes.FindItemWithText("Convective film").Index;
+                    selectedId = lvTypes.FindItemWithText("Convective Film").Index;
                     // Check for deleted regions
                     if (vfht.RegionType == RegionTypeEnum.Selection.ToFriendlyString()) { }
                     else if (vfht.RegionType == RegionTypeEnum.SurfaceName.ToFriendlyString())
@@ -707,15 +707,16 @@ namespace PrePoMax.Forms
             Step step = _controller.GetStep(_stepName);
             System.Drawing.Color color = _controller.Settings.Pre.LoadSymbolColor;
             bool twoD = _controller.Model.Properties.ModelSpace.IsTwoD();
+            bool complex = step is SteadyStateDynamicsStep;
             // Populate list view
             ListViewItem item;
             string name;
             string loadName;
             // Concentrated force -  node set, reference points
-            name = "Concentrated force";
+            name = "Concentrated Force";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            CLoad cLoad = new CLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD);
+            CLoad cLoad = new CLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD, complex, 0);
             if (step.IsLoadSupported(cLoad))
             {
                 ViewCLoad vcl = new ViewCLoad(cLoad);
@@ -728,7 +729,7 @@ namespace PrePoMax.Forms
             name = "Moment";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            MomentLoad momentLoad = new MomentLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD);
+            MomentLoad momentLoad = new MomentLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD, complex, 0);
             if (step.IsLoadSupported(cLoad))
             {
                 ViewMomentLoad vml = new ViewMomentLoad(momentLoad);
@@ -738,10 +739,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Pressure
-            name = "Uniform pressure";
+            name = "Uniform Pressure";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            DLoad dLoad = new DLoad(loadName, "", RegionTypeEnum.Selection, 0, twoD);
+            DLoad dLoad = new DLoad(loadName, "", RegionTypeEnum.Selection, 0, twoD, complex, 0);
             if (step.IsLoadSupported(dLoad))
             {
                 string[] surfaceNames;
@@ -755,10 +756,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Hydrostatic pressure
-            name = "Hydrostatic pressure";
+            name = "Hydrostatic Pressure";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            HydrostaticPressure hpLoad = new HydrostaticPressure(loadName, "", RegionTypeEnum.Selection, twoD);
+            HydrostaticPressure hpLoad = new HydrostaticPressure(loadName, "", RegionTypeEnum.Selection, twoD, complex, 0);
             if (step.IsLoadSupported(hpLoad))
             {
                 string[] surfaceNames;
@@ -772,10 +773,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Pressure
-            name = "Imported pressure";
+            name = "Imported Pressure";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            ImportedPressure ipLoad = new ImportedPressure(loadName, "", RegionTypeEnum.Selection, twoD);
+            ImportedPressure ipLoad = new ImportedPressure(loadName, "", RegionTypeEnum.Selection, twoD, complex, 0);
             if (step.IsLoadSupported(ipLoad))
             {
                 string[] surfaceNames;
@@ -789,10 +790,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Surface traction
-            name = "Surface traction";
+            name = "Surface Traction";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            STLoad sTLoad = new STLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD);
+            STLoad sTLoad = new STLoad(loadName, "", RegionTypeEnum.Selection, 0, 0, 0, twoD, complex, 0);
             if (step.IsLoadSupported(sTLoad))
             {
                 string[] surfaceNames;
@@ -806,10 +807,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Shell edge load
-            name = "Normal shell edge load";
+            name = "Normal Shell Edge Load";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            ShellEdgeLoad shellEdgeLoad = new ShellEdgeLoad(loadName, "", RegionTypeEnum.Selection, 0, twoD);
+            ShellEdgeLoad shellEdgeLoad = new ShellEdgeLoad(loadName, "", RegionTypeEnum.Selection, 0, twoD, complex, 0);
             if (step.IsLoadSupported(shellEdgeLoad) && !twoD)
             {
                 ViewShellEdgeLoad vsel = new ViewShellEdgeLoad(shellEdgeLoad);
@@ -822,7 +823,7 @@ namespace PrePoMax.Forms
             name = "Gravity";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            GravityLoad gravityLoad = new GravityLoad(loadName, "", RegionTypeEnum.Selection, twoD);
+            GravityLoad gravityLoad = new GravityLoad(loadName, "", RegionTypeEnum.Selection, twoD, complex, 0);
             if (step.IsLoadSupported(gravityLoad))
             {
                 ViewGravityLoad vgl = new ViewGravityLoad(gravityLoad);
@@ -832,10 +833,10 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Centrifugal load -  part, element sets
-            name = "Centrifugal load";
+            name = "Centrifugal Load";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
-            CentrifLoad centrifLoad = new CentrifLoad(loadName, "", RegionTypeEnum.Selection, twoD);
+            CentrifLoad centrifLoad = new CentrifLoad(loadName, "", RegionTypeEnum.Selection, twoD, complex, 0);
             ViewCentrifLoad vcfl = new ViewCentrifLoad(centrifLoad);
             if (step.IsLoadSupported(gravityLoad))
             {
@@ -859,7 +860,7 @@ namespace PrePoMax.Forms
             }
             // Thermal                                                                                                              
             // Concentrated flux -  node set
-            name = "Concentrated flux";
+            name = "Concentrated Flux";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
             CFlux cFlux = new CFlux(loadName, "", RegionTypeEnum.Selection, 0, twoD);
@@ -872,7 +873,7 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Surface flux
-            name = "Surface flux";
+            name = "Surface Flux";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
             DFlux dFlux = new DFlux(loadName, "", RegionTypeEnum.Selection, 0, twoD);
@@ -889,7 +890,7 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Body flux
-            name = "Body flux";
+            name = "Body Flux";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
             BodyFlux bFlux = new BodyFlux(loadName, "", RegionTypeEnum.Selection, 0, twoD);
@@ -902,7 +903,7 @@ namespace PrePoMax.Forms
                 lvTypes.Items.Add(item);
             }
             // Film heat transfer
-            name = "Convective film";
+            name = "Convective Film";
             loadName = GetLoadName(name);
             item = new ListViewItem(name);
             FilmHeatTransfer filmHeatTransfer = new FilmHeatTransfer(loadName, "", RegionTypeEnum.Selection, 0, 0, twoD);

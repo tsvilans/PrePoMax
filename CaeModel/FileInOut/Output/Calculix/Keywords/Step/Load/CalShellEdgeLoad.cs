@@ -15,16 +15,18 @@ namespace FileInOut.Output.Calculix
         // Variables                                                                                                                
         private ShellEdgeLoad _load;
         private FeSurface _surface;
+        private ComplexLoadTypeEnum _complexLoadType;
 
 
         // Properties                                                                                                               
 
 
         // Constructor                                                                                                              
-        public CalShellEdgeLoad(ShellEdgeLoad load, FeSurface surface)
+        public CalShellEdgeLoad(ShellEdgeLoad load, FeSurface surface, ComplexLoadTypeEnum complexLoadType)
         {
             _load = load;
             _surface = surface;
+            _complexLoadType = complexLoadType;
         }
 
 
@@ -36,7 +38,9 @@ namespace FileInOut.Output.Calculix
             string amplitude = "";
             if (_load.AmplitudeName != Load.DefaultAmplitudeName) amplitude = ", Amplitude=" + _load.AmplitudeName;
             //
-            sb.AppendFormat("*Dload{0}{1}", amplitude, Environment.NewLine);
+            string loadCase = GetComplexLoadCase(_complexLoadType);
+            //
+            sb.AppendFormat("*Dload{0}{1}{2}", amplitude, loadCase, Environment.NewLine);
             //
             return sb.ToString();
         }
@@ -49,6 +53,8 @@ namespace FileInOut.Output.Calculix
             FeFaceName faceName;
             string faceKey = "";
             double magnitude;
+            //
+            double ratio = GetComplexRatio(_complexLoadType, _load.PhaseDeg);
             //
             foreach (var entry in _surface.ElementFaces)
             {
@@ -63,7 +69,7 @@ namespace FileInOut.Output.Calculix
                     else if (faceName == FeFaceName.S6) faceKey = "EDNOR4";
                 }
                 //
-                magnitude = _load.Magnitude;
+                magnitude = ratio * _load.Magnitude;
                 sb.AppendFormat("{0}, {1}, {2}", entry.Value, faceKey, magnitude.ToCalculiX16String()).AppendLine();
             }
             return sb.ToString();

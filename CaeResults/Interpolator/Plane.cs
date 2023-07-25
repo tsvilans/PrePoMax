@@ -20,6 +20,11 @@ namespace CaeResults
             Point = point;
             Direction = direction;
         }
+        public Plane(Plane plane)
+        {
+            Point = plane.Point.DeepCopy();
+            Direction = plane.Direction.DeepCopy();
+        }
 
 
         // Methods                                                                                                                  
@@ -34,6 +39,10 @@ namespace CaeResults
             Vec3D d = Direction * Vec3D.DotProduct(v, Direction);
             Vec3D projectedPoint = pointToProject - d;
             return projectedPoint;
+        }
+        public Plane DeepCopy()
+        {
+            return new Plane(this);
         }
     }
 }

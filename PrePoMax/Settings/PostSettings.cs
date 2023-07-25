@@ -31,7 +31,8 @@ namespace PrePoMax
         // Variables                                                                                                                
         private string _deformationFieldOutputName;
         private UndeformedModelTypeEnum _undeformedModelType;
-        private Color _undeformedModelColor;
+        private Color _undeformedWireModelColor;
+        private Color _undeformedSolidModelColor;
         private bool _showMinValueLocation;
         private bool _showMaxValueLocation;
         private int _maxHistoryEntriesToShow;
@@ -45,8 +46,31 @@ namespace PrePoMax
         }
         public Color UndeformedModelColor
         {
-            get { return _undeformedModelColor; }
-            set { _undeformedModelColor = value; }
+            get
+            {
+                // White color is used for times where no undeformed geometry is displayed
+                if (_undeformedModelType == UndeformedModelTypeEnum.None) return Color.White;
+                else if (_undeformedModelType == UndeformedModelTypeEnum.WireframeBody) return _undeformedWireModelColor;
+                else if (_undeformedModelType == UndeformedModelTypeEnum.SolidBody) return _undeformedSolidModelColor;
+                else throw new NotSupportedException();
+            }
+            set
+            {
+                if (_undeformedModelType == UndeformedModelTypeEnum.None) { }
+                else if (_undeformedModelType == UndeformedModelTypeEnum.WireframeBody) _undeformedWireModelColor = value;
+                else if (_undeformedModelType == UndeformedModelTypeEnum.SolidBody) _undeformedSolidModelColor = value;
+                else throw new NotSupportedException();
+            }
+        }
+        public Color UndeformedWireModelColor
+        {
+            get { return _undeformedWireModelColor; }
+            set { _undeformedWireModelColor = value; }
+        }
+        public Color UndeformedSolidModelColor
+        {
+            get { return _undeformedSolidModelColor; }
+            set { _undeformedSolidModelColor = value; }
         }
         public bool ShowMinValueLocation { get { return _showMinValueLocation; } set { _showMinValueLocation = value; } }
         public bool ShowMaxValueLocation { get { return _showMaxValueLocation; } set { _showMaxValueLocation = value; } }
@@ -76,7 +100,8 @@ namespace PrePoMax
         {
             _deformationFieldOutputName = CaeResults.FeResults.GetPossibleDeformationFieldOutputNames()[0];
             _undeformedModelType = UndeformedModelTypeEnum.WireframeBody;
-            _undeformedModelColor = Color.Black;
+            _undeformedWireModelColor = Color.Black;
+            _undeformedSolidModelColor = Color.FromArgb(128, Color.Gray);
             //
             _showMinValueLocation = false;
             _showMaxValueLocation = true;

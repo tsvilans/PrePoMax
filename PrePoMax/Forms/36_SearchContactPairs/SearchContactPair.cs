@@ -149,10 +149,10 @@ namespace PrePoMax.Forms
 
 
         // Methods                                                                                                                  
-        public void PopulateDropDownLists(string[] surfaceInteracionNames, string[] contacPairMethodNames)
+        public void PopulateDropDownLists(string[] surfaceInteractionNames, string[] conctactPairMethodNames)
         {
-            _dctd.PopulateProperty(nameof(SurfaceInteractionName), surfaceInteracionNames);
-            _dctd.PopulateProperty(nameof(ContactPairMethod), contacPairMethodNames);
+            _dctd.PopulateProperty(nameof(SurfaceInteractionName), surfaceInteractionNames);
+            _dctd.PopulateProperty(nameof(ContactPairMethod), conctactPairMethodNames);
             //
             _dctd.GetProperty(nameof(GeometryTypeName)).SetIsBrowsable(false);
             //

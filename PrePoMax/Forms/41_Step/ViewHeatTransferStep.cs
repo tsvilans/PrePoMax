@@ -20,6 +20,7 @@ namespace PrePoMax
         [CategoryAttribute("Data")]
         [OrderedDisplayName(9, 10, "Steady state")]
         [DescriptionAttribute("Enable/disable the steady state heat transfer solution.")]
+        [Id(10, 1)]
         public bool SteadyState { get { return _heatTransferStep.SteadyState; } set { _heatTransferStep.SteadyState = value; } }
         //
         //[CategoryAttribute("Advanced")]

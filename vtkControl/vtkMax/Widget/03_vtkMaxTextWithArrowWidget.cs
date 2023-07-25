@@ -150,9 +150,13 @@ namespace vtkControl
         }
         private void RecomputeHead(double[] start, double[] end)
         {
-            _headPolyData.GetPoints().SetPoint(0, end[0], end[1], 0);
-            _headPolyData.GetPointData().GetVectors().SetTuple3(0, end[0] - start[0], end[1] - start[1], 0);
-            _headPolyData.Modified();
+            try
+            {
+                _headPolyData.GetPoints().SetPoint(0, end[0], end[1], 0);
+                _headPolyData.GetPointData().GetVectors().SetTuple3(0, end[0] - start[0], end[1] - start[1], 0);
+                _headPolyData.Modified();
+            }
+            catch { }
         }
         private double[] ProjectPointOnPlane(double[] point, double[] pointOnPlane, double[] normal)
         {

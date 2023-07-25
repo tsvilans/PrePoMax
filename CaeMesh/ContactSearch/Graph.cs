@@ -7,7 +7,7 @@ using CaeGlobals;
 
 namespace CaeMesh
 {
-    public class Graph<T>
+    public class Graph<T> where T : IComparable<T>
     {
         // Variables                                                                                                                
         private NodeList<T> _nodeSet;
@@ -166,13 +166,16 @@ namespace CaeMesh
             }
             return true;
         }
-        public List<Graph<T>> GeConnectedSubgraphs()
+        public List<Graph<T>> GetConnectedSubgraphs()
         {
             Node<T> currentNode;
             HashSet<Node<T>> visitedNodes = new HashSet<Node<T>>();
             Queue<Node<T>> queue = new Queue<Node<T>>();
             NodeList<T> connectedNodes;
             List<Graph<T>> connectedSubgraphs = new List<Graph<T>>();
+            // Sort
+            try { _nodeSet.Sort(); }
+            catch { }
             //
             foreach (var node in _nodeSet)
             {
@@ -190,7 +193,7 @@ namespace CaeMesh
                         if (visitedNodes.Add(currentNode))
                         {
                             connectedNodes.Add(currentNode);
-                            // Add all neighbour to the queue
+                            // Add all neighbours to the queue
                             foreach (var neighbour in currentNode.Neighbors)
                                 queue.Enqueue(neighbour);
                         }
@@ -201,6 +204,34 @@ namespace CaeMesh
             }
             //
             return connectedSubgraphs;
+        }
+        //
+        public List<T> GetIndependencyList()
+        {
+            Graph<T> graphCopy = new Graph<T>(_nodeSet);
+            List<T> childItems = new List<T>();
+            List<T> independencyList = new List<T>();
+            // Remove all independent items
+            do
+            {
+                childItems.Clear();
+                //
+                foreach (Node<T> node in graphCopy.Nodes)
+                {
+                    if (node.Neighbors.Count() == 0) childItems.Add(node.Value);
+                }
+                //
+                foreach (var item in childItems)
+                {
+                    graphCopy.Remove(item);
+                }
+                independencyList.AddRange(childItems);
+            }
+            while (childItems.Count > 0);
+            //
+            if (graphCopy.Count > 0) throw new NotSupportedException();
+            //
+            return independencyList;
         }
     }
 }

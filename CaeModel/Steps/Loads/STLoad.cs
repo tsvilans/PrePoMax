@@ -29,8 +29,9 @@ namespace CaeModel
 
 
         // Constructors                                                                                                             
-        public STLoad(string name, string surfaceName, RegionTypeEnum regionType, double f1, double f2, double f3, bool twoD)
-            : base(name, twoD) 
+        public STLoad(string name, string surfaceName, RegionTypeEnum regionType, double f1, double f2, double f3, bool twoD,
+                      bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _surfaceName = surfaceName;
             _regionType = regionType;

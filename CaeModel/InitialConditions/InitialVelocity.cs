@@ -94,7 +94,7 @@ namespace CaeModel
             // Add group
             FieldData fieldData = new FieldData(FOFieldNames.Velo);
             fieldData.GlobalIncrementId = 1;
-            fieldData.Type = StepType.Static;
+            fieldData.StepType = StepTypeEnum.Static;
             fieldData.Time = 1;
             fieldData.MethodId = 1;
             fieldData.StepId = 1;
@@ -105,7 +105,7 @@ namespace CaeModel
             field.AddComponent(FOComponentNames.V1, values1);
             field.AddComponent(FOComponentNames.V2, values2);
             field.AddComponent(FOComponentNames.V3, values3);
-            results.AddFiled(fieldData, field);
+            results.AddField(fieldData, field);
             // Unit system
             results.UnitSystem = new UnitSystem(unitSystemType);
             //

@@ -21,11 +21,6 @@ namespace PrePoMax
         [DescriptionAttribute("Name of the history output.")]
         public abstract string Name { get; set; }
         //
-        [CategoryAttribute("Data")]
-        [OrderedDisplayName(1, 10, "Frequency")]
-        [DescriptionAttribute("Integer N, which indicates that only results of every N-th increment will be stored.")]
-        public abstract int Frequency { get; set; }
-        //
         [CategoryAttribute("Region")]
         [OrderedDisplayName(0, 10, "Region type")]
         [DescriptionAttribute("Select the region type for the creation of the history output.")]

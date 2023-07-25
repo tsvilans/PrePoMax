@@ -58,24 +58,6 @@ namespace CaeResults
             _cellBoxes = ComputeCellBoundingBoxes(source);
             _regionBoxes = SplitCellBoxesToRegions(_cellBoxes, _sourceBox, _nx, _ny, _nz);
             _triangles = TriangularCellsToTriangles(source);
-            //
-            //_locator = new vtkControl.vtkMaxLocator(source);
-            //
-            //_trianglesOctree = GenerateOctree(source, _cellBoxes, _sourceBox);
-            //
-            //int max = 0;
-            //int num = 0;
-            //List<int> nums = new List<int>();
-            //double average = 0;
-            //foreach (var boundingBox in _regionBoxes)
-            //{
-            //    num = ((Dictionary<int, BoundingBox>)boundingBox.Tag).Count;
-            //    nums.Add(num);
-            //    if (num > max) max = num;
-            //    average += num;
-            //}
-            //average /= _regionBoxes.Length;
-            //nums.Sort();
         }
         public void InterpolateAt(double[] point, InterpolatorEnum interpolator, out double[] distance, out double value)
         {
@@ -153,6 +135,7 @@ namespace CaeResults
                             if (!regions.ContainsKey(index))
                             {
                                 bb = _regionBoxes[index];
+                                //
                                 if (bb != null && ((Dictionary<int, BoundingBox>)bb.Tag).Count > 0)
                                 {
                                     regions.Add(index, bb);

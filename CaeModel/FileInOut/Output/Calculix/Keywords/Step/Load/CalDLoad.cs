@@ -15,16 +15,18 @@ namespace FileInOut.Output.Calculix
         // Variables                                                                                                                
         private DLoad _load;
         private FeSurface _surface;
+        private ComplexLoadTypeEnum _complexLoadType;
 
 
         // Properties                                                                                                               
 
 
         // Constructor                                                                                                              
-        public CalDLoad(DLoad load, FeSurface surface)
+        public CalDLoad(DLoad load, FeSurface surface, ComplexLoadTypeEnum complexLoadType)
         {
             _load = load;
             _surface = surface;
+            _complexLoadType = complexLoadType;
         }
 
 
@@ -36,7 +38,9 @@ namespace FileInOut.Output.Calculix
             string amplitude = "";
             if (_load.AmplitudeName != Load.DefaultAmplitudeName) amplitude = ", Amplitude=" + _load.AmplitudeName;
             //
-            sb.AppendFormat("*Dload{0}{1}", amplitude, Environment.NewLine);
+            string loadCase = GetComplexLoadCase(_complexLoadType);
+            //
+            sb.AppendFormat("*Dload{0}{1}{2}", amplitude, loadCase, Environment.NewLine);
             //
             return sb.ToString();
         }
@@ -67,7 +71,9 @@ namespace FileInOut.Output.Calculix
                     faceKey = "P" + faceName.ToString()[1];
                 }
                 //
-                magnitude = _load.Magnitude;
+                double ratio = GetComplexRatio(_complexLoadType, _load.PhaseDeg);
+                //
+                magnitude = ratio * _load.Magnitude;
                 if (_surface.SurfaceFaceTypes == FeSurfaceFaceTypes.ShellFaces && faceName == FeFaceName.S2) magnitude *= -1;
                 //
                 sb.AppendFormat("{0}, {1}, {2}", entry.Value, faceKey, magnitude.ToCalculiX16String()).AppendLine();

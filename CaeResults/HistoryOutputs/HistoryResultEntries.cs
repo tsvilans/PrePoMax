@@ -16,6 +16,7 @@ namespace CaeResults
         private List<double> _values;
         private List<int> _count;
         private bool _local;
+        private string _unit;
 
 
         // Properties                                                                                                               
@@ -23,6 +24,7 @@ namespace CaeResults
         public List<double> Values { get { return _values; } set { _values = value; } }
         public List<int> Count { get { return _count; } set { _count = value; } }
         public bool Local { get { return _local; } set { _local = value; } }
+        public string Unit { get { return _unit; } set { _unit = value; } }
 
 
         // Constructor                                                                                                              
@@ -35,6 +37,7 @@ namespace CaeResults
             _values = new List<double>();
             _count = new List<int>();
             _local = local;
+            _unit = null;
         }
 
 

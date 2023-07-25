@@ -36,8 +36,9 @@ namespace CaeModel
         }
 
         // Constructors                                                                                                             
-        public MomentLoad(string name, string regionName, RegionTypeEnum regionType, double m1, double m2, double m3, bool twoD)
-            : base(name, twoD) 
+        public MomentLoad(string name, string regionName, RegionTypeEnum regionType, double m1, double m2, double m3,
+                          bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg) 
         {
             _regionName = regionName;
             RegionType = regionType;
@@ -48,11 +49,11 @@ namespace CaeModel
             _m3 = m3;
         }
 
-        public MomentLoad(string name, int nodeId, double m1, double m2, double m3, bool twoD)
-            : base(name, twoD)
+        public MomentLoad(string name, int nodeId, double m1, double m2, double m3, bool twoD, bool complex, double phaseDeg)
+            : base(name, twoD, complex, phaseDeg)
         {
             _regionName = null;
-            RegionType = CaeGlobals.RegionTypeEnum.NodeId;
+            RegionType = RegionTypeEnum.NodeId;
             _nodeId = nodeId;
             //
             M1 = m1;    // account for 2D

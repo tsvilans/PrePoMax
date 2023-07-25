@@ -15,16 +15,18 @@ namespace FileInOut.Output.Calculix
         // Variables                                                                                                                
         private STLoad _load;
         private CLoad[] _cLoads;
+        private ComplexLoadTypeEnum _complexLoadType;
 
 
         // Properties                                                                                                               
 
 
         // Constructor                                                                                                              
-        public CalSTLoad(FeModel model, STLoad load)
+        public CalSTLoad(FeModel model, STLoad load, ComplexLoadTypeEnum complexLoadType)
         {
-            _cLoads = model.GetNodalLoadsFromSurfaceTraction(load);
             _load = load;
+            _cLoads = model.GetNodalLoadsFromSurfaceTraction(_load);
+            _complexLoadType = complexLoadType;
         }
 
 
@@ -36,13 +38,18 @@ namespace FileInOut.Output.Calculix
             string amplitude = "";
             if (_load.AmplitudeName != Load.DefaultAmplitudeName) amplitude = ", Amplitude=" + _load.AmplitudeName;
             //
-            sb.AppendFormat("*Cload{0}{1}", amplitude, Environment.NewLine);
+            string loadCase = GetComplexLoadCase(_complexLoadType);
+            //
+            sb.AppendFormat("*Cload{0}{1}{2}", amplitude, loadCase, Environment.NewLine);
             //
             return sb.ToString();
         }
         public override string GetDataString()
         {
             StringBuilder sb = new StringBuilder();
+            //
+            double ratio = GetComplexRatio(_complexLoadType, _load.PhaseDeg);
+            //
             if (_cLoads != null)
             {
                 List<int> directions = new List<int>();
@@ -55,7 +62,8 @@ namespace FileInOut.Output.Calculix
                     //
                     foreach (var dir in directions)
                     {
-                        sb.AppendFormat("{0}, {1}, {2}", cLoad.NodeId, dir, cLoad.GetComponent(dir - 1).ToCalculiX16String());
+                        sb.AppendFormat("{0}, {1}, {2}", cLoad.NodeId, dir,
+                                        (ratio * cLoad.GetComponent(dir - 1)).ToCalculiX16String());
                         sb.AppendLine();
                     }
                 }

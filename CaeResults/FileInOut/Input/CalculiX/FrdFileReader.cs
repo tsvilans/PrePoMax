@@ -57,6 +57,8 @@ namespace CaeResults
                 Dictionary<int, FeNode> nodes = null;
                 Dictionary<int, int> nodeIdsLookUp = null;
                 Dictionary<int, FeElement> elements = null;
+                Dictionary<int, string> materialIdMaterialName = null;
+                Dictionary<int, List<int>> materialIdElementIds = null;
                 //
                 FeResults result = new FeResults(fileName);
                 Field field;
@@ -73,6 +75,7 @@ namespace CaeResults
                         result.HashName = GetHashName(dataSet);
                         result.DateTime = GetDateTime(dataSet);
                         result.UnitSystem = GetUnitSystem(dataSet);
+                        materialIdMaterialName = GetMaterialIdsAndNames(dataSet);
                     }
                     else if (setID.StartsWith("    2C")) // Nodes
                     {
@@ -81,22 +84,37 @@ namespace CaeResults
                     }
                     else if (setID.StartsWith("    3C")) // Elements
                     {
-                        elements = GetElements(dataSet);
+                        elements = GetElements(dataSet, out materialIdElementIds);
                         //elements = GetElementsFast(dataSet));
                     }
                     else if (setID.StartsWith("    1PSTEP")) // Fields
                     {
                         GetField(dataSet, constantWidth, prevFieldData, nodeIdsLookUp, out fieldData, out field);
-                        result.AddFiled(fieldData, field);
+                        result.AddField(fieldData, field);
                         prevFieldData = fieldData.DeepClone();
                     }
                 }
+                //
+                result.Preprocess();
                 //
                 RemoveErrorElements(nodes, ref elements);
                 //
                 FeMesh mesh = new FeMesh(nodes, elements, MeshRepresentation.Results);
                 mesh.ResetPartsColor();
                 result.SetMesh(mesh, nodeIdsLookUp);
+                //
+                //
+                if (materialIdMaterialName != null && materialIdElementIds != null &&
+                    materialIdMaterialName.Count == materialIdElementIds.Count)
+                {
+                    FeElementSet elementSet;
+                    foreach (var entry in materialIdMaterialName)
+                    {
+                        elementSet = new FeElementSet(entry.Value, materialIdElementIds[entry.Key].ToArray());
+                        result.Mesh.AddElementSet(elementSet);
+                    }
+                }
+                //
                 //
                 return result;
             }
@@ -209,6 +227,31 @@ namespace CaeResults
             //
             return new UnitSystem(unitSystemType);
         }
+        static private Dictionary<int, string> GetMaterialIdsAndNames(string[] lines)
+        {
+            //    1UMAT    1S235
+            //    1UMAT    2SPRING
+            int materialId;
+            string materialName;
+            string[] tmp;
+            Dictionary<int, string> materialIdMaterialName = new Dictionary<int, string>();
+            //
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].ToUpper().Contains("1UMAT"))
+                {
+                    tmp = lines[i].Split(new string[] { "1UMAT" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (tmp.Length == 2)
+                    {
+                        materialId = int.Parse(tmp[1].Substring(0, 5));
+                        materialName = "MATERIAL_" + tmp[1].Substring(5, tmp[1].Length - 5).Trim();
+                        materialIdMaterialName.Add(materialId, materialName);
+                    }
+                }
+            }
+            //
+            return materialIdMaterialName;
+        }
         static private List<string[]> GetDataSets(string[] lines)
         {
             List<string> dataSet = new List<string>();
@@ -298,7 +341,7 @@ namespace CaeResults
 
             return nodes;
         }
-        static private Dictionary<int, FeElement> GetElements(string[] lines)
+        static private Dictionary<int, FeElement> GetElements(string[] lines, out Dictionary<int, List<int>> materialIdElementIds)
         {
             //        el.id   type       ?   mat.id      
             // -1      1413      3       0        1      
@@ -306,6 +349,8 @@ namespace CaeResults
             // -2       483       489       481       482
 
             Dictionary<int, FeElement> elements = new Dictionary<int, FeElement>();
+            List<int> elementIds;
+            materialIdElementIds = new Dictionary<int, List<int>>();
             int id;
             FrdFeDescriptorId feDescriptorId;
             FeElement element;
@@ -320,7 +365,10 @@ namespace CaeResults
                 record1 = lines[i].Split(splitter, StringSplitOptions.RemoveEmptyEntries);
                 id = int.Parse(record1[1]);
                 feDescriptorId = (FrdFeDescriptorId)int.Parse(record1[2]);
-                //materialID = int.Parse(record1[4]);
+                materialID = int.Parse(record1[4]);
+                //
+                if (materialIdElementIds.TryGetValue(materialID, out elementIds)) elementIds.Add(id);
+                else materialIdElementIds.Add(materialID, new List<int> { id });
                 //
                 switch (feDescriptorId)
                 {
@@ -428,38 +476,10 @@ namespace CaeResults
             GetFieldHeaderData(lines, ref lineNum, prevFieldData, out fieldData, out numOfVal);
             float[][] values = GetFieldValuesData(lines, ref lineNum, constantWidth, numOfVal, nodeIdsLookUp, out components);
             //
-            switch (fieldData.Name)
+            field = new Field(fieldData.Name);
+            for (int i = 0; i < components.Count; i++)
             {
-                case FOFieldNames.Disp:
-                case FOFieldNames.Dispi:
-                case FOFieldNames.Forc:
-                case FOFieldNames.Forci:
-                //
-                case FOFieldNames.Velo:
-                // Thermal
-                case FOFieldNames.Flux:
-                // Sensitivity
-                case FOFieldNames.Norm:
-                    field = CreateVectorField(fieldData.Name, components, values);
-                    break;
-                case FOFieldNames.Stress:
-                case FOFieldNames.Stressi:
-                case FOFieldNames.ToStrain:
-                case FOFieldNames.ToStraii:
-                case FOFieldNames.MeStrain:
-                case FOFieldNames.MeStraii:
-                // Error
-                case FOFieldNames.ZZStr:
-                case FOFieldNames.ZZStri:
-                    field = CreateStressField(fieldData.Name, components, values);
-                    break;
-                default:
-                    field = new Field(fieldData.Name);
-                    for (int i = 0; i < components.Count; i++)
-                    {
-                        field.AddComponent(components[i], values[i]);
-                    }
-                    break;
+                field.AddComponent(components[i], values[i]);
             }
         }
 
@@ -467,7 +487,32 @@ namespace CaeResults
                                                out FieldData fieldData, out int numOfVal)
         {
             {
+
                 // STATIC STEP
+
+                // 1. Record:
+                // Format:(1X,' 100','C',6A1,E12.5,I12,20A1,I2,I5,10A1,I2)
+                // Values: KEY,CODE,SETNAME,VALUE,NUMNOD,TEXT,ICTYPE,NUMSTP,ANALYS,
+                //         FORMAT
+                // Where: KEY    = 100
+                //        CODE   = C
+                //        SETNAME= Name (not used)
+                //        VALUE  = Could be frequency, time or any numerical value
+                //        NUMNOD = Number of nodes in this nodal results block
+                //        TEXT   = Any text
+                //        ICTYPE = Analysis type
+                //                 0  static
+                //                 1  time step
+                //                 2  frequency
+                //                 3  load step
+                //                 4  user named
+                //        NUMSTP = Step number
+                //        ANALYS = Type of analysis (description)
+                //        FORMAT = Format indicator
+                //                 0  short format
+                //                 1  long format 
+                //                 2  binary format 
+
 
                 //                              field#  stepIncrement#       step#            - COMMENTS
                 //    1PSTEP                        25               1           2           
@@ -509,6 +554,16 @@ namespace CaeResults
                 //  -5  D3          1    2    3    0                                         
                 //  -5  ALL         1    2    0    0    1ALL                                 
 
+                // STEADY STATE DYNAMICS STEP
+
+                //    1PSTEP                         3           0           2               
+                //  100CL  103 0.00000E+00          21                     1    3           1
+                // -4  DISP        4    1                                                    
+                // -5  D1          1    2    1    0                                          
+                // -5  D2          1    2    2    0                                          
+                // -5  D3          1    2    3    0                                          
+                // -5  ALL         1    2    0    0    1ALL                                  
+
                 // LAST ITERATIONS
 
                 //    1PSTEP              STP 2INC  12                                       
@@ -536,7 +591,7 @@ namespace CaeResults
             //
             string name;
             int globalIncrementId = -1;
-            StepType type = StepType.Static;
+            StepTypeEnum type = StepTypeEnum.Static;
             float time;
             int stepId;
             int stepIncrementId = -1;
@@ -546,13 +601,13 @@ namespace CaeResults
             // Last iterations
             if (record[2].Contains("INC"))
             {
-                type = StepType.LastIterations;
+                type = StepTypeEnum.LastIterations;
                 stepId = int.Parse(record[record.Length - 1]);
             }
             else
             {
-                stepId = int.Parse(record[3]);
                 stepIncrementId = int.Parse(record[2]);
+                stepId = int.Parse(record[3]);
             }
             // Find 100C line - user field data
             while (!lines[lineNum].TrimStart().StartsWith("100C")) lineNum++;
@@ -567,28 +622,33 @@ namespace CaeResults
             time = float.Parse(record[2]);
             numOfVal = int.Parse(record[3]);
             methodId = int.Parse(record[4]);
+            // Steady state dynamics
+            if (methodId == 1 && stepIncrementId == 0)
+                type = StepTypeEnum.SteadyStateDynamics;
             // Sensitivity
-            if (type == StepType.Static && methodId == 3)   // method 3 is also usef for last iterations type
+            if (type == StepTypeEnum.Static && methodId == 3)   // method 3 is also used for last iterations type
             {
-                if (prevFieldData.Type == StepType.Frequency || prevFieldData.Type == StepType.FrequencySensitivity)
-                    type = StepType.FrequencySensitivity;
+                if (prevFieldData.StepType == StepTypeEnum.Frequency || prevFieldData.StepType == StepTypeEnum.FrequencySensitivity)
+                    type = StepTypeEnum.FrequencySensitivity;
             }
             //
-            if (int.Parse(record[4]) == 4) type = StepType.Buckling;                                // buckling switch
+            if (methodId == 4) type = StepTypeEnum.Buckling;                                            // buckling switch
             //
-            if (type == StepType.Buckling)
+            if (type == StepTypeEnum.Buckling)
                 GetStepAndStepIncrementIds(type, 1, globalIncrementId, prevFieldData, out stepId, out stepIncrementId);
-            else if (type == StepType.FrequencySensitivity)
+            else if (type == StepTypeEnum.SteadyStateDynamics)
+                GetStepAndStepIncrementIds(type, 1, globalIncrementId, prevFieldData, out stepId, out stepIncrementId);
+            else if (type == StepTypeEnum.FrequencySensitivity)
                 GetStepAndStepIncrementIds(type, 0, globalIncrementId, prevFieldData, out stepId, out stepIncrementId);
             // Check for modal analysis
             else if (record.Length > 5 && record[5].Contains("MODAL"))
             {
-                type = StepType.Frequency;
+                type = StepTypeEnum.Frequency;
                 record = lines[lineNum - 2].Split(splitter, StringSplitOptions.RemoveEmptyEntries); // 1PMODE
                 int freqNum = int.Parse(record[1]);
                 stepIncrementId = freqNum;
             }
-            else if (type == StepType.LastIterations)
+            else if (type == StepTypeEnum.LastIterations)
             {
                 stepIncrementId = int.Parse(record[5]);
             }
@@ -598,13 +658,13 @@ namespace CaeResults
             //
             fieldData = new FieldData(name);
             fieldData.GlobalIncrementId = globalIncrementId;
-            fieldData.Type = type;
+            fieldData.StepType = type;
             fieldData.Time = time;
             fieldData.MethodId = methodId;
             fieldData.StepId = stepId;
             fieldData.StepIncrementId = stepIncrementId;
         }
-        static private void GetStepAndStepIncrementIds(StepType type, int startIncrementId, int globalIncrementId,
+        static private void GetStepAndStepIncrementIds(StepTypeEnum type, int startIncrementId, int globalIncrementId,
                                                        FieldData prevFieldData, out int stepId, out int stepIncrementId)
         {
             if (prevFieldData == null) // this is the first step
@@ -612,7 +672,7 @@ namespace CaeResults
                 stepId = 1;
                 stepIncrementId = startIncrementId;
             }
-            else if (prevFieldData.Type != type)   // this is the first increment in the new type step
+            else if (prevFieldData.StepType != type)   // this is the first increment in the new type step
             {
                 stepId = prevFieldData.StepId + 1;
                 stepIncrementId = startIncrementId;
@@ -769,132 +829,8 @@ namespace CaeResults
             }
             return values;
         }
-
-        static private Field CreateVectorField(string name, List<string> components, float[][] values)
-        {
-            Field field = new Field(name);
-            //
-            float[] magnitude = new float[values[0].Length];
-            for (int i = 0; i < magnitude.Length; i++)
-            {
-                magnitude[i] = (float)Math.Sqrt(Math.Pow(values[0][i], 2) + Math.Pow(values[1][i], 2) + Math.Pow(values[2][i], 2));
-            }
-            field.AddComponent("ALL", magnitude, true);
-            //
-            for (int i = 0; i < components.Count; i++)
-            {
-                // Field ALL is allready added
-                if (components[i] != "ALL") field.AddComponent(components[i], values[i]);
-            }
-            //
-            return field;
-        }
-        static private Field CreateStressField(string name, List<string> components, float[][] values)
-        {
-            Field field = new Field(name);
-            //
-            if (values.Length == 6)
-            {
-                float[] vonMises = new float[values[0].Length];
-                for (int i = 0; i < vonMises.Length; i++)
-                {
-                    vonMises[i] = (float)Math.Sqrt(0.5f * (
-                                                             Math.Pow(values[0][i] - values[1][i], 2)
-                                                           + Math.Pow(values[1][i] - values[2][i], 2)
-                                                           + Math.Pow(values[2][i] - values[0][i], 2)
-                                                           + 6 * (
-                                                                    Math.Pow(values[3][i], 2)
-                                                                  + Math.Pow(values[4][i], 2)
-                                                                  + Math.Pow(values[5][i], 2)
-                                                                  )
-                                                           )
-                                                  );
-                }
-                field.AddComponent("MISES", vonMises, true);
-                //
-                float[] tresca = new float[values[0].Length];
-                field.AddComponent("TRESCA", tresca, true);
-                //
-                for (int i = 0; i < components.Count; i++) field.AddComponent(components[i], values[i]);
-                //
-                ComputeAndAddPrincipalVariables(field, values);
-                //
-                float[] eMax = field.GetComponentValues("PRINCIPAL-MAX");
-                float[] eMin = field.GetComponentValues("PRINCIPAL-MIN");
-                for (int i = 0; i < tresca.Length; i++) tresca[i] = eMax[i] - eMin[i];
-            }
-            //
-            return field;
-        }
-        static private Field CreateStrainField(string name, List<string> components, float[][] values)
-        {
-            Field field = new Field(name);
-            //
-            for (int i = 0; i < components.Count; i++) field.AddComponent(components[i], values[i]);
-            //
-            if (values.Length == 6) ComputeAndAddPrincipalVariables(field, values);
-            //
-            return field;
-        }
-        static private void ComputeAndAddPrincipalVariables(Field field, float[][] values)
-        {
-            // https://en.wikipedia.org/wiki/Cubic_function#General_solution_to_the_cubic_equation_with_arbitrary_coefficients
-            // https://en.wikiversity.org/wiki/Principal_stresses
-            //
-            float[] s0 = new float[values[0].Length];
-            float[] s1 = new float[values[0].Length];
-            float[] s2 = new float[values[0].Length];
-            float[] s3 = new float[values[0].Length];
-            //
-            float s11;
-            float s22;
-            float s33;
-            float s12;
-            float s23;
-            float s31;
-            //
-            double I1;
-            double I2;
-            double I3;
-            //
-            double sp1, sp2, sp3;
-            sp1 = sp2 = sp3 = 0;
-            //
-            for (int i = 0; i < s1.Length; i++)
-            {
-                s11 = values[0][i];
-                s22 = values[1][i];
-                s33 = values[2][i];
-                s12 = values[3][i];
-                s23 = values[4][i];
-                s31 = values[5][i];
-                //
-                I1 = s11 + s22 + s33;
-                I2 = s11 * s22 + s22 * s33 + s33 * s11 - Math.Pow(s12, 2.0) - Math.Pow(s23, 2.0) - Math.Pow(s31, 2.0);
-                I3 = s11 * s22 * s33 - s11 * Math.Pow(s23, 2.0) - s22 * Math.Pow(s31, 2.0) - s33 * Math.Pow(s12, 2.0) +
-                     2.0 * s12 * s23 * s31;
-                //
-                Tools.SolveQubicEquationDepressedCubic(1.0, -I1, I2, -I3, ref sp1, ref sp2, ref sp3);
-                Tools.Sort3_descending(ref sp1, ref sp2, ref sp3);
-                //
-                s0[i] = Math.Abs(sp1) > Math.Abs(sp3) ? (float)sp1 : (float)sp3;
-                s1[i] = (float)sp1;
-                s2[i] = (float)sp2;
-                s3[i] = (float)sp3;
-                //
-                if (float.IsNaN(s0[i])) s0[i] = 0;
-                if (float.IsNaN(s1[i])) s1[i] = 0;
-                if (float.IsNaN(s2[i])) s2[i] = 0;
-                if (float.IsNaN(s3[i])) s3[i] = 0;
-            }
-            //
-            field.AddComponent("SGN-MAX-ABS-PRI", s0, true);
-            field.AddComponent("PRINCIPAL-MAX", s1, true);
-            field.AddComponent("PRINCIPAL-MID", s2, true);
-            field.AddComponent("PRINCIPAL-MIN", s3, true);
-        }
-
-
+        
+        
         // LINEAR ELEMENTS                                                                                              
         static private bool TryGetLinearBeamElement(int id, string[] record, out FeElement element)
         {

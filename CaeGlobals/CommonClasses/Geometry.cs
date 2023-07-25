@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CaeGlobals
 {
@@ -76,6 +77,166 @@ namespace CaeGlobals
                 }
             }
         }
+        public static double PointToTriangleDistance(double[] point, double[][] triangle)
+        {
+            // ChatGPT using UnityEngine;
+            double[] tp1 = triangle[0];
+            double[] tp2 = triangle[1];
+            double[] tp3 = triangle[2];
+            //
+            double[] edge1 = new double[3];
+            double[] edge2 = new double[3];
+            double[] edge3 = new double[3];
+            double[] edge3inv = new double[3];
+            VmV(ref edge1, tp2, tp1);
+            VmV(ref edge2, tp3, tp2);
+            VmV(ref edge3, tp1, tp3);
+            VmV(ref edge3inv, tp3, tp1);
+            //
+            double[] normal = new double[3];
+            VcrossV(ref normal, edge1, edge3inv);
+            Vnorm(ref normal, normal);
+            //
+            double[] tmp = new double[3];
+            VmV(ref tmp, tp1, point);
+            double distance = VdotV(normal, tmp);
+            //
+            double[] projection = new double[3];
+            VpVxS(ref projection, point, normal, distance);
+            //
+            double a = VdotV(edge1, edge1);
+            double b = VdotV(edge1, edge2);
+            double c = VdotV(edge2, edge2);
+            VmV(ref tmp, projection, tp1);
+            double d = VdotV(edge1, tmp);
+            VmV(ref tmp, projection, tp2);
+            double e = VdotV(edge2, tmp);
+            VmV(ref tmp, projection, tp3);
+            //double f = VdotV(tmp, tmp);
+            //
+            double det = a * c - b * b;
+            double s = b * e - c * d;
+            double t = b * d - a * e;
+            //
+            if (s + t < det)
+            {
+                if (s < 0)
+                {
+                    if (t < 0)
+                    {
+                        if (d < 0)
+                        {
+                            s = Clamp(s, 0, det);
+                            t = 0;
+                        }
+                        else
+                        {
+                            s = 0;
+                            t = Clamp(t, 0, det);
+                        }
+                    }
+                    else
+                    {
+                        s = 0;
+                        t = Clamp(t, 0, det);
+                    }
+                }
+                else if (t < 0)
+                {
+                    s = Clamp(s, 0, det);
+                    t = 0;
+                }
+                else
+                {
+                    double invDet = 1 / det;
+                    s *= invDet;
+                    t *= invDet;
+                }
+            }
+            else
+            {
+                if (s < 0)
+                {
+                    double tmp0 = b + d;
+                    double tmp1 = c + e;
+                    if (tmp1 > tmp0)
+                    {
+                        double numer = tmp1 - tmp0;
+                        double denom = a - 2 * b + c;
+                        s = Clamp(numer / denom, 0, 1);
+                        t = 1 - s;
+                    }
+                    else
+                    {
+                        s = 0;
+                        t = Clamp(-e / c, 0, 1);
+                    }
+                }
+                else if (t < 0)
+                {
+                    if (a + d > b + e)
+                    {
+                        double numer = c + e - b - d;
+                        double denom = a - 2 * b + c;
+                        s = Clamp(numer / denom, 0, 1);
+                        t = 1 - s;
+                    }
+                    else
+
+                    {
+                        s = Clamp(-e / c, 0, 1);
+                        t = 0;
+                    }
+                }
+                else
+                {
+                    double numer = c + e - b - d;
+                    double denom = a - 2 * b + c;
+                    s = Clamp(numer / denom, 0, 1);
+                    t = 1 - s;
+                }
+            }
+            //
+            double[] closestPoint = new double[3];
+            VxS(ref tmp, edge1, s);
+            VpV(ref closestPoint, tp1, tmp);
+            VxS(ref tmp, edge2, t);
+            VpV(ref closestPoint, closestPoint, tmp);
+            //
+            return Math.Sqrt(VdistV2(point, closestPoint));
+        }
+        public static double[][] ShrinkTriangle(double[][] triangle, double shrink)
+        {
+            double[][] shrinkTriangle = new double[3][];
+            shrinkTriangle[0] = new double[3];
+            shrinkTriangle[1] = new double[3];
+            shrinkTriangle[2] = new double[3];
+            //
+            double[] tmp = new double[3];
+            double[] center = new double[3];
+            double[] shrinkCenter = new double[3];
+            //
+            VpVpV(ref tmp, triangle[0], triangle[1], triangle[2]);
+            VxS(ref center, tmp, 1.0 / 3.0);
+            VxS(ref shrinkCenter, center, shrink);
+            //
+            VxS(ref tmp, triangle[0], (1 - shrink));
+            VpV(ref shrinkTriangle[0], tmp, shrinkCenter);
+            //
+            VxS(ref tmp, triangle[1], (1 - shrink));
+            VpV(ref shrinkTriangle[1], tmp, shrinkCenter);
+            //
+            VxS(ref tmp, triangle[2], (1 - shrink));
+            VpV(ref shrinkTriangle[2], tmp, shrinkCenter);
+            //
+            return shrinkTriangle;
+        }
+        public static double Clamp(double value, double min, double max)
+        {
+            if (value < min) value = min;
+            else if (value > max) value = max;
+            return value;
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // https://github.com/GammaUNC/PQP/blob/master/src/TriDist.cpp
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +257,12 @@ namespace CaeGlobals
             Vr[0] = V1[0] + V2[0];
             Vr[1] = V1[1] + V2[1];
             Vr[2] = V1[2] + V2[2];
+        }
+        public static void VpVpV(ref double[] Vr, double[] V1, double[] V2, double[] V3)
+        {
+            Vr[0] = V1[0] + V2[0] + V3[0];
+            Vr[1] = V1[1] + V2[1] + V3[1];
+            Vr[2] = V1[2] + V2[2] + V3[2];
         }
         public static void VxS(ref double[] Vr, double[] V, double s)
         {
@@ -254,7 +421,7 @@ namespace CaeGlobals
         // coincident points on the intersection of the triangles, as might 
         // be expected.
         //--------------------------------------------------------------------------
-        public static double TriDist(ref double[] P, ref double[] Q, double[][] S, double[][] T)
+        public static double TriDist(ref double[] P, ref double[] Q, double[][] S, double[][] T, bool onlyInternal)
         {
             // Compute vectors along the 6 sides
             double[][] Sv = new double[][] { new double[] { 0, 0, 0 }, new double[3] { 0, 0, 0 }, new double[] { 0, 0, 0 } };
@@ -305,7 +472,11 @@ namespace CaeGlobals
                         VmV(ref Z, T[(j + 2) % 3], Q);
                         double b = VdotV(Z, VEC);
                         //
-                        if ((a <= 0) && (b >= 0)) return Math.Sqrt(dd);
+                        if ((a <= 0) && (b >= 0))
+                        {
+                            if (onlyInternal) return double.MaxValue;
+                            else return Math.Sqrt(dd);
+                        }
                         //
                         double p = VdotV(V, VEC);
                         //
@@ -331,11 +502,11 @@ namespace CaeGlobals
             //
             // First check for case 1
             double[] Sn = new double[3];
-            double Snl;
+            double Sn2;
             VcrossV(ref Sn, Sv[0], Sv[1]);  // compute normal to S triangle
-            Snl = VdotV(Sn, Sn);            // compute square of length of normal
-            // If cross product is long enough,
-            if (Snl > 1e-15)
+            Sn2 = VdotV(Sn, Sn);            // compute square of length of normal
+            // If cross product is long enough
+            if (Sn2 > 1e-15)
             {
                 // Get projection lengths of T points
                 double[] Tp = new double[3];
@@ -364,7 +535,7 @@ namespace CaeGlobals
                     //
                     if (Tp[2] > Tp[point]) point = 2;
                 }
-                // If Sn is a separating direction, 
+                // If point was found
                 if (point >= 0)
                 {
                     shown_disjoint = 1;
@@ -383,7 +554,7 @@ namespace CaeGlobals
                             {
                                 // T[point] passed the test - it's a closest point for the T triangle;
                                 // the other point is on the face of S
-                                VpVxS(ref P, T[point], Sn, Tp[point] / Snl);
+                                VpVxS(ref P, T[point], Sn, Tp[point] / Sn2);
                                 VcV(Q, T[point]);
                                 return Math.Sqrt(VdistV2(P, Q));
                             }
@@ -392,12 +563,13 @@ namespace CaeGlobals
                 }
             }
             double[] Tn = new double[3];
-            double Tnl;
-            VcrossV(ref Tn, Tv[0], Tv[1]);
-            Tnl = VdotV(Tn, Tn);
-            //
-            if (Tnl > 1e-15)
+            double Tn2;
+            VcrossV(ref Tn, Tv[0], Tv[1]);  // compute normal to T triangle
+            Tn2 = VdotV(Tn, Tn);            // compute square of length of normal
+            // If cross product is long enough
+            if (Tn2 > 1e-15)
             {
+                // Get projection lengths of S points
                 double[] Sp = new double[3];
                 //
                 VmV(ref V, T[0], S[0]);
@@ -408,7 +580,7 @@ namespace CaeGlobals
                 //
                 VmV(ref V, T[0], S[2]);
                 Sp[2] = VdotV(V, Tn);
-                //
+                // If Tn is a separating direction, find point with smallest projection
                 int point = -1;
                 if ((Sp[0] > 0) && (Sp[1] > 0) && (Sp[2] > 0))
                 {
@@ -424,11 +596,11 @@ namespace CaeGlobals
                     //
                     if (Sp[2] > Sp[point]) point = 2;
                 }
-                //
+                // If point was found
                 if (point >= 0)
                 {
                     shown_disjoint = 1;
-                    //
+                    // Test whether the point found, when projected onto the other triangle, lies within the face.
                     VmV(ref V, S[point], T[0]);
                     VcrossV(ref Z, Tn, Tv[0]);
                     if (VdotV(V, Z) > 0)
@@ -441,24 +613,27 @@ namespace CaeGlobals
                             VcrossV(ref Z, Tn, Tv[2]);
                             if (VdotV(V, Z) > 0)
                             {
+                                // S[point] passed the test - it's a closest point for the S triangle;
+                                // the other point is on the face of T
+                                VpVxS(ref Q, S[point], Tn, Sp[point] / Tn2);
                                 VcV(P, S[point]);
-                                VpVxS(ref Q, S[point], Tn, Sp[point] / Tnl);
                                 return Math.Sqrt(VdistV2(P, Q));
                             }
                         }
                     }
                 }
             }
-            // Case 1 can't be shown.
-            // If one of these tests showed the triangles disjoint,
-            // we assume case 3 or 4, otherwise we conclude case 2, 
-            // that the triangles overlap.
+            // Case 1 can't be shown
+            // If one of the tests showed the triangles disjoint - not overlaping, we assume case 3
+            // If cross product was not long enough, we assume case 4
             if (shown_disjoint == 1)
             {
                 VcV(P, minP);
                 VcV(Q, minQ);
-                return Math.Sqrt(mindd);
+                if (onlyInternal) return double.MaxValue;
+                else return Math.Sqrt(mindd);
             }
+            // Otherwise we conclude case 2: the triangles overlap.
             else return 0;
         }
     }

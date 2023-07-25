@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace CaeModel
 {
     [Serializable]
-    public class RigidBody : Constraint, ISerializable
+    public class RigidBody : Constraint, ISerializable // ISerializable must be here
     {
         // Variables                                                                                                                
 

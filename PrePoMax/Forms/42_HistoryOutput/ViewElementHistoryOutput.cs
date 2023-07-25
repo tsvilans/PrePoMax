@@ -49,7 +49,6 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         public override string Name { get { return _historyOutput.Name; } set { _historyOutput.Name = value; } }
-        public override int Frequency { get { return _historyOutput.Frequency; } set { _historyOutput.Frequency = value; } }
         //
         [CategoryAttribute("Data")]
         [OrderedDisplayName(2, 10, "Variables to output")]
@@ -89,6 +88,8 @@ namespace PrePoMax
             //
             base.SetBase(_historyOutput, regionTypePropertyNamePairs);
             base.DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
+            //
+            StringIntegerDefaultConverter.SetInitialValue = 1;
         }
 
 

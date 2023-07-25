@@ -171,7 +171,7 @@ namespace PrePoMax.Forms
             if (_prevRemeshingParameters == null)
             {
                 MeshingParameters meshingParameters =
-                    _controller.GetDefaultMeshingParameters(_controller.Model.Mesh.Parts.Keys.ToArray(), false);
+                    _controller.GetPartDefaultMeshingParameters(_controller.Model.Mesh.Parts.Keys.ToArray(), false);
                 RemeshingParameters = new RemeshingParameters("", RegionTypeEnum.Selection, meshingParameters);
             }
             else RemeshingParameters = _prevRemeshingParameters;
@@ -205,7 +205,7 @@ namespace PrePoMax.Forms
             //
             if (RemeshingParameters.RegionType == RegionTypeEnum.Selection &&
                 (RemeshingParameters.CreationIds == null || RemeshingParameters.CreationIds.Length == 0))
-                throw new CaeException("The element set for remeshing must contain at least one item.");
+                throw new CaeException("The element set for remeshing selection must contain at least one item.");
         }
         private void HighlightElementSet()
         {

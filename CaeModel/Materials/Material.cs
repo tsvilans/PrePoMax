@@ -37,6 +37,14 @@ namespace CaeModel
         {
             _properties.Add(property);
         }
+        public MaterialProperty GetProperty<T>()
+        {
+            foreach (MaterialProperty property in _properties)
+            {
+                if (property is T) return property;
+            }
+            return null;
+        }
         public void ConvertUnits(UnitSystem currentSystem, UnitSystem fromSystem, UnitSystem toSystem)
         {
             try

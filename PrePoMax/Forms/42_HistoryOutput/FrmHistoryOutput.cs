@@ -136,7 +136,7 @@ namespace PrePoMax.Forms
             //
             if (HistoryOutput.RegionType == RegionTypeEnum.Selection &&
                 (HistoryOutput.CreationIds == null || HistoryOutput.CreationIds.Length == 0))
-                throw new CaeException("The history output must contain at least one item.");
+                throw new CaeException("The history output selection must contain at least one item.");
             // Check if the name exists
             CheckName(_historyOutputToEditName, HistoryOutput.Name, _historyOutputNames, "history output");
             // Create
@@ -261,7 +261,7 @@ namespace PrePoMax.Forms
         {
             ListViewItem item;
             // Node output
-            item = new ListViewItem("Node output");
+            item = new ListViewItem("Node Output");
             NodalHistoryOutput nho = new NodalHistoryOutput(GetHistoryOutputName("N"), NodalHistoryVariable.U,
                                                             "", RegionTypeEnum.Selection);
             ViewNodalHistoryOutput vnho = new ViewNodalHistoryOutput(nho);
@@ -269,7 +269,7 @@ namespace PrePoMax.Forms
             item.Tag = vnho;
             lvTypes.Items.Add(item);
             // Element output
-            item = new ListViewItem("Element output");
+            item = new ListViewItem("Element Output");
             ElementHistoryOutput eho = new ElementHistoryOutput(GetHistoryOutputName("E"), ElementHistoryVariable.S,
                                                                 "", RegionTypeEnum.Selection);
             ViewElementHistoryOutput veho = new ViewElementHistoryOutput(eho);
@@ -277,7 +277,7 @@ namespace PrePoMax.Forms
             item.Tag = veho;
             lvTypes.Items.Add(item);
             // Contact output
-            item = new ListViewItem("Contact output");
+            item = new ListViewItem("Contact Output");
             if (contactPairNames.Length > 0)
             {
                 Step step = _controller.Model.StepCollection.GetStep(_stepName);
@@ -295,7 +295,7 @@ namespace PrePoMax.Forms
         }
         private string GetHistoryOutputName(string prefix)
         {
-            return _historyOutputNames.GetNextNumberedKey(prefix + "H_output");
+            return _historyOutputNames.GetNextNumberedKey(prefix + "H_Output");
         }
         private void HighlightHistoryOutput()
         {

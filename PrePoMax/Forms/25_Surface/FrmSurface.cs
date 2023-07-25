@@ -86,7 +86,7 @@ namespace PrePoMax.Forms
             CheckName(_surfaceToEditName, Surface.Name, _surfaceNames, "surface");
             //
             if (Surface.CreatedFrom == FeSurfaceCreatedFrom.Selection && (Surface.FaceIds == null || Surface.FaceIds.Length == 0))
-                throw new CaeException("The surface must contain at least one item.");
+                throw new CaeException("The surface selection must contain at least one item.");
             //
             if (_surfaceToEditName == null)
             {

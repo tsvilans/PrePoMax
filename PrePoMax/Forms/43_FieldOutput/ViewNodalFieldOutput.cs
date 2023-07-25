@@ -20,13 +20,17 @@ namespace PrePoMax
         RF = 1,
         [StandardValue("U", Description = "Displacements.")]
         U = 2,
+        [StandardValue("PU", Description = "Displacements magnitude and phase.")]
+        PU = 4,
         [StandardValue("V", Description = "Velocities.")]
-        V = 4,
+        V = 8,
         // Thermal
         [StandardValue("NT", Description = "Temperatures.")]
-        NT = 8,
+        NT = 16,
+        [StandardValue("PNT", Description = "Temperatures magnitude and phase.")]
+        PNT = 32,
         [StandardValue("RFL", Description = "External concentrated heat sources.")]
-        RFL = 16
+        RFL = 64
     }
 
     [Serializable]
@@ -38,7 +42,6 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         public override string Name { get { return _fieldOutput.Name; } set { _fieldOutput.Name = value; } }
-        public override int Frequency { get { return _fieldOutput.Frequency; } set { _fieldOutput.Frequency = value; } }
         public override bool LastIterations
         {
             get { return _fieldOutput.LastIterations; }
@@ -77,6 +80,8 @@ namespace PrePoMax
             //
             _dctd.RenameBooleanPropertyToOnOff(nameof(LastIterations));
             _dctd.RenameBooleanPropertyToOnOff(nameof(ContactElements));
+            //
+            StringIntegerDefaultConverter.SetInitialValue = 1;
         }
     }
 

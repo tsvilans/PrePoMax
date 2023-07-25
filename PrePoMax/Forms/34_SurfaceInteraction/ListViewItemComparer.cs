@@ -10,27 +10,26 @@ namespace PrePoMax.Forms
     class ListViewItemComparer : System.Collections.IComparer
     {
         //  Variables                                                                                                               
-        public Dictionary<string, int> namePosition = new Dictionary<string, int>();        
-        private int col;
+        private Dictionary<string, int> _namePosition = new Dictionary<string, int>();        
+        private int _col;
 
 
         //  Constructors                                                                                                            
         public ListViewItemComparer()
-            :this (0)
+            :this(0, null)
         {
         }
-        public ListViewItemComparer(int column)            
+        public ListViewItemComparer(int column, Dictionary<string, int> namePosition)            
         {
-            col = column;
-            //
-            namePosition.Add("Surface behavior", 0);
-            namePosition.Add("Friction", 1);
-            namePosition.Add("Gap conductance", 2);
+            _col = column;
+            _namePosition = namePosition;
         }
         public int Compare(object x, object y)
         {
-            int xPos = namePosition[((ListViewItem)x).Text];
-            int yPos = namePosition[((ListViewItem)y).Text];
+            if (_namePosition == null) return 0;
+            //
+            int xPos = _namePosition[((ListViewItem)x).Text];
+            int yPos = _namePosition[((ListViewItem)y).Text];
             //
             if (xPos > yPos) return 1;
             else if (xPos < yPos) return -1;

@@ -95,7 +95,7 @@ namespace CaeResults
                                     GetField(resultFileName, sortedTime, globalIncrementId, stepId, numOfAllNodes,
                                              cellIdNodeIds, nodeIdsLookUp, nodeIdCellCount, out fieldData, out field);                                    
                                     //
-                                    if (field != null) result.AddFiled(fieldData, field);
+                                    if (field != null) result.AddField(fieldData, field);
                                 }
                                 catch
                                 { }
@@ -166,7 +166,7 @@ namespace CaeResults
                                     GetField(resultFileName, time, globalIncrementId, stepId, numOfAllNodes, cellIdNodeIds,
                                              nodeIdsLookUp, nodeIdCellCount, out fieldData, out field);
                                     //
-                                    if (field != null) result.AddFiled(fieldData, field);
+                                    if (field != null) result.AddField(fieldData, field);
                                 }
                             }
                             catch
@@ -672,7 +672,7 @@ namespace CaeResults
         {
             fieldData = new FieldData(Path.GetFileNameWithoutExtension(fileName));
             fieldData.GlobalIncrementId = globalIncrementId;
-            fieldData.Type = StepType.Static;
+            fieldData.StepType = StepTypeEnum.Static;
             fieldData.Time = (float)time;
             fieldData.MethodId = 1;
             fieldData.StepId = stepId;
@@ -1095,6 +1095,43 @@ namespace CaeResults
             }
         }
         static private int[] ReadIntArray(BinaryReader binaryReader, int numOfItems)
+        {
+            if (numOfItems > int.MaxValue / sizeof(int)) return ReadIntArrayByParts(binaryReader, numOfItems);
+            else return ReadIntArrayAsOnePart(binaryReader, numOfItems);
+        }
+        static private int[] ReadIntArrayByParts(BinaryReader binaryReader, int numOfItems)
+        {
+            // Read parenthesis
+            binaryReader.ReadChar();
+            // Read data
+            int maxLen = 1024 * 16;
+            int numLoops = numOfItems / maxLen;
+            int remainder = numOfItems % maxLen;
+            //
+            byte[] bytes;
+            int[] allItems = new int[numOfItems];
+            int[] items = new int[maxLen];
+            for (int i = 0; i < numLoops; i++)
+            {
+                //bytes = new byte[maxLen * sizeof(int)];
+                bytes = binaryReader.ReadBytes(maxLen * sizeof(int));
+                Buffer.BlockCopy(bytes, 0, items, 0, bytes.Length);
+                Array.Copy(items, 0, allItems, i * maxLen, maxLen);
+            }
+            // Remainder
+            if (remainder > 0)
+            {
+                items = new int[remainder];
+                bytes = binaryReader.ReadBytes(remainder * sizeof(int));
+                Buffer.BlockCopy(bytes, 0, items, 0, bytes.Length);
+                Array.Copy(items, 0, allItems, numLoops * maxLen, remainder);
+            }
+            // Read parenthesis
+            binaryReader.ReadChar();
+            //
+            return allItems;
+        }
+        static private int[] ReadIntArrayAsOnePart(BinaryReader binaryReader, int numOfItems)
         {
             // Read parenthesis
             binaryReader.ReadChar();

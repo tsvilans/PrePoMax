@@ -23,6 +23,7 @@ namespace CaeMesh
         protected double[] _faceAreas;
         protected GeomFaceType[] _faceTypes;
         protected int[][] _faceEdgeIds;
+        protected int[][][] _cellIdCellIdEdgeNodeIds;
         protected int[][] _cellNeighboursOverCellEdge;
         protected int[][] _edgeCells;
         protected int[][] _edgeCellIdsByEdge;
@@ -101,6 +102,16 @@ namespace CaeMesh
         /// [0...num. of faces][0...num. of edges] -> local edge id
         /// </summary>
         public int[][] FaceEdgeIds { get { return _faceEdgeIds; } set { _faceEdgeIds = value; } }
+
+        /// <summary>
+        /// CellIdCellIdEdgeNodeIds
+        /// [0...num. of cells][0...num. of neigh.] -> edge node ids
+        /// </summary>
+        public int[][][] CellIdCellIdEdgeNodeIds
+        {
+            get { return _cellIdCellIdEdgeNodeIds; }
+            set { _cellIdCellIdEdgeNodeIds = value; }
+        }
 
         /// <summary>
         /// CellNeighboursOverEdge
@@ -185,6 +196,22 @@ namespace CaeMesh
                 _faceEdgeIds = new int[visualization.FaceEdgeIds.Length][];
                 for (int i = 0; i < _faceEdgeIds.Length; i++)
                     _faceEdgeIds[i] = visualization.FaceEdgeIds[i].ToArray();
+            }
+            //
+            if (visualization.CellIdCellIdEdgeNodeIds != null)
+            {
+                _cellIdCellIdEdgeNodeIds = new int[visualization.CellIdCellIdEdgeNodeIds.Length][][];
+                for (int i = 0; i < _cellIdCellIdEdgeNodeIds.Length; i++)
+                {
+                    if (visualization.CellIdCellIdEdgeNodeIds[i] != null)
+                    {
+                        _cellIdCellIdEdgeNodeIds[i] = new int[visualization.CellIdCellIdEdgeNodeIds[i].Length][];
+                        for (int j = 0; j < _cellIdCellIdEdgeNodeIds[i].Length; j++)
+                        {
+                            _cellIdCellIdEdgeNodeIds[i][j] = visualization.CellIdCellIdEdgeNodeIds[i][j].ToArray();
+                        }
+                    }
+                }
             }
             //
             if (visualization.CellNeighboursOverCellEdge != null)
@@ -622,7 +649,7 @@ namespace CaeMesh
             return elementIdSurfaceIds;
         }
         // Free edges and nodes
-        public HashSet<int> GetFreeEdgeIds()
+        public HashSet<int> GetFreeEdgeIds1()
         {
             int[] edgeCount;
             HashSet<int> freeEdgeIds = new HashSet<int>();
@@ -644,6 +671,69 @@ namespace CaeMesh
             }
             //
             return freeEdgeIds;
+        }
+        public HashSet<int> GetFreeEdgeIds()
+        {
+            int edgeCellId;
+            int[] edgeCellIds;
+            HashSet<int> freeEdgeIds = new HashSet<int>();
+            //
+            foreach (var faceEdgeIds in _faceEdgeIds)
+            {
+                foreach (var edgeId in faceEdgeIds)
+                {
+                    edgeCellIds = _edgeCellIdsByEdge[edgeId];
+                    if (edgeCellIds.Length > 0)
+                    {
+                        edgeCellId = edgeCellIds[0];
+                        //
+                        if (IsCellEdgeFreeEdge(edgeCellId)) freeEdgeIds.Add(edgeId);
+                    }
+                }
+            }
+            //
+            return freeEdgeIds;
+        }
+        private bool IsCellEdgeFreeEdge(int edgeCellId)
+        {
+            int count = 0;
+            bool isCellEdge;
+            int[] edgeNodeIds = _edgeCells[edgeCellId];
+            HashSet<int> cellNodeIds = new HashSet<int>();
+            for (int i = 0; i < _cells.Length; i++)
+            {
+                // Is cell on the free boundary
+                //if (_cellNeighboursOverCellEdge[i].Contains(-1))
+                {
+                    cellNodeIds.Clear();
+                    cellNodeIds.UnionWith(_cells[i]);
+                    isCellEdge = true;
+                    // Does the cell contain the whole edge
+                    for (int j = 0; j < edgeNodeIds.Length; j++)
+                    {
+                        if (!cellNodeIds.Contains(edgeNodeIds[j]))
+                        {
+                            isCellEdge = false;
+                            break;
+                        }
+                        else
+                        {
+                            isCellEdge = isCellEdge;
+                        }
+                    }
+                    //
+                    if (isCellEdge)
+                    {
+                        count++;
+                        if (count > 1)
+                            break;
+                    }
+                    
+                }
+            }
+            //
+            if (count == 1) return true;
+            else return false;
         }
         public HashSet<int> GetFreeEdgeNodeIds()
         {
@@ -698,9 +788,10 @@ namespace CaeMesh
                 if (baseCellIds[k] < 0) // skip found cells
                 {
                     nodeIds = _edgeCells[k];
-                    //
+                    // For cells
                     for (int i = 0; i < _cellNeighboursOverCellEdge.Length; i++)
                     {
+                        // For cell neighbours
                         for (int j = 0; j < _cellNeighboursOverCellEdge[i].Length; j++)
                         {
                             if (_cellNeighboursOverCellEdge[i][j] == -1)
@@ -905,6 +996,7 @@ namespace CaeMesh
             // Shell parts
             int edgeId;
             int[] edgeCell;
+            int[] edgeNodeIds;
             List<int> vertexEdgeIds;
             List<int> errorEdgeCellIdsList = new List<int>();
             List<int> errorNodeIdsList = new List<int>();
@@ -920,8 +1012,14 @@ namespace CaeMesh
                 for (int j = 0; j < _faceEdgeIds[i].Length; j++)
                 {
                     edgeId = _faceEdgeIds[i][j];
+
+                    //IsEdgeAClosedLoop(edgeId, out edgeNodeIds);
+                    //if (edgeNodeIds != null && edgeId == 9)
+                    //    errorNodeIdsList = new List<int>(edgeNodeIds);
+
                     // Skip edges that form a single edge loop
-                    if (IsEdgeAClosedLoop(edgeId)) continue;
+                    if (IsEdgeAClosedLoop(edgeId, out edgeNodeIds))
+                        continue;
                     // For each edge cell
                     for (int k = 0; k < _edgeCellIdsByEdge[edgeId].Length; k++)
                     {
@@ -969,11 +1067,13 @@ namespace CaeMesh
             // Save
             if (errorEdgeCellIdsList.Count > 0) errorEdgeCellIds = errorEdgeCellIdsList.ToArray();
             else errorEdgeCellIds = null;
+            //
             if (errorNodeIdsList.Count > 0) errorNodeIds = errorNodeIdsList.ToArray();
             else errorNodeIds = null;
         }
-        public bool IsEdgeAClosedLoop(int edgeId)
+        public bool IsEdgeAClosedLoop(int edgeId, out int[] edgeNodeIds)
         {
+            edgeNodeIds = null;
             int[] edgeCellIds = _edgeCellIdsByEdge[edgeId];
             if (edgeCellIds.Length > 0)
             {
@@ -983,14 +1083,17 @@ namespace CaeMesh
                 //
                 for (int i = 0; i < edgeCellIds.Length; i++)
                 {
-                    edgeCell = _edgeCells[i];
+                    edgeCell = _edgeCells[edgeCellIds[i]];
                     // Add only first and second node id
                     count += 2;
                     allNodeIds.Add(edgeCell[0]);
                     allNodeIds.Add(edgeCell[1]);
                 }
                 //
-                return allNodeIds.Count() * 2 == count;
+                edgeNodeIds = allNodeIds.ToArray();
+                //
+                if (allNodeIds.Count == 2) return false;
+                else return allNodeIds.Count() * 2 == count;
             }
             else return false;
         }

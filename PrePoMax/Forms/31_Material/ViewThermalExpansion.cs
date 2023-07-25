@@ -20,7 +20,7 @@ namespace PrePoMax
         // Properties                                                                                                               
         public override string Name
         {
-            get { return "Thermal expansion"; }
+            get { return "Thermal Expansion"; }
         }
         //
         [Browsable(false)]

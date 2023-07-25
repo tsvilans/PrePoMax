@@ -19,7 +19,7 @@ namespace CaeModel
 
         // Constructors                                                                                                             
         public FixedBC(string name, string regionName, RegionTypeEnum regionType, bool twoD)
-            : base(name, regionName, regionType, twoD)
+            : base(name, regionName, regionType, twoD, false, 0)
         {
         }
 

@@ -23,7 +23,7 @@ namespace CaeResults
         //  Constructors                                                                                                            
         public ResultsCollection()
         {
-            _results = new OrderedDictionary<string, FeResults>("Results collection", StringComparer.OrdinalIgnoreCase);
+            _results = new OrderedDictionary<string, FeResults>("Results Collection", StringComparer.OrdinalIgnoreCase);
             //
             Clear();
         }
@@ -97,7 +97,15 @@ namespace CaeResults
         {
             return _results.ContainsKey(name);
         }
-        
+        public bool ContainsComplexResults()
+        {
+            foreach (var entry in _results)
+            {
+                if (entry.Value.ContainsComplexResults()) return true;
+            }
+            return false;
+        }
+        //
         public void Add(string name, FeResults result)
         {
             if (_results.ContainsKey(name)) _results.Replace(name, name, result);
@@ -105,8 +113,7 @@ namespace CaeResults
             //
             _currentResult = result;
         }
-        
-        
+        //
         public void SetCurrentResult(string name)
         {
             _results.TryGetValue(name, out _currentResult);

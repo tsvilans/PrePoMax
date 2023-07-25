@@ -32,15 +32,13 @@ namespace FileInOut.Output.Calculix
         // Methods                                                                                                                  
         public override string GetKeywordString()
         {
-            string frequency = _contactHistoryOutput.Frequency > 1 ? ", Frequency=" + _contactHistoryOutput.Frequency : "";
             string totals = "";
             if (_contactHistoryOutput.TotalsType == TotalsTypeEnum.Yes) totals = ", Totals=Yes";
             else if (_contactHistoryOutput.TotalsType == TotalsTypeEnum.Only) totals = ", Totals=Only";
             string masterSlave = "";
             if (_contactHistoryOutput.Variables.HasFlag(ContactHistoryVariable.CF))
                 masterSlave = ", Master=" + _masterName + ", Slave=" + _slaveName;
-            return string.Format("*Contact print{0}{1}{2}{3}",
-                                 frequency, totals, masterSlave, Environment.NewLine);
+            return string.Format("*Contact print{0}{1}{2}", totals, masterSlave, Environment.NewLine);
         }
         public override string GetDataString()
         {

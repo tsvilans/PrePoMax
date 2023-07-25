@@ -44,6 +44,12 @@ namespace CaeGlobals
             Y = xyz[1];
             Z = xyz[2];
         }
+        public Vec3D(Vec3D vec)
+        {
+            X = vec.X;
+            Y = vec.Y;
+            Z = vec.Z;
+        }
 
 
         // Methods                                                                                                                  
@@ -63,6 +69,10 @@ namespace CaeGlobals
             if (X < 0) X = -X;
             if (Y < 0) Y = -Y;
             if (Z < 0) Z = -Z;
+        }
+        public Vec3D DeepCopy()
+        {
+            return new Vec3D(this);
         }
 
 

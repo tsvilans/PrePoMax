@@ -32,6 +32,7 @@ namespace CaeJob
         protected string _workDirectory;
         protected string _executable;
         protected string _argument;
+        protected bool _compatibilityMode;
         protected JobStatus _jobStatus;
         protected int _numCPUs;
         protected List<EnvironmentVariable> _environmentVariables;
@@ -81,6 +82,7 @@ namespace CaeJob
             get { return _argument; }
             set { _argument = value; }
         }
+        public bool CompatibilityMode { get { return _compatibilityMode; } set { _compatibilityMode = value; } }
         public JobStatus JobStatus { get { return _jobStatus; } }
         public int NumCPUs
         {
@@ -158,6 +160,7 @@ namespace CaeJob
             _executable = executable;
             _argument = argument;
             _workDirectory = workDirectory;
+            _compatibilityMode = false;
             _numCPUs = 1;
             _environmentVariables = new List<EnvironmentVariable>();
             //
@@ -284,7 +287,7 @@ namespace CaeJob
             if (File.Exists(_outputFileName)) File.Delete(_outputFileName);
             if (File.Exists(_errorFileName)) File.Delete(_errorFileName);
             //
-            if (Tools.IsWindows10orNewer()) Run_Win10();
+            if (Tools.IsWindows10orNewer() && !_compatibilityMode) Run_Win10();
             else Run_OldWin();
         }
         private void bwStart_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

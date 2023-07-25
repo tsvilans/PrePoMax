@@ -71,7 +71,7 @@ namespace PrePoMax
                 nodes = Controller.GetScaledNodes(Controller.GetScale(), nodeIds);
                 for (int i = 0; i < nodes.Length; i++) nodeCoor[i] = nodes[i].Coor;
                 //
-                if (Controller.ViewResultsType == ViewResultsType.ColorContours)
+                if (Controller.ViewResultsType == ViewResultsTypeEnum.ColorContours)
                 {
                     results = true;
                     // Values

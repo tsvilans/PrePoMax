@@ -32,6 +32,7 @@ namespace CaeModel
         private double _alpha;                              //ISerializable
         private SolutionProcedureEnum _solutionProcedure;   //ISerializable
         private bool _relativeToAbsolute;                   //ISerializable
+        private Damping _damping;                           //ISerializable
 
 
         // Properties                                                                                                               
@@ -47,6 +48,7 @@ namespace CaeModel
         }
         public SolutionProcedureEnum SolutionProcedure { get { return _solutionProcedure; } set { _solutionProcedure = value; } }
         public bool RelativeToAbsolute { get { return _relativeToAbsolute; } set { _relativeToAbsolute = value; } }
+        public Damping Damping { get { return _damping; } set { _damping = value; } }
 
 
         // Constructors                                                                                                             
@@ -60,6 +62,7 @@ namespace CaeModel
             _alpha = AlphaDefault;
             _solutionProcedure = SolutionProcedureEnum.ExplicitExplicit;
             _relativeToAbsolute = false;
+            _damping = new Damping();
             _incrementationType = IncrementationTypeEnum.Automatic;
             //
             if (addFieldOutputs)
@@ -83,6 +86,8 @@ namespace CaeModel
                         _solutionProcedure = (SolutionProcedureEnum)entry.Value; break;
                     case "_relativeToAbsolute":
                         _relativeToAbsolute = (bool)entry.Value; break;
+                    case "_damping":
+                        _damping = (Damping)entry.Value; break;
                     default:
                         break;
                 }
@@ -140,6 +145,7 @@ namespace CaeModel
             info.AddValue("_alpha", _alpha, typeof(double));
             info.AddValue("_explicit", _solutionProcedure, typeof(SolutionProcedureEnum));
             info.AddValue("_relativeToAbsolute", _relativeToAbsolute, typeof(bool));
+            info.AddValue("_damping", _damping, typeof(Damping));
         }
     }
 }

@@ -65,12 +65,14 @@ namespace CaeMesh
             int id;
             string name;
             List<string> allNames = new List<string>();
+            double size;
             NodeData nodeData;
             foreach (var itemIds in itemIdsList)
             {
                 id = _graph.Nodes.Count() + 1;
                 name = GetNameFromItemIds(itemIds, allNames, mesh);
-                nodeData = new NodeData(id, name, itemIds);
+                size = GetSizeFromItemIds(itemIds, mesh);
+                nodeData = new NodeData(id, name, itemIds, size);
                 //
                 _graph.AddNode(new Node<NodeData>(nodeData));
                 allNames.Add(name);
@@ -98,7 +100,7 @@ namespace CaeMesh
         //
         public List<MasterSlaveItem> GetMasterSlaveItems(bool checkUnresolved)
         {
-            List<Graph<NodeData>> connectedSubgraphList = _graph.GeConnectedSubgraphs();
+            List<Graph<NodeData>> connectedSubgraphList = _graph.GetConnectedSubgraphs();
             List<MasterSlaveItem> masterSlaveItems = new List<MasterSlaveItem>();
             //
             foreach (var connectedGraph in connectedSubgraphList)
@@ -128,11 +130,40 @@ namespace CaeMesh
                 partIds.Add(FeMesh.GetPartIdFromGeometryId(itemId));
             }
             if (partIds.Count == 1) name = mesh.GetPartNamesByIds(partIds.ToArray())[0];
-            else name = allNames.GetNextNumberedKey("Merged" +
-                "");
+            else name = allNames.GetNextNumberedKey("Merged");
             //
             return name;
         }
+        public static double GetSizeFromItemIds(HashSet<int> itemIds, FeMesh mesh)
+        {
+            double size = 0;
+            foreach (var itemId in itemIds) size += GetSize(itemId, mesh);
+            return size;
+        }
+        private static double GetSize(int geometryId, FeMesh mesh)
+        {
+            int[] itemTypePartIds = FeMesh.GetItemTypePartIdsFromGeometryId(geometryId);
+            GeometryType geomType = (GeometryType)itemTypePartIds[1];
+            VisualizationData vis = mesh.GetPartById(itemTypePartIds[2]).Visualization;
+            // Face
+            if (geomType == GeometryType.SolidSurface ||
+                geomType == GeometryType.ShellFrontSurface ||
+                geomType == GeometryType.ShellBackSurface)
+            {
+                int faceId = itemTypePartIds[0];
+                return vis.FaceAreas[faceId] * 1E6;
+            }
+            // Edge
+            else if (geomType == GeometryType.Edge ||
+                     geomType == GeometryType.ShellEdgeSurface)
+            {
+                int edgeId = itemTypePartIds[0];
+                return vis.EdgeLengths[edgeId];
+            }
+            // Vertex
+            else return 0;
+        }
+        //
         private static List<MasterSlaveItem> GetMasterSlaveItemsFromGraphWithoutCycles(Graph<NodeData> graph)
         {
             Graph<NodeData> reducedGraph;

@@ -27,21 +27,65 @@ namespace PrePoMax.Forms
             set { _explodedViewParameters = value; }
         }
         //
-        [Category("Data")]
-        [OrderedDisplayName(0, 10, "Exploded view style")]
-        [DescriptionAttribute("Select the exploded view style.")]
+        [Category("Method")]
+        [OrderedDisplayName(0, 10, "Exploded view method")]
+        [DescriptionAttribute("Select the exploded view method.")]
         [Id(1, 1)]
-        public ExplodedViewTypeEnum Type
+        public ExplodedViewMethodEnum Method
         {
-            get { return _explodedViewParameters.Type; }
-            set { _explodedViewParameters.Type = value; }
+            get { return _explodedViewParameters.Method; }
+            set
+            {
+                _explodedViewParameters.Method = value;
+                UpdateVisibility();
+            }
         }
         //
-        [Category("Data")]
+        [Category("Method")]
+        [OrderedDisplayName(1, 10, "X coordinate")]
+        [DescriptionAttribute("Enter the center point X coordinate.")]
+        [Id(2, 1)]
+        public double CenterX
+        {
+            get { return _explodedViewParameters.CenterX; }
+            set { _explodedViewParameters.CenterX = value; }
+        }
+        //
+        [Category("Method")]
+        [OrderedDisplayName(2, 10, "Y coordinate")]
+        [DescriptionAttribute("Enter the center point Y coordinate.")]
+        [Id(3, 1)]
+        public double CenterY
+        {
+            get { return _explodedViewParameters.CenterY; }
+            set { _explodedViewParameters.CenterY = value; }
+        }
+        //
+        [Category("Method")]
+        [OrderedDisplayName(3, 10, "Z coordinate")]
+        [DescriptionAttribute("Enter the center point Z coordinate.")]
+        [Id(4, 1)]
+        public double CenterZ
+        {
+            get { return _explodedViewParameters.CenterZ; }
+            set { _explodedViewParameters.CenterZ = value; }
+        }
+        //
+        [Category("Direction and scaling")]
+        [OrderedDisplayName(0, 10, "Exploded view direction")]
+        [DescriptionAttribute("Select the exploded view direction.")]
+        [Id(1, 2)]
+        public ExplodedViewDirectionEnum Direction
+        {
+            get { return _explodedViewParameters.Direction; }
+            set { _explodedViewParameters.Direction = value; }
+        }
+        //
+        [Category("Direction and scaling")]
         [OrderedDisplayName(1, 10, "Magnification")]
         [DescriptionAttribute("Select the exploded view magnification (larger than 1).")]
         [TypeConverter(typeof(StringDoubleConverter))]
-        [Id(2, 1)]
+        [Id(2, 2)]
         public double Magnification
         {
             get { return _explodedViewParameters.Magnification; }
@@ -53,11 +97,11 @@ namespace PrePoMax.Forms
             }
         }
         //
-        [Category("Data")]
+        [Category("Direction and scaling")]
         [OrderedDisplayName(2, 10, "Scale factor")]
         [DescriptionAttribute("Select the exploded view scale factor [0, 1].")]
         [TypeConverter(typeof(StringDoubleConverter))]
-        [Id(3, 1)]
+        [Id(3, 2)]
         public double ScaleFactor
         {
             get { return _explodedViewParameters.ScaleFactor; }
@@ -78,11 +122,19 @@ namespace PrePoMax.Forms
             _dctd = ProviderInstaller.Install(this);
             _dctd.CategorySortOrder = CustomSortOrder.AscendingById;
             _dctd.PropertySortOrder = CustomSortOrder.AscendingById;
+            //
+            UpdateVisibility();
         }
 
 
         // Methods                                                                                                                  
-       
+        public void UpdateVisibility()
+        {
+            bool visible = _explodedViewParameters.Method == ExplodedViewMethodEnum.CenterPoint;
+            _dctd.GetProperty(nameof(CenterX)).SetIsBrowsable(visible);
+            _dctd.GetProperty(nameof(CenterY)).SetIsBrowsable(visible);
+            _dctd.GetProperty(nameof(CenterZ)).SetIsBrowsable(visible);
+        }
 
        
 

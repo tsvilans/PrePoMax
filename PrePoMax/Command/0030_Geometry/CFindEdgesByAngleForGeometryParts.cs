@@ -37,7 +37,8 @@ namespace PrePoMax.Commands
 
         public override string GetCommandString()
         {
-            return base.GetCommandString() + GetArrayAsString(_partNames) + ": " + _edgeAngle + "°";
+            return base.GetCommandString() + GetArrayAsString(_partNames) + ": " + _edgeAngle + " " +
+                   StringAngleDegConverter.GetUnitAbbreviation();
         }
     }
 }

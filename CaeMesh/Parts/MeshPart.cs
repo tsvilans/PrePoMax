@@ -21,6 +21,8 @@ namespace CaeMesh
         protected FeElementTypeParabolicWedge _parabolicWedgeType;
         protected FeElementTypeLinearHexa _linearHexaType;
         protected FeElementTypeParabolicHexa _parabolicHexaType;
+        //
+        protected bool _createdFromBasePart;
 
 
         // Properties                                                                                                               
@@ -35,6 +37,8 @@ namespace CaeMesh
         public FeElementTypeParabolicWedge ParabolicWedgeType { get { return _parabolicWedgeType; } set { _parabolicWedgeType = value; } }
         public FeElementTypeLinearHexa LinearHexaType { get { return _linearHexaType; } set { _linearHexaType = value; } }
         public FeElementTypeParabolicHexa ParabolicHexaType { get { return _parabolicHexaType; } set { _parabolicHexaType = value; } }
+        //
+        public bool CreatedFromBasePart { get { return _createdFromBasePart; } }
 
 
         // Constructors                                                                                                             
@@ -42,11 +46,15 @@ namespace CaeMesh
             : base(name, partId, nodeLabels, elementLabels, elementTypes)
         {
             InitializeElementTypes();
+            //
+            _createdFromBasePart = false;
         }
         public MeshPart(BasePart part)
             : base(part)
         {
             InitializeElementTypes();
+            //
+            _createdFromBasePart = true;
         }
         public MeshPart(MeshPart part)
             : base(part)
@@ -62,6 +70,8 @@ namespace CaeMesh
             _parabolicWedgeType = part.ParabolicWedgeType;
             _linearHexaType = part.LinearHexaType;
             _parabolicHexaType = part.ParabolicHexaType;
+            //
+            _createdFromBasePart = part.CreatedFromBasePart;
         }
 
 

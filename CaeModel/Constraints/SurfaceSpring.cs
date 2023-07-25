@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace CaeModel
 {
     [Serializable]
-    public class SurfaceSpring : SpringConstraint, ISerializable
+    public class SurfaceSpring : SpringConstraint, ISerializable // ISerializable must be here
     {
         // Variables                                                                                                                
         private bool _stiffnessPerArea;          //ISerializable

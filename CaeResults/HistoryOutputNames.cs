@@ -13,8 +13,15 @@ namespace CaeResults
     }
     class HOFieldNames
     {
+        public const string ComplexRealSuffix = " RE";
+        public const string ComplexImaginarySuffix = " IM";
+        public const string ComplexMagnitudeSuffix = " MAG";
+        public const string ComplexPhaseSuffix = " PHA";
+        //
         public const string Time = "TIME";
+        public const string Frequency = "FREQUENCY";
         // Nodal
+        public const string Coordinates = "COORDINATES";
         public const string Displacements = "DISPLACEMENTS";
         public const string Velocities = "VELOCITIES";
         public const string Forces = "FORCES";
@@ -28,6 +35,14 @@ namespace CaeResults
         public const string Temperatures = "TEMPERATURES";
         public const string HeatGeneration = "HEAT GENERATION";
         public const string TotalHeatGeneration = "TOTAL HEAT GENERATION";
+        // Frequency
+        public const string EigenvalueOutput = "EIGENVALUE OUTPUT";
+        public const string ParticipationFactors = "PARTICIPATION FACTORS";
+        public const string EffectiveModalMass = "EFFECTIVE MODAL MASS";
+        public const string TotalEffectiveModalMass = "TOTAL EFFECTIVE MODAL MASS";
+        public const string TotalEffectiveMass = "TOTAL EFFECTIVE MASS";
+        public const string RelativeEffectiveModalMass = "RELATIVE EFFECTIVE MODAL MASS";
+        public const string RelativeTotalEffectiveModalMass = "RELATIVE TOTAL EFFECTIVE MODAL MASS";
         // Contact
         public const string RelativeContactDisplacement = "RELATIVE CONTACT DISPLACEMENT";
         public const string ContactStress = "CONTACT STRESS";
@@ -56,6 +71,35 @@ namespace CaeResults
         public const string SurfaceNormal = "SURFACE NORMAL";
         // Error
         public const string Error = "ERROR";
+
+
+        // Methods
+        public static string GetNoSuffixName(string name)
+        {
+            if (name.EndsWith(ComplexRealSuffix))
+                return name.Substring(0, name.Length - ComplexRealSuffix.Length);
+            else if (name.EndsWith(ComplexImaginarySuffix))
+                return name.Substring(0, name.Length - ComplexImaginarySuffix.Length);
+            else if (name.EndsWith(ComplexMagnitudeSuffix))
+                return name.Substring(0, name.Length - ComplexMagnitudeSuffix.Length);
+            else if (name.EndsWith(ComplexPhaseSuffix))
+                return name.Substring(0, name.Length - ComplexPhaseSuffix.Length);
+            else return name;
+        }
+        public static bool HasRealComplexSuffix(string name)
+        {
+            if (name.EndsWith(ComplexRealSuffix)) return true;
+            else return false;
+        }
+        public static bool HasComplexSuffix(string name)
+        {
+            if (name.EndsWith(ComplexRealSuffix) ||
+                name.EndsWith(ComplexImaginarySuffix) ||
+                name.EndsWith(ComplexMagnitudeSuffix) ||
+                name.EndsWith(ComplexPhaseSuffix))
+                return true;
+            else return false;
+        }
     }
     //
     class HOComponentNames
@@ -91,6 +135,22 @@ namespace CaeResults
         public const string N1 = "N1";
         public const string N2 = "N2";
         public const string N3 = "N3";
+        //
+        public const string EIGENVALUE = "EIGENVALUE";
+        public const string OMEGA = "OMEGA";
+        public const string FREQUENCY = "FREQUENCY";
+        public const string FREQUENCY_IM = "FREQUENCY IM";
+        //
+        public const string XCOMPONENT = "X COMPONENT";
+        public const string YCOMPONENT = "Y COMPONENT";
+        public const string ZCOMPONENT = "Z COMPONENT";
+        public const string XROTATION = "X ROTATION";
+        public const string YROTATION = "Y ROTATION";
+        public const string ZROTATION = "Z ROTATION";
+        //
+        public const string X = "X";
+        public const string Y = "Y";
+        public const string Z = "Z";
 
     }
 

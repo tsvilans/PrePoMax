@@ -16,78 +16,43 @@ namespace PrePoMax.Commands
     class CSetMeshingParameters : Command, ICommandWithDialog, ISerializable
     {
         // Variables                                                                                                                
-        private string[] _partNames;                    //ISerializable
-        private MeshingParameters _meshingParameters;   //ISerializable
 
 
         // Constructors                                                                                                             
         public CSetMeshingParameters(string[] partNames, MeshingParameters meshingParameters)
             : base("Set meshing parameters")
         {
-            _partNames = partNames;
-            _meshingParameters = meshingParameters.DeepClone();
+            //
+            // this class is needed for compatibility for version v1.3.5
+            //
         }
         // ISerialization
         public CSetMeshingParameters(SerializationInfo info, StreamingContext context)
-            : base("") // this can be empty
+            : base("")
         {
-            string partName = null;         // old serialization parameter
-            foreach (SerializationEntry entry in info)
-            {
-                switch (entry.Name)
-                {
-                    case "Command+_name":
-                        _name = (string)entry.Value; break;
-                    case "Command+_dateCreated":
-                        _dateCreated = (DateTime)entry.Value; break;
-                    case "_partName":
-                        partName = (string)entry.Value; break;
-                    case "_partNames":
-                        _partNames = (string[])entry.Value; break;
-                    case "_meshingParameters":
-                        _meshingParameters = (MeshingParameters)entry.Value; break;
-                }
-            }
-            if (_partNames == null && partName != null) _partNames = new string[] { partName };
+            // Compatibility for version v1.3.5
         }
 
 
         // Methods                                                                                                                  
         public override bool Execute(Controller receiver)
         {
-            foreach (var partName in _partNames)
-            {
-                receiver.SetMeshingParameters(partName, _meshingParameters.DeepClone());
-            }
+            // Compatibility for version v1.3.5
             return true;
         }
         public void ExecuteWithDialogs(Controller receiver)
         {
-            // first set previously used meshing parameters
-            foreach (var partName in _partNames)
-            {
-                receiver.SetMeshingParameters(partName, _meshingParameters.DeepClone());
-            }
-            // get new meshing parameters
-            MeshingParameters meshingParameters = receiver.GetMeshingParameters(_partNames);
-            // if new parameters were defined use them, else use old mesh parameters
-            if (meshingParameters != null) _meshingParameters = meshingParameters;
-            Execute(receiver);
+            // Compatibility for version v1.3.5
         }
         public override string GetCommandString()
         {
-            return base.GetCommandString() + GetArrayAsString(_partNames);
+            // Compatibility for version v1.3.5
+            return base.GetCommandString();
         }
-
-
         // ISerialization
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            // Using typeof() works also for null fields
-            info.AddValue("Command+_name", _name, typeof(string));
-            info.AddValue("Command+_dateCreated", _dateCreated, typeof(DateTime));
-            info.AddValue("_partNames", _partNames, typeof(string[]));
-            info.AddValue("_meshingParameters", _meshingParameters, typeof(MeshingParameters));
+            // Compatibility for version v1.3.5
         }
     }
 }

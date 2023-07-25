@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CaeGlobals;
 using System.Runtime.Serialization;
+using CaeResults;
+using FileInOut.Output.Calculix;
+using System.Xml.Linq;
 
 namespace CaeModel
 {
@@ -13,7 +16,7 @@ namespace CaeModel
     {
         // Variables                                                                                                                
         private double[][] _youngsPoissonsTemp;
-
+        
 
         // Properties                                                                                                               
         public double[][] YoungsPoissonsTemp
@@ -42,5 +45,6 @@ namespace CaeModel
 
 
         // Methods                                                                                                                  
+
     }
 }

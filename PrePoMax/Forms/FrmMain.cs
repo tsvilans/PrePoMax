@@ -15,6 +15,8 @@ using CaeJob;
 using System.Reflection;
 using CaeModel;
 using CaeMesh;
+using CaeResults;
+using vtkControl;
 
 namespace PrePoMax
 {
@@ -72,9 +74,11 @@ namespace PrePoMax
         private FrmDefinedField _frmDefinedField;
         private FrmSettings _frmSettings;
         private FrmQuery _frmQuery;
+        private FrmFind _frmFind;
         private FrmAnalysis _frmAnalysis;
         private FrmMonitor _frmMonitor;
         private FrmAnimation _frmAnimation;
+        private FrmResultFieldOutput _frmResultFieldOutput;
         private FrmViewResultHistoryOutput _frmViewResultHistoryOutput;
         private FrmResultHistoryOutput _frmResultHistoryOutput;
         private FrmTransformation _frmTransformation;
@@ -233,7 +237,6 @@ namespace PrePoMax
                 _modelTree.PreviewEvent += ModelTree_PreviewEvent;
                 _modelTree.CreateCompoundPart += CreateAndImportCompoundPart;
                 _modelTree.SwapPartGeometries += SwapPartGeometries;
-                _modelTree.MeshingParametersEvent += GetSetMeshingParameters;
                 _modelTree.PreviewEdgeMesh += PreviewEdgeMeshesAsync;
                 _modelTree.CreateMeshEvent += CreatePartMeshes;
                 _modelTree.CopyGeometryToResultsEvent += CopyGeometryPartsToResults;
@@ -313,7 +316,6 @@ namespace PrePoMax
                 AddFormToAllForms(_frmAnalyzeGeometry);
                 //
                 _frmMeshingParameters = new FrmMeshingParameters(_controller);
-                _frmMeshingParameters.UpdateHighlightFromTree = UpdateHighlightFromTree;
                 _frmMeshingParameters.PreviewEdgeMeshesAsync = PreviewEdgeMeshesAsync;
                 AddFormToAllForms(_frmMeshingParameters);
                 //
@@ -414,9 +416,16 @@ namespace PrePoMax
                 _frmQuery.Form_RemoveAnnotations = tsbRemoveAnnotations_Click;
                 AddFormToAllForms(_frmQuery);
                 //
+                _frmFind = new FrmFind();
+                _frmFind.Form_RemoveAnnotations = tsbRemoveAnnotations_Click;
+                AddFormToAllForms(_frmFind);
+                //
                 _frmAnimation = new FrmAnimation();
                 _frmAnimation.Form_ControlsEnable = DisableEnableControlsForAnimation;
                 AddFormToAllForms(_frmAnimation);
+                //
+                _frmResultFieldOutput = new FrmResultFieldOutput(_controller);
+                AddFormToAllForms(_frmResultFieldOutput);
                 //
                 _frmViewResultHistoryOutput = new FrmViewResultHistoryOutput(_controller);
                 AddFormToAllForms(_frmViewResultHistoryOutput);
@@ -431,7 +440,10 @@ namespace PrePoMax
                 _vtk.Enabled = false;
                 // Deformation toolstrip
                 InitializeDeformationComboBoxes();
-                //
+                InitializeComplexComboBoxes();
+                // Converters
+                tstbDeformationFactor.UnitConverter = new StringDoubleConverter();
+                tstbAngle.UnitConverter = new StringAngleDegConverter();
                 // Create the Keyboard Hook
                 _keyboardHook = new KeyboardHook();
                 // Capture the events
@@ -527,7 +539,7 @@ namespace PrePoMax
                         HashSet<string> importExtensions = GetFileImportExtensions();
                         //
                         if (extension == ".pmx" || extension == ".pmh" || extension == ".frd")
-                            await Task.Run(() => OpenAsync(fileName));
+                            await Task.Run(() => OpenAsync(fileName, _controller.Open));
                         else if (importExtensions.Contains(extension))
                         {
                             // Create new model
@@ -797,34 +809,36 @@ namespace PrePoMax
         {
             if (_controller.Model.Geometry != null && _controller.CurrentView == ViewGeometryModelResults.Geometry)
             {
-                if (nodeName == "Mesh refinements") tsmiCreateMeshRefinement_Click(null, null);
+                if (nodeName == _modelTree.MeshingParametersName) tsmiCreateMeshingParameters_Click(null, null);
+                else if (nodeName == _modelTree.MeshRefinementsName) tsmiCreateMeshRefinement_Click(null, null);
             }
             else if (_controller.Model.Mesh != null && _controller.CurrentView == ViewGeometryModelResults.Model)
             {
                 // _controller.Model.Mesh defines the unit system and must
-                if (nodeName == "Node sets") tsmiCreateNodeSet_Click(null, null);
-                else if (nodeName == "Element sets") tsmiCreateElementSet_Click(null, null);
-                else if (nodeName == "Surfaces") tsmiCreateSurface_Click(null, null);
-                else if (nodeName == "Reference points") tsmiCreateRP_Click(null, null);
-                else if (nodeName == "Materials") tsmiCreateMaterial_Click(null, null);
-                else if (nodeName == "Sections") tsmiCreateSection_Click(null, null);
-                else if (nodeName == "Constraints") tsmiCreateConstraint_Click(null, null);
-                else if (nodeName == "Surface interactions") tsmiCreateSurfaceInteraction_Click(null, null);
-                else if (nodeName == "Contact pairs") tsmiCreateContactPair_Click(null, null);
-                else if (nodeName == "Amplitudes") tsmiCreateAmplitude_Click(null, null);
-                else if (nodeName == "Initial conditions") tsmiCreateInitialCondition_Click(null, null);
-                else if (nodeName == "Steps") tsmiCreateStep_Click(null, null);
-                else if (nodeName == "History outputs" && stepName != null) CreateHistoryOutput(stepName);
-                else if (nodeName == "Field outputs" && stepName != null) CreateFieldOutput(stepName);
-                else if (nodeName == "BCs" && stepName != null) CreateBoundaryCondition(stepName);
-                else if (nodeName == "Loads" && stepName != null) CreateLoad(stepName);
-                else if (nodeName == "Defined fields" && stepName != null) CreateDefinedField(stepName);
-                else if (nodeName == "Analyses") tsmiCreateAnalysis_Click(null, null);
+                if (nodeName == _modelTree.NodeSetsName) tsmiCreateNodeSet_Click(null, null);
+                else if (nodeName == _modelTree.ElementSetsName) tsmiCreateElementSet_Click(null, null);
+                else if (nodeName == _modelTree.SurfacesName) tsmiCreateSurface_Click(null, null);
+                else if (nodeName == _modelTree.ReferencePointsName) tsmiCreateRP_Click(null, null);
+                else if (nodeName == _modelTree.MaterialsName) tsmiCreateMaterial_Click(null, null);
+                else if (nodeName == _modelTree.SectionsName) tsmiCreateSection_Click(null, null);
+                else if (nodeName == _modelTree.ConstraintsName) tsmiCreateConstraint_Click(null, null);
+                else if (nodeName == _modelTree.SurfaceInteractionsName) tsmiCreateSurfaceInteraction_Click(null, null);
+                else if (nodeName == _modelTree.ContactPairsName) tsmiCreateContactPair_Click(null, null);
+                else if (nodeName == _modelTree.AmplitudesName) tsmiCreateAmplitude_Click(null, null);
+                else if (nodeName == _modelTree.InitialConditionsName) tsmiCreateInitialCondition_Click(null, null);
+                else if (nodeName == _modelTree.StepsName) tsmiCreateStep_Click(null, null);
+                else if (nodeName == _modelTree.HistoryOutputsName && stepName != null) CreateHistoryOutput(stepName);
+                else if (nodeName == _modelTree.FieldOutputsName && stepName != null) CreateFieldOutput(stepName);
+                else if (nodeName == _modelTree.BoundaryConditionsName && stepName != null) CreateBoundaryCondition(stepName);
+                else if (nodeName == _modelTree.LoadsName && stepName != null) CreateLoad(stepName);
+                else if (nodeName == _modelTree.DefinedFieldsName && stepName != null) CreateDefinedField(stepName);
+                else if (nodeName == _modelTree.AnalysesName) tsmiCreateAnalysis_Click(null, null);
             }
             else if (_controller.CurrentResult != null && _controller.CurrentResult.Mesh != null &&
                      _controller.CurrentView == ViewGeometryModelResults.Results)
             {
-                if (nodeName == "History outputs") tsmiCreateResultHistoryOutput_Click(null, null);
+                if (nodeName == _modelTree.FieldOutputsName) tsmiCreateResultFieldOutput_Click(null, null);
+                else if (nodeName == _modelTree.HistoryOutputsName) tsmiCreateResultHistoryOutput_Click(null, null);
             }
         }
         private void ModelTree_Edit(NamedClass namedClass, string stepName)
@@ -833,6 +847,7 @@ namespace PrePoMax
             if (_controller.CurrentView == ViewGeometryModelResults.Geometry)
             {
                 if (namedClass is GeometryPart) EditGeometryPart(namedClass.Name);
+                else if (namedClass is MeshingParameters) EditMeshingParameters(namedClass.Name);
                 else if (namedClass is FeMeshRefinement) EditMeshRefinement(namedClass.Name);
             }
             // Model
@@ -866,11 +881,12 @@ namespace PrePoMax
             else if (_controller.CurrentView == ViewGeometryModelResults.Results)
             {
                 if (namedClass is ResultPart || namedClass is GeometryPart) EditResultPart(namedClass.Name);
-                else if (namedClass is CaeResults.HistoryResultData hd) ViewResultHistoryOutputData(hd);
-                else if (namedClass is CaeResults.FieldData fd) ShowLegendSettings();
+                else if (namedClass is ResultFieldOutput rfo) EditResultFieldOutput(rfo.Name);
+                else if (namedClass is HistoryResultData hd) ViewResultHistoryOutputData(hd);
+                else if (namedClass is FieldData fd) ShowLegendSettings();
             }
         }
-        private void  ModelTree_Query()
+        private void ModelTree_Query()
         {
             tsmiQuery_Click(null, null);
         }
@@ -882,7 +898,11 @@ namespace PrePoMax
             {
                 ApplyActionOnItems<FeNodeSet>(items, DuplicateNodeSets);
                 ApplyActionOnItems<FeElementSet>(items, DuplicateElementSets);
+                //
                 ApplyActionOnItems<Material>(items, DuplicateMaterials);
+                //
+                ApplyActionOnItems<CaeModel.Constraint>(items, DuplicateConstraints);
+                //
                 ApplyActionOnItems<SurfaceInteraction>(items, DuplicateSurfaceInteractions);
                 //
                 ApplyActionOnItems<Step>(items, DuplicateSteps);
@@ -983,7 +1003,7 @@ namespace PrePoMax
             {
                 names.Add(items[i].Name);
             }
-
+            //
             if (names.Count > 0)
             {
                 if (colorContours) ColorContoursOnResultPart(names.ToArray());
@@ -995,6 +1015,7 @@ namespace PrePoMax
         {
             if (_controller.CurrentView == ViewGeometryModelResults.Geometry)
             {
+                ApplyActionOnItems<MeshingParameters>(items, DeleteMeshingParameters);
                 ApplyActionOnItems<FeMeshRefinement>(items, DeleteMeshRefinements);
                 // At last delete the parts
                 ApplyActionOnItems<GeometryPart>(items, DeleteGeometryParts);
@@ -1029,12 +1050,13 @@ namespace PrePoMax
                 ApplyActionOnItems<ResultPart>(items, DeleteResultParts);
                 ApplyActionOnItems<GeometryPart>(items, DeleteResultParts);
                 // First delete components and then field outputs
-                DeleteParentItems<CaeResults.FieldData>(items, parentNames, DeleteResultFieldOutputComponents);
-                ApplyActionOnItems<CaeResults.Field>(items, DeleteResultFieldOutputs);
+                DeleteParentItems<FieldData>(items, parentNames, DeleteResultFieldOutputComponents);
+                ApplyActionOnItems<Field>(items, DeleteResultFieldOutputs);
+                ApplyActionOnItems<ResultFieldOutput>(items, DeleteResultFieldOutputs);
                 //
                 DeleteResultHistoryResultCompoments(items);
-                DeleteParentItems<CaeResults.HistoryResultField>(items, parentNames, DeleteResultHistoryResultFields);
-                ApplyActionOnItems<CaeResults.HistoryResultSet>(items, RemoveResultHistoryResultSets);
+                DeleteParentItems<HistoryResultField>(items, parentNames, DeleteResultHistoryResultFields);
+                ApplyActionOnItems<HistoryResultSet>(items, RemoveResultHistoryResultSets);
                 
             }
         }
@@ -1163,8 +1185,7 @@ namespace PrePoMax
                 // Vtk
                 bool vtkVisible = false;
                 // Tree
-                _modelTree.DisableGeometryAndModelTreeMouse = true;
-                _modelTree.DisableResultsTreeMouse = true;
+                SetStateWorking("Rendering...");
                 //                      Enable                                                          
                 if (_controller.ModelInitialized || _controller.ResultsInitialized)
                 {
@@ -1195,7 +1216,7 @@ namespace PrePoMax
                                     (setModelView && !_controller.ModelInitialized) ||
                                     (setResultsView && !_controller.ResultsInitialized);
                 
-                // Only for individul views !!!
+                // Only for individual views !!!
                 if (setEmptyView) { }
                 else if (setGeometryView)
                 {
@@ -1207,8 +1228,6 @@ namespace PrePoMax
                     tsViews.DisableMouseButtons = false;
                     // Vtk
                     vtkVisible = true;
-                    // Tree
-                    _modelTree.DisableGeometryAndModelTreeMouse = false;
                 }
                 else if (setModelView)
                 {
@@ -1230,8 +1249,6 @@ namespace PrePoMax
                     tscbSymbolsForStep.Enabled = true;
                     // Vtk
                     vtkVisible = true;
-                    // Tree
-                    _modelTree.DisableGeometryAndModelTreeMouse = false;
                 }
                 else if (setResultsView)
                 {
@@ -1245,13 +1262,17 @@ namespace PrePoMax
                     tsResults.Enabled = true;
                     // Vtk
                     vtkVisible = true;
-                    // Tree
-                    _modelTree.DisableResultsTreeMouse = false;
                 }
+                // Tree
+                SetStateReady("Rendering...");
                 //                      Buttons                                                         
                 tsbSectionView.Checked = _controller.IsSectionViewActive();
                 tsbExplodedView.Checked = _controller.IsExplodedViewActive();
                 tsbTransformation.Checked = _controller.AreTransformationsActive();
+                //                      Icons                                                           
+                UpdateResultsTypeIconStates();
+                //
+                UpdateComplexControlStates();
                 //
                 _vtk.Visible = vtkVisible;
             });
@@ -1334,7 +1355,7 @@ namespace PrePoMax
                     openFileDialog.FileName = "";
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        if (CheckBeforeOpen(openFileDialog.FileName)) await OpenAsync(openFileDialog.FileName);
+                        if (CheckBeforeOpen(openFileDialog.FileName)) await OpenAsync(openFileDialog.FileName, _controller.Open);
                     }
                 }
             }
@@ -1365,7 +1386,7 @@ namespace PrePoMax
             }
             return true;
         }
-        private async Task OpenAsync(string fileName, bool resetCamera = true, Action callback = null)
+        private async Task OpenAsync(string fileName, Action<string> ActionOnFile, bool resetCamera = true, Action callback = null)
         {
             bool stateSet = false;
             try
@@ -1373,7 +1394,7 @@ namespace PrePoMax
                 if (SetStateWorking(Globals.OpeningText))
                 {
                     stateSet = true;
-                    await Task.Run(() => Open(fileName, resetCamera));
+                    await Task.Run(() => Open(fileName, ActionOnFile, resetCamera));
                     callback?.Invoke();                    
                 }
                 else MessageBoxes.ShowWarning("Another task is already running.");
@@ -1390,15 +1411,15 @@ namespace PrePoMax
                 if (stateSet) SetStateReady(Globals.OpeningText);
             }
         }
-        public void Open(string fileName, bool resetCamera = true)
-        {            
-            _controller.Open(fileName);
+        public void Open(string fileName, Action<string> ActionOnFile, bool resetCamera = true)
+        {
+            ActionOnFile(fileName);
             //
             if (_controller.CurrentResult != null && _controller.CurrentResult.Mesh != null)
             {
                 SetResultNames();
                 // Reset the previous step and increment
-                SetAllStepAndIncrementIds();
+                SetAllStepAndIncrementIds(true);
                 // Set last increment
                 SetDefaultStepAndIncrementIds();
                 // Show the selection in the results tree
@@ -1410,7 +1431,7 @@ namespace PrePoMax
             else if (_controller.CurrentView == ViewGeometryModelResults.Results)
             {
                 // Set the representation which also calls Draw
-                _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+                _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
                 //
                 if (resetCamera) tsmiFrontView_Click(null, null);
             }
@@ -1421,7 +1442,7 @@ namespace PrePoMax
         internal void tsmiImportFile_Click(object sender, EventArgs e)
         {
             ImportFile(false);
-        }
+        }        
         internal async void tsmiSave_Click(object sender, EventArgs e)
         {
             try
@@ -1897,7 +1918,7 @@ namespace PrePoMax
             try
             {
                 string fileName = ((ToolStripMenuItem)sender).Name;
-                if (CheckBeforeOpen(fileName)) OpenAsync(fileName);
+                if (CheckBeforeOpen(fileName)) OpenAsync(fileName, _controller.Open);
             }
             catch (Exception ex)
             {
@@ -1990,15 +2011,7 @@ namespace PrePoMax
                 SetZoomToFit(true);
             }
         }
-        private void tsmiRegenerteUsingOtherFiles_Click(object sender, EventArgs e)
-        {
-            RegenerateWithDialogs(true, false);
-        }
-        private void tsmiRegenerateForRemeshing_Click(object sender, EventArgs e)
-        {
-            RegenerateWithDialogs(false, true);
-        }        
-        private async void RegenerateWithDialogs(bool showImportDialog, bool showMeshParametersDialog)
+        private async void tsmiRegenerteUsingOtherFiles_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2007,7 +2020,7 @@ namespace PrePoMax
                 Application.DoEvents();
                 SetStateWorking(Globals.RegeneratingText);
                 _modelTree.ScreenUpdating = false;
-                await Task.Run(() => _controller.RegenerateHistoryCommandsWithDialogs(showImportDialog, showMeshParametersDialog));
+                await Task.Run(() => _controller.RegenerateHistoryCommandsWithDialogs(true));
             }
             catch (Exception ex)
             {
@@ -2024,7 +2037,6 @@ namespace PrePoMax
                 SetZoomToFit(true);
             }
         }
-
         public void EnableDisableUndoRedo(string undo, string redo)
         {
             InvokeIfRequired(EnableDisable, undo, redo);
@@ -2404,29 +2416,60 @@ namespace PrePoMax
         //
         private void tsmiResultsUndeformed_Click(object sender, EventArgs e)
         {
-            if (GetCurrentView() == ViewGeometryModelResults.Results)
-            {
-                if (_frmAnimation.Visible) _frmAnimation.Hide();
-                _controller.ViewResultsType = ViewResultsType.Undeformed;
-            }
+            SetUndeformedModelType(ViewResultsTypeEnum.Undeformed, UndeformedModelTypeEnum.None);
         }
         private void tsmiResultsDeformed_Click(object sender, EventArgs e)
         {
-            if (GetCurrentView() == ViewGeometryModelResults.Results)
-            {
-                if (_frmAnimation.Visible) _frmAnimation.Hide();
-                _controller.ViewResultsType = ViewResultsType.Deformed;
-            }
+            SetUndeformedModelType(ViewResultsTypeEnum.Deformed, UndeformedModelTypeEnum.None);
         }
         private void tsmiResultsColorContours_Click(object sender, EventArgs e)
         {
+            SetUndeformedModelType(ViewResultsTypeEnum.ColorContours, UndeformedModelTypeEnum.None);
+        }
+        private void tsmiResultsDeformedColorWireframe_Click(object sender, EventArgs e)
+        {
+            SetUndeformedModelType(ViewResultsTypeEnum.ColorContours, UndeformedModelTypeEnum.WireframeBody);
+        }
+
+        private void tsmiResultsDeformedColorSolid_Click(object sender, EventArgs e)
+        {
+            SetUndeformedModelType(ViewResultsTypeEnum.ColorContours, UndeformedModelTypeEnum.SolidBody);
+        }
+        private void SetUndeformedModelType(ViewResultsTypeEnum viewResultsType, UndeformedModelTypeEnum undeformedModelType)
+        {
+            _controller.SetUndeformedModelType(undeformedModelType);
+            //
             if (GetCurrentView() == ViewGeometryModelResults.Results)
             {
                 if (_frmAnimation.Visible) _frmAnimation.Hide();
-                _controller.ViewResultsType = ViewResultsType.ColorContours;
+                _controller.ViewResultsType = viewResultsType;
+            }
+            //
+            UpdateResultsTypeIconStates();
+        }
+        private void UpdateResultsTypeIconStates()
+        {
+            tsbResultsUndeformed.Checked = false;
+            tsbResultsDeformed.Checked = false;
+            tsbResultsColorContours.Checked = false;
+            tsbResultsUndeformedWireframe.Checked = false;
+            tsbResultsUndeformedSolid.Checked = false;
+            //
+            if (GetCurrentView() == ViewGeometryModelResults.Results)
+            {
+                if (_controller.ViewResultsType == ViewResultsTypeEnum.Undeformed) tsbResultsUndeformed.Checked = true;
+                else if (_controller.ViewResultsType == ViewResultsTypeEnum.Deformed) tsbResultsDeformed.Checked = true;
+                else if (_controller.ViewResultsType == ViewResultsTypeEnum.ColorContours)
+                {
+                    if (_controller.GetUndeformedModelType() == UndeformedModelTypeEnum.None)
+                        tsbResultsColorContours.Checked = true;
+                    else if (_controller.GetUndeformedModelType() == UndeformedModelTypeEnum.WireframeBody)
+                        tsbResultsUndeformedWireframe.Checked = true;
+                    else if (_controller.GetUndeformedModelType() == UndeformedModelTypeEnum.SolidBody)
+                        tsbResultsUndeformedSolid.Checked = true;
+                }
             }
         }
-
         #endregion
 
         #region Geometry ###########################################################################################################
@@ -2797,7 +2840,7 @@ namespace PrePoMax
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
                 OrderedDictionary<string, double> presetValues =
-                    new OrderedDictionary<string, double>("Preset transparency values", StringComparer.OrdinalIgnoreCase);
+                    new OrderedDictionary<string, double>("Preset Transparency values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -2860,7 +2903,7 @@ namespace PrePoMax
             frmGetValue.MaxValue = 90;
             SetFormLoaction(frmGetValue);
             OrderedDictionary<string, double> presetValues =
-                new OrderedDictionary<string, double>("Preset values", StringComparer.OrdinalIgnoreCase);
+                new OrderedDictionary<string, double>("Preset Transparency Values", StringComparer.OrdinalIgnoreCase);
             presetValues.Add("Default", CaeMesh.Globals.EdgeAngle);
             string desc = "Enter the face angle for model edges detection.";
             frmGetValue.PrepareForm("Find model edges: " + partNames.ToShortString(), "Angle", desc,
@@ -2877,7 +2920,7 @@ namespace PrePoMax
                 HashSet<PartType> stlPartTypes = new HashSet<PartType>();
                 HashSet<PartType> cadPartTypes = new HashSet<PartType>();
                 //
-                string[] allPartNames = _controller.GetPartAndSubPartNames(partNames);
+                string[] allPartNames = _controller.GetMeshablePartNames(partNames);
                 foreach (var partName in allPartNames)
                 {
                     part = (GeometryPart)_controller.Model.Geometry.Parts[partName];
@@ -2969,38 +3012,45 @@ namespace PrePoMax
         #endregion  ################################################################################################################
 
         #region Mesh ###############################################################################################################
-        internal void tsmiMeshingParameters_Click(object sender, EventArgs e)
+        private void tsmiCreateMeshingParameters_Click(object sender, EventArgs e)
         {
             try
             {
-                SelectMultipleEntities("Parts", _controller.GetGeometryPartsWithoutSubParts(), GetSetMeshingParameters);
+                CreateMeshingParameters();
             }
             catch (Exception ex)
             {
                 ExceptionTools.Show(this, ex);
             }
         }
-        private void tsmiPreviewEdgeMesh_Click(object sender, EventArgs e)
+        private void tsmiEditMeshingParameters_Click(object sender, EventArgs e)
         {
             try
             {
-                SelectMultipleEntities("Parts", _controller.GetGeometryPartsWithoutSubParts(), PreviewEdgeMeshes);
+                SelectOneEntity("Meshing Parameters", _controller.GetMeshingParameters(), EditMeshingParameters);
             }
             catch (Exception ex)
             {
                 ExceptionTools.Show(this, ex);
             }
         }
+        private void tsmiDeleteMeshingParameters_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SelectMultipleEntities("Meshing Parameters", _controller.GetMeshingParameters(), DeleteMeshingParameters);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        //
         private void tsmiCreateMeshRefinement_Click(object sender, EventArgs e)
         {
             try
             {
-                if (_controller.Model.Geometry == null) return;
-                // Data editor
-                ItemSetDataEditor.SelectionForm = _frmSelectItemSet;
-                ItemSetDataEditor.ParentForm = _frmMeshRefinement;
-                _frmSelectItemSet.SetOnlyGeometrySelection(true);
-                ShowForm(_frmMeshRefinement, "Create Mesh Refinement", null);
+                CreateMeshRefinement();
             }
             catch (Exception ex)
             {
@@ -3029,6 +3079,18 @@ namespace PrePoMax
                 ExceptionTools.Show(this, ex);
             }
         }
+        //
+        private void tsmiPreviewEdgeMesh_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SelectMultipleEntities("Parts", _controller.GetGeometryPartsWithoutSubParts(), PreviewEdgeMeshes);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
         internal void tsmiCreateMesh_Click(object sender, EventArgs e)
         {
             try
@@ -3040,139 +3102,7 @@ namespace PrePoMax
                 ExceptionTools.Show(this, ex);
             }            
         }
-
         //
-        private void GetSetMeshingParameters(string[] partNames)
-        {
-            try
-            {
-                GetMeshingParameters(partNames, false);
-            }
-            catch (Exception ex)
-            {
-                ExceptionTools.Show(this, ex);
-            }
-        }
-        public MeshingParameters GetMeshingParameters(string[] partNames, bool formModal)
-        {
-            BasePart part;
-            MeshingParameters meshingParameters = null;
-            MeshingParameters defaultMeshingParameters = GetDefaultMeshingParameters(partNames);
-            if (defaultMeshingParameters != null)
-            {
-                foreach (var partName in partNames)
-                {
-                    part = _controller.GetGeometryPart(partName);
-                    // First time set the meshing parameters
-                    if (partName == partNames[0] && part is GeometryPart gp1)
-                        meshingParameters = gp1.MeshingParameters;
-                    // Meshing parameters exist only when all parts have the same meshing parameters
-                    if (!(part is GeometryPart gp2) || !MeshingParameters.Equals(meshingParameters, gp2.MeshingParameters))
-                        meshingParameters = null;
-                }
-                // Use meshingParameters as default if meshing parameters are not equal
-                if (meshingParameters == null) meshingParameters = defaultMeshingParameters;
-            }
-            else return null;
-            //
-            MeshingParameters parameters = null;
-            //
-            InvokeIfRequired(() =>
-            {
-                parameters = GetMeshingParametersForm(partNames, defaultMeshingParameters, meshingParameters, formModal);
-            });
-            return parameters;
-        }
-        public MeshingParameters GetDefaultMeshingParameters(string[] partNames, bool onlyOneMeshType = true)
-        {
-            double sumMax = 0;
-            double sumMin = 0;
-            double sumHausDorff = 0;
-            MeshingParameters defaultMeshingParameters = null;
-            HashSet<bool> useMmg = new HashSet<bool>();
-            foreach (var partName in partNames)
-            {
-                // Default parameters
-                defaultMeshingParameters = GetDefaultMeshingParameters(partName);
-                // If part is not found return null
-                if (defaultMeshingParameters != null)
-                {
-                    // Check for different types of meshes
-                    useMmg.Add(defaultMeshingParameters.UseMmg);
-                    //
-                    sumMax += defaultMeshingParameters.MaxH;
-                    sumMin += defaultMeshingParameters.MinH;
-                    sumHausDorff += defaultMeshingParameters.Hausdorff;
-                }
-                // Part was not found
-                else return null;
-            }
-            //
-            defaultMeshingParameters.MaxH = CaeGlobals.Tools.RoundToSignificantDigits(sumMax / partNames.Length, 2);
-            defaultMeshingParameters.MinH = CaeGlobals.Tools.RoundToSignificantDigits(sumMin / partNames.Length, 2);
-            defaultMeshingParameters.Hausdorff = CaeGlobals.Tools.RoundToSignificantDigits(sumHausDorff / partNames.Length, 2);
-            // All parts must be of either netgen type or mmg type
-            if (onlyOneMeshType)
-            {
-                if (useMmg.Count() == 1) return defaultMeshingParameters;
-                else return null;
-            }
-            else return defaultMeshingParameters;
-        }
-        public MeshingParameters GetDefaultMeshingParameters(string partName)
-        {
-            BasePart part = _controller.GetGeometryPart(partName);
-            if (part == null) part = _controller.GetModelPart(partName);
-            if (part == null) return null;
-            //
-            if (!_controller.MeshJobIdle) throw new Exception("The meshing is already in progress.");
-            //
-            MeshingParameters defaultMeshingParameters = _controller.Settings.Meshing.MeshingParameters.DeepClone();
-            double factorMax = 20;
-            double factorMin = 1000;
-            double factorHausdorff = 500;
-            double maxSize = part.BoundingBox.GetDiagonal();
-            //
-            if (part.PartType == PartType.Shell && part is GeometryPart gp && gp.CADFileData == null)
-                defaultMeshingParameters.UseMmg = true;
-            else if (part.PartType == PartType.Shell && part is MeshPart)   // for remeshing
-                defaultMeshingParameters.UseMmg = true;
-            //
-            defaultMeshingParameters.MaxH = CaeGlobals.Tools.RoundToSignificantDigits(maxSize / factorMax, 2);
-            defaultMeshingParameters.MinH = CaeGlobals.Tools.RoundToSignificantDigits(maxSize / factorMin, 2);
-            defaultMeshingParameters.Hausdorff = CaeGlobals.Tools.RoundToSignificantDigits(maxSize / factorHausdorff, 2);
-            //
-            return defaultMeshingParameters;
-        }
-        public MeshingParameters GetMeshingParametersForm(string[] partNames,
-                                                                  MeshingParameters defaultMeshingParameters,
-                                                                  MeshingParameters meshingParameters,
-                                                                  bool formModal)
-        {
-            // - show form
-            CloseAllForms();
-            SetFormLoaction(_frmMeshingParameters);
-            _frmMeshingParameters.PartNames = partNames;
-            _frmMeshingParameters.DefaultMeshingParameters = defaultMeshingParameters;
-            _frmMeshingParameters.MeshingParameters = meshingParameters;
-            //
-            if (formModal)
-            {
-                if (_frmMeshingParameters.ShowDialog() == DialogResult.OK)
-                    return _frmMeshingParameters.MeshingParameters;
-                else return null; // Cancel pressed on Meshing parameters form
-            }
-            else
-            {
-                _frmMeshingParameters.Show();
-                return null;
-            }
-        }
-        public void SetDefaultMeshingParameters(string partName)
-        {
-            MeshingParameters defaultMeshingParameters = GetDefaultMeshingParameters(partName);
-            _controller.SetMeshingParametersCommand(new string[] { partName }, defaultMeshingParameters);
-        }
         private async void PreviewEdgeMeshes(string[] partNames)
         {
             await PreviewEdgeMeshesAsync(partNames, null, null);
@@ -3185,7 +3115,7 @@ namespace PrePoMax
             {
                 if (SetStateWorking(Globals.PreviewText))
                 {
-                    stateSet = true;
+                    stateSet = true;                    
                     //
                     await Task.Run(() =>
                     {
@@ -3206,7 +3136,42 @@ namespace PrePoMax
                 if (stateSet) SetStateReady(Globals.PreviewText);
             }
         }
-        //
+        // Meshing parameters
+        private void CreateMeshingParameters()
+        {
+            if (_controller.Model.Geometry == null) return;
+            // Data editor
+            ItemSetDataEditor.SelectionForm = _frmSelectItemSet;
+            ItemSetDataEditor.ParentForm = _frmMeshingParameters;
+            _frmSelectItemSet.SetOnlyGeometrySelection(true);
+            ShowForm(_frmMeshingParameters, "Create Meshing Parameters", null);
+        }
+        private void EditMeshingParameters(string meshingParametersName)
+        {
+            // Data editor
+            ItemSetDataEditor.SelectionForm = _frmSelectItemSet;
+            ItemSetDataEditor.ParentForm = _frmMeshingParameters;
+            _frmSelectItemSet.SetOnlyGeometrySelection(true);
+            ShowForm(_frmMeshingParameters, "Edit Meshing Parameters", meshingParametersName);
+        }
+        private void DeleteMeshingParameters(string[] meshingParametersNames)
+        {
+            if (MessageBoxes.ShowWarningQuestion("OK to delete selected meshing parameters?" + Environment.NewLine
+                                                 + meshingParametersNames.ToRows()) == DialogResult.OK)
+            {
+                _controller.RemoveMeshingParametersCommand(meshingParametersNames);
+            }
+        }
+        // Mesh refinement
+        private void CreateMeshRefinement()
+        {
+            if (_controller.Model.Geometry == null) return;
+            // Data editor
+            ItemSetDataEditor.SelectionForm = _frmSelectItemSet;
+            ItemSetDataEditor.ParentForm = _frmMeshRefinement;
+            _frmSelectItemSet.SetOnlyGeometrySelection(true);
+            ShowForm(_frmMeshRefinement, "Create Mesh Refinement", null);
+        }
         private void EditMeshRefinement(string meshRefinementName)
         {
             // Data editor
@@ -3223,6 +3188,7 @@ namespace PrePoMax
                 _controller.RemoveMeshRefinementsCommand(meshRefinementNames);
             }
         }
+        // Create mesh
         private async void CreatePartMeshes(string[] partNames)
         {
             try
@@ -3244,7 +3210,6 @@ namespace PrePoMax
                     try
                     {
                         part = _controller.GetGeometryPart(partName);
-                        if (part.MeshingParameters == null) SetDefaultMeshingParameters(partName);
                         //
                         await Task.Run(() => _controller.CreateMeshCommand(partName));
                         // Check for the cancel button click
@@ -3314,18 +3279,38 @@ namespace PrePoMax
         }
         private void CreateDefaultMeshes(string[] partNames)
         {
-            foreach (var partName in partNames) SetDefaultMeshingParameters(partName);
             CreatePartMeshes(partNames);
         }
         private async void CreateUserDefinedMeshes(string[] partNames)
         {
             await Task.Run(() =>
             {
-                GetSetMeshingParameters(partNames);
-                while (_frmMeshingParameters.Visible)
+                InvokeIfRequired(() => { CreateMeshingParameters(); });
+                //
+                bool firstTime = true;
+                do
                 {
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(250);
+                    if (firstTime)
+                    {
+                        Selection selection = new Selection();
+                        selection.Add(new SelectionNodeIds(vtkSelectOperation.None, false,
+                                                           _controller.Model.Geometry.GetPartIdsByNames(partNames)));
+                        selection.SelectItem = vtkSelectItem.Part;
+                        selection.CurrentView = (int)ViewGeometryModelResults.Geometry;
+                        _controller.Selection = selection;
+                        _controller.SetSelectByToOff();
+                        //
+                        InvokeIfRequired(() => {
+                            //_controller.HighlightSelection();
+                            SelectionChanged(_controller.Model.Geometry.GetPartIdsByNames(partNames));
+                        });
+                        //
+                        firstTime = false;
+                    }
                 }
+                while (_frmMeshingParameters.Visible);
+
             });
             if (_frmMeshingParameters.DialogResult == DialogResult.OK) CreatePartMeshes(partNames);
         }
@@ -3725,7 +3710,7 @@ namespace PrePoMax
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
                 OrderedDictionary<string, double> presetValues
-                    = new OrderedDictionary<string, double>("Preset values", StringComparer.OrdinalIgnoreCase);
+                    = new OrderedDictionary<string, double>("Preset Transparency Values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -4263,6 +4248,17 @@ namespace PrePoMax
                  ExceptionTools.Show(this, ex);
              }
         }
+        private void tsmiDuplicateConstraint_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SelectMultipleEntities("Constraints", _controller.GetAllConstraints(), DuplicateConstraints);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
         private void tsmiSwapMasterSlaveConstraint_Click(object sender, EventArgs e)
         {
             try
@@ -4326,6 +4322,10 @@ namespace PrePoMax
             ItemSetDataEditor.ParentForm = _frmConstraint;
             _frmSelectItemSet.SetOnlyGeometrySelection(false);
             ShowForm(_frmConstraint, "Edit Constraint", constraintName);
+        }
+        private void DuplicateConstraints(string[] constraintNames)
+        {
+            _controller.DuplicateConstraintsCommnad(constraintNames);
         }
         private void SwapMasterSlaveConstraints(string[] constraintNames)
         {
@@ -4719,7 +4719,7 @@ namespace PrePoMax
                 SelectFirstComponentOfFirstFieldOutput();
             }
             // Set the representation which also calls Draw
-            _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+            _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
             //
             SetMenuAndToolStripVisibility();
         }
@@ -5350,7 +5350,7 @@ namespace PrePoMax
                 SelectFirstComponentOfFirstFieldOutput();
             }
             // Set the representation which also calls Draw
-            _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+            _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
             //
             SetMenuAndToolStripVisibility();
         }
@@ -5509,7 +5509,7 @@ namespace PrePoMax
                 SelectFirstComponentOfFirstFieldOutput();
             }
             // Set the representation which also calls Draw
-            _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+            _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
             //
             SetMenuAndToolStripVisibility();
         }
@@ -5558,6 +5558,25 @@ namespace PrePoMax
                     SetFormLoaction(_frmQuery);
                     _frmQuery.PrepareForm(_controller);
                     _frmQuery.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        private void tsmiFind_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_frmFind.Visible)
+                {
+                    ClearSelection();
+                    //
+                    CloseAllForms();
+                    SetFormLoaction(_frmFind);
+                    _frmFind.PrepareForm(_controller);
+                    _frmFind.Show();
                 }
             }
             catch (Exception ex)
@@ -6004,7 +6023,7 @@ namespace PrePoMax
             {
                 string resultsFile = job.Name + ".frd";
                 //
-                await OpenAsync(Path.Combine(job.WorkDirectory, resultsFile), false,
+                await OpenAsync(Path.Combine(job.WorkDirectory, resultsFile), _controller.Open, false,
                     () => { if (_controller.CurrentResult != null && _controller.CurrentResult.Mesh != null)
                             _frmMonitor.DialogResult = DialogResult.OK; }); // this hides the monitor window
             }
@@ -6071,7 +6090,7 @@ namespace PrePoMax
         #endregion  ################################################################################################################
 
         #region Results  ###########################################################################################################
-        public void ViewResultHistoryOutputData(CaeResults.HistoryResultData historyData)
+        public void ViewResultHistoryOutputData(HistoryResultData historyData)
         {
             try
             {
@@ -6093,9 +6112,50 @@ namespace PrePoMax
                 ExceptionTools.Show(this, ex);
             }
         }
+        private void tsmiTransformation_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SinglePointDataEditor.ParentForm = _frmTransformation;
+                SinglePointDataEditor.Controller = _controller;
+                //
+                ShowForm(_frmTransformation, "Create Transformation", null);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        private async void tsmiAppendResults_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "Calculix result files|*.frd";
+                    openFileDialog.Multiselect = false;
+                    //
+                    openFileDialog.FileName = "";
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        foreach (var fileName in openFileDialog.FileNames)
+                        {
+                            // Do not use: if (CheckBeforeOpen(fileName))
+                            if (File.Exists(fileName)) await OpenAsync(fileName, _controller.AppendResult);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+                _controller.ModelChanged = false;   // hide messagebox
+                tsmiNew_Click(null, null);
+            }
+        }
 
         #endregion  ################################################################################################################
-        
+
         #region Result part menu  ##################################################################################################
         private void tsmiEditResultParts_Click(object sender, EventArgs e)
         {
@@ -6190,21 +6250,6 @@ namespace PrePoMax
             }
         }
         //
-        private void tsmiTransformation_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SinglePointDataEditor.ParentForm = _frmTransformation;
-                SinglePointDataEditor.Controller = _controller;
-                //
-                ShowForm(_frmTransformation, "Create Transformation", null);
-            }
-            catch (Exception ex)
-            {
-                ExceptionTools.Show(this, ex);
-            }
-        }
-        //
         private void EditResultPart(string partName)
         {
             _frmPartProperties.View = ViewGeometryModelResults.Results;
@@ -6247,7 +6292,7 @@ namespace PrePoMax
                 frmGetValue.MaxValue = 255;
                 SetFormLoaction(frmGetValue);
                 OrderedDictionary<string, double> presetValues =
-                    new OrderedDictionary<string, double>("Preset transparency values", StringComparer.OrdinalIgnoreCase);
+                    new OrderedDictionary<string, double>("Preset Transparency Values", StringComparer.OrdinalIgnoreCase);
                 presetValues.Add("Semi-transparent", 128);
                 presetValues.Add("Opaque", 255);
                 string desc = "Enter the transparency between 0 and 255.\n" + "(0 - transparent; 255 - opaque)";
@@ -6279,11 +6324,33 @@ namespace PrePoMax
         #endregion  ################################################################################################################
 
         #region Result field output  ###############################################################################################
+        private void tsmiCreateResultFieldOutput_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                CreateResultFieldOutput();
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        private void tsmiEditResultFieldOutput_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SelectOneEntity("Field Outputs", _controller.GetResultFieldOutputs(), EditResultFieldOutput);
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
         private void tsmiDeleteResultFieldOutput_Click(object sender, EventArgs e)
         {
             try
             {
-                SelectMultipleEntities("Field Outputs", _controller.GetResultFieldOutputsAsNamedItems(),
+                SelectMultipleEntities("Field Outputs", _controller.GetVisibleResultFieldOutputsAsNamedItems(),
                                        DeleteResultFieldOutputs);
             }
             catch (Exception ex)
@@ -6292,6 +6359,17 @@ namespace PrePoMax
             }
         }
         //
+        private void CreateResultFieldOutput()
+        {
+            if (_controller.CurrentResult == null || _controller.CurrentResult.Mesh == null) return;
+            if (_controller.CurrentResult.GetAllFiledNameComponentNames().Count == 0) return;
+            //
+            ShowForm(_frmResultFieldOutput, "Create Field Output", null);
+        }
+        private void EditResultFieldOutput(string resultFieldOutputName)
+        {
+            ShowForm(_frmResultFieldOutput, "Edit Field Output", resultFieldOutputName);
+        }
         public void DeleteResultFieldOutputs(string[] fieldOutputNames)
         {
             if (MessageBoxes.ShowWarningQuestion("OK to delete selected field outputs?" + Environment.NewLine
@@ -6402,6 +6480,7 @@ namespace PrePoMax
             }
         }
         #endregion  ################################################################################################################
+       
 
         #region Help menu  #########################################################################################################
         private void tsmiHomePage_Click(object sender, EventArgs e)
@@ -6523,6 +6602,7 @@ namespace PrePoMax
         {
             if (ids == null) ids = _controller.GetSelectionIds();
             //
+            if (_frmMeshingParameters != null && _frmMeshingParameters.Visible) _frmMeshingParameters.SelectionChanged(ids);
             if (_frmMeshRefinement != null && _frmMeshRefinement.Visible) _frmMeshRefinement.SelectionChanged(ids);
             if (_frmSelectGeometry != null && _frmSelectGeometry.Visible) _frmSelectGeometry.SelectionChanged(ids);
             //
@@ -6617,8 +6697,8 @@ namespace PrePoMax
                 {
                     if (stepName != null)
                     {
-                        string itemName = text.Replace("Create ", "").ToLower();
-                        MessageBoxes.ShowWarning("Creation of a " + itemName + " in the step: "
+                        string itemName = text.Replace("Create ", "").Replace("Edit ", "").ToLower();
+                        MessageBoxes.ShowWarning("Creating/editing of a " + itemName + " in the step: "
                                                  + stepName + " is not supported.");
                     }
                 }
@@ -6903,6 +6983,7 @@ namespace PrePoMax
                 if (newResultName != currentResultName)
                 {
                     SetResult(newResultName);
+                    UpdateComplexControlStates();
                 }
                 this.ActiveControl = null;
             }
@@ -6945,7 +7026,7 @@ namespace PrePoMax
                 if (e.KeyCode == Keys.Enter)
                 {
                     _controller.Redraw();
-                    this.ActiveControl = _vtk;
+                    this.ActiveControl = null;
                     // No beep
                     e.SuppressKeyPress = true;
                 }
@@ -6958,6 +7039,41 @@ namespace PrePoMax
         private void tstbDeformationFactor_EnabledChanged(object sender, EventArgs e)
         {
             if (tstbDeformationFactor.Enabled) UpdateScaleFactorTextBoxState();
+        }
+        // Complex
+        private void tscbComplex_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Enable angle text box if needed
+                UpdateAngleTextBoxState();
+                //
+                _controller.Redraw();
+                this.ActiveControl = null;
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
+        }
+        private void tstbAngle_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    tstbAngle.Text = Tools.GetPhase360(tstbAngle.Value).ToString();
+                    //
+                    _controller.Redraw();
+                    this.ActiveControl = null;
+                    // No beep
+                    e.SuppressKeyPress = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionTools.Show(this, ex);
+            }
         }
         //
         public void SetResultNames()
@@ -6978,11 +7094,10 @@ namespace PrePoMax
                 }
             });
         }
-        private void SetResult(string resultName)
+        public void SetResult(string resultName)
         {
             // Clear
             Clear3D();
-            //_controller.RemoveExplodedView(false);
             // Set results
             _controller.AllResults.SetCurrentResult(resultName);
             // Regenerate tree
@@ -6998,10 +7113,9 @@ namespace PrePoMax
                 // Set last increment
                 SetDefaultStepAndIncrementIds();
                 // Show the selection in the results tree
-                //return;
                 SelectFirstComponentOfFirstFieldOutput();
                 //
-                _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+                _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
                 //
                 SetMenuAndToolStripVisibility();
                 //tsmiZoomToFit_Click(null, null);    // different results have different views
@@ -7015,7 +7129,7 @@ namespace PrePoMax
             // Control width
             currentWidth += 20; // to account for the drop down arrow
             if (currentWidth < 125) currentWidth = 125;
-            else if (currentWidth > 500) currentWidth = 500;
+            else if (currentWidth > 400) currentWidth = 400;
             tscbResultNames.Size = new Size(currentWidth, tscbResultNames.Height);
             //
             Application.DoEvents();
@@ -7036,20 +7150,19 @@ namespace PrePoMax
         private void InitializeDeformationComboBoxes()
         {
             tscbDeformationVariable.Items.Clear();
-            string[] variableNames = CaeResults.FeResults.GetPossibleDeformationFieldOutputNames();
+            string[] variableNames = FeResults.GetPossibleDeformationFieldOutputNames();
             tscbDeformationVariable.Items.AddRange(variableNames);
             tscbDeformationVariable.SelectedIndex = 0;  // Displacements
             //
             tscbDeformationType.Items.Clear();
-            Type type = typeof(CaeResults.DeformationScaleFactorTypeEnum);
+            Type type = typeof(DeformationScaleFactorTypeEnum);
             string[] typeNames = Enum.GetNames(type);
             for (int i = 0; i < typeNames.Length; i++)
             {
-                typeNames[i] = ((CaeResults.DeformationScaleFactorTypeEnum)Enum.Parse(type, typeNames[i])).GetDisplayedName();
+                typeNames[i] = ((DeformationScaleFactorTypeEnum)Enum.Parse(type, typeNames[i])).GetDisplayedName();
             }
             tscbDeformationType.Items.AddRange(typeNames);
             tscbDeformationType.SelectedIndex = 2;      // Automatic
-
 
             //if (controller.Results != null)
             //    vps.PopulateDropDownList(controller.Results.GetExistingDeformationFieldOutputNames());
@@ -7058,7 +7171,8 @@ namespace PrePoMax
         }
         private void UpdateScaleFactorTextBoxState()
         {
-            tstbDeformationFactor.Enabled = GetDeformationType() == CaeResults.DeformationScaleFactorTypeEnum.UserDefined;
+            tslDeformationFactor.Enabled = GetDeformationType() == DeformationScaleFactorTypeEnum.UserDefined;
+            tstbDeformationFactor.Enabled = tslDeformationFactor.Enabled;
         }
         public string GetDeformationVariable()
         {
@@ -7066,16 +7180,15 @@ namespace PrePoMax
             //
             return tscbDeformationVariable.SelectedItem.ToString();
         }
-        public CaeResults.DeformationScaleFactorTypeEnum GetDeformationType()
+        public DeformationScaleFactorTypeEnum GetDeformationType()
         {
             // Invoke
             if (InvokeRequired)
-                return (CaeResults.DeformationScaleFactorTypeEnum)Invoke(
-                    new Func<CaeResults.DeformationScaleFactorTypeEnum>(GetDeformationType));
+                return (DeformationScaleFactorTypeEnum)Invoke(new Func<DeformationScaleFactorTypeEnum>(GetDeformationType));
             //
             string displayName = tscbDeformationType.SelectedItem.ToString();
-            CaeResults.DeformationScaleFactorTypeEnum[] scaleFactorTypes =
-                (CaeResults.DeformationScaleFactorTypeEnum[])Enum.GetValues(typeof(CaeResults.DeformationScaleFactorTypeEnum));
+            DeformationScaleFactorTypeEnum[] scaleFactorTypes =
+                (DeformationScaleFactorTypeEnum[])Enum.GetValues(typeof(DeformationScaleFactorTypeEnum));
             //
             for (int i = 0; i < scaleFactorTypes.Length; i++)
             {
@@ -7086,7 +7199,88 @@ namespace PrePoMax
         }
         public float GetDeformationFactor()
         {
-            return float.Parse(tstbDeformationFactor.Text);
+            return (float)tstbDeformationFactor.Value;
+        }
+        // Complex
+        private void InitializeComplexComboBoxes()
+        {
+            tscbComplex.Items.Clear();
+            //
+            Type type = typeof(ComplexResultTypeEnum);
+            string[] typeNames = Enum.GetNames(type);
+            for (int i = 0; i < typeNames.Length; i++)
+            {
+                typeNames[i] = ((ComplexResultTypeEnum)Enum.Parse(type, typeNames[i])).GetDisplayedName();
+            }
+            tscbComplex.Items.AddRange(typeNames);
+            tscbComplex.SelectedIndex = 0;  // Real
+            //
+            UpdateComplexControlStates();
+        }
+        private void UpdateComplexControlStates()
+        {
+            bool visible;
+            if (_controller.ContainsComplexResults)
+            {
+                visible = true;
+                //
+                bool enabled = true;
+                //if (_controller.CurrentFieldData != null)
+                //{
+                //    Field field = _controller.CurrentResult.GetField(_controller.CurrentFieldData);
+                //    if (field != null) enabled = field.Complex;
+                //    else enabled = false;
+                //}
+                //else enabled = false;
+                //
+                tslComplex.Enabled = enabled;
+                tscbComplex.Enabled = enabled;
+                if (enabled) UpdateAngleTextBoxState();
+                else
+                {
+                    tslAngle.Enabled = false;
+                    tstbAngle.Enabled = false;
+                }
+            }
+            else
+            {
+                visible = false;
+            }
+            //
+            SetComplexControlsVisibility(visible);
+        }
+        private void SetComplexControlsVisibility(bool visible)
+        {
+            tslComplex.Visible = visible;
+            tscbComplex.Visible = visible;
+            tslAngle.Visible = visible;
+            tstbAngle.Visible = visible;
+        }
+        private void UpdateAngleTextBoxState()
+        {
+            bool enabled = GetComplexResultType() == ComplexResultTypeEnum.RealAtAngle;
+            tslAngle.Enabled = enabled;
+            tstbAngle.Enabled = enabled;
+        }
+        public ComplexResultTypeEnum GetComplexResultType()
+        {
+            // Invoke
+            if (InvokeRequired)
+                return (ComplexResultTypeEnum)Invoke(new Func<ComplexResultTypeEnum>(GetComplexResultType));
+            //
+            string displayName = tscbComplex.SelectedItem.ToString();
+            ComplexResultTypeEnum[] complexResultTypes = (ComplexResultTypeEnum[])Enum.GetValues(typeof(ComplexResultTypeEnum));
+            //
+            for (int i = 0; i < complexResultTypes.Length; i++)
+            {
+                if (displayName == complexResultTypes[i].GetDisplayedName()) return complexResultTypes[i];
+            }
+            //
+            throw new NotSupportedException();
+        }
+        public double GetComplexAngleDeg()
+        {
+            return tstbAngle.Value;
         }
 
         #endregion  ################################################################################################################
@@ -7103,22 +7297,15 @@ namespace PrePoMax
         }
         private void tsbResultsColorContours_Click(object sender, EventArgs e)
         {
-            _controller.SetUndeformedModelType(UndeformedModelTypeEnum.None);
-            //
             tsmiResultsColorContours_Click(null, null);
         }
         private void tsbResultsUndeformedWireframe_Click(object sender, EventArgs e)
         {
-            _controller.SetUndeformedModelType(UndeformedModelTypeEnum.WireframeBody);
-            //
-            tsmiResultsColorContours_Click(null, null);
+            tsmiResultsDeformedColorWireframe_Click(null, null);
         }
-
         private void tsbResultsUndeformedSolid_Click(object sender, EventArgs e)
         {
-            _controller.SetUndeformedModelType(UndeformedModelTypeEnum.SolidBody);
-            //
-            tsmiResultsColorContours_Click(null, null);
+            tsmiResultsDeformedColorSolid_Click(null, null);
         }
         private void tsbTransformation_Click(object sender, EventArgs e)
         {
@@ -7129,7 +7316,7 @@ namespace PrePoMax
         {
             try
             {
-                CaeResults.FieldData current = _controller.CurrentFieldData;
+                FieldData current = _controller.CurrentFieldData;
                 SetFieldData(current.Name, current.Component, GetCurrentFieldOutputStepId(), GetCurrentFieldOutputStepIncrementId());
             }
             catch
@@ -7177,7 +7364,7 @@ namespace PrePoMax
         {
             try
             {
-                if (_controller.ViewResultsType != ViewResultsType.Undeformed &&
+                if (_controller.ViewResultsType != ViewResultsTypeEnum.Undeformed &&
                     _controller.GetResultStepIDs().Length > 0 && !_frmAnimation.Visible)
                 {
                     CloseAllForms();
@@ -7204,6 +7391,15 @@ namespace PrePoMax
             tscbDeformationVariable.Enabled = enable;   // must be here
             tscbDeformationType.Enabled = enable;       // must be here
             tstbDeformationFactor.Enabled = enable;     // must be here
+            //
+            if (enable) UpdateComplexControlStates();
+            else
+            {
+                tslComplex.Enabled = false;
+                tscbComplex.Enabled = false;
+                tslAngle.Enabled = false;
+                tstbAngle.Enabled = false;
+            }
             //
             tsResults.DisableMouseButtons = !enable;
             tscbStepAndIncrement.Enabled = enable;      // must be here despite the tsResults.DisableMouseButtons = !enable;
@@ -7239,6 +7435,7 @@ namespace PrePoMax
                 tsResults.DisableMouseButtons = working;
                 //
                 //this.DisableAllMouseEvents = working;
+                tspbProgress.Visible = working;
             });
         }
         public void SetStateReady(string currentText)
@@ -7295,7 +7492,7 @@ namespace PrePoMax
         }
         private bool CheckValiditiy()
         {
-            string[] invalidItems = _controller.CheckAndUpdateValidity();
+            string[] invalidItems = _controller.CheckAndUpdateModelValidity();
             if (invalidItems.Length > 0)
             {
                 string text = "The model contains active invlaid items:" + Environment.NewLine;
@@ -7661,9 +7858,10 @@ namespace PrePoMax
         {
             InvokeIfRequired(_vtk.SetScalarBarNumberFormat, numberFormat);
         }
-        public void SetScalarBarText(string fieldName, string componentName, string unitAbbreviation, string minMaxType)
+        public void SetScalarBarText(string fieldName, string componentName, string unitAbbreviation, string complexComponent,
+                                     string minMaxType)
         {
-            InvokeIfRequired(_vtk.SetScalarBarText, fieldName, componentName, unitAbbreviation, minMaxType);
+            InvokeIfRequired(_vtk.SetScalarBarText, fieldName, componentName, unitAbbreviation, complexComponent, minMaxType);
         }
         public void DrawLegendBackground(bool drawBackground)
         {
@@ -7708,7 +7906,7 @@ namespace PrePoMax
             InvokeIfRequired(_vtk.DrawStatusBlockBorder, drawBorder);
         }
         public void SetStatusBlock(string name, DateTime dateTime, float analysisTime, string unit, string deformationVariable,
-                                   float scaleFactor, vtkControl.DataFieldType fieldType, int stepNumber, int incrementNumber)
+                                   float scaleFactor, vtkControl.vtkMaxFieldDataType fieldType, int stepNumber, int incrementNumber)
         {
             InvokeIfRequired(_vtk.SetStatusBlock, name, dateTime, analysisTime, unit, deformationVariable, scaleFactor,
                              fieldType, stepNumber, incrementNumber);
@@ -7769,8 +7967,8 @@ namespace PrePoMax
 
         public void SetFieldData(string name, string component, int stepId, int stepIncrementId)
         {
-            CaeResults.FieldData fieldData = new CaeResults.FieldData(name, component, stepId, stepIncrementId);
-            CaeResults.FieldData currentData = _controller.CurrentFieldData;
+            FieldData fieldData = new FieldData(name, component, stepId, stepIncrementId);
+            FieldData currentData = _controller.CurrentFieldData;
             // In case the currentData is null exit
             if (currentData == null) return;
             //
@@ -7781,49 +7979,53 @@ namespace PrePoMax
                 //
                 if (fieldData.Name == currentData.Name && fieldData.Component == currentData.Component)
                 {
-                    // the step id or increment id changed                                              
+                    // Step id or increment id changed                                              
 
-                    // find the choosen data; also contains info about type of step ...
+                    // Find the choosen data; also contains info about type of step ...
                     fieldData = _controller.CurrentResult.GetFieldData(fieldData.Name,
-                                                                 fieldData.Component,
-                                                                 fieldData.StepId,
-                                                                 fieldData.StepIncrementId);
-                    // update controller field data
+                                                                       fieldData.Component,
+                                                                       fieldData.StepId,
+                                                                       fieldData.StepIncrementId,
+                                                                       true);
+                    // Update controller field data
                     _controller.CurrentFieldData = fieldData;
-                    // draw deformation or field data
-                    if (_controller.ViewResultsType != ViewResultsType.Undeformed) _controller.DrawResults(false);
+                    // Draw deformation or field data
+                    if (_controller.ViewResultsType != ViewResultsTypeEnum.Undeformed) _controller.DrawResults(false);
                 }
                 else
                 {
-                    // field of field component changed                                                 
+                    // Field of field component changed                                                 
 
-                    // update controller field data; this is used for the SetStepAndIncrementIds to detect missing ids
+                    // Update controller field data; this is used for the SetStepAndIncrementIds to detect missing ids
                     _controller.CurrentFieldData = fieldData;
-                    // find all step and step increments
-                    //SetAllStepAndIncrementIds();
-                    // find the existing choosen data; also contains info about type of step ...
+                    // Find the existing choosen data; also contains info about type of step ...
                     fieldData = _controller.CurrentResult.GetFieldData(fieldData.Name,
-                                                                 fieldData.Component,
-                                                                 fieldData.StepId,
-                                                                 fieldData.StepIncrementId);
-                    // update controller field data
+                                                                       fieldData.Component,
+                                                                       fieldData.StepId,
+                                                                       fieldData.StepIncrementId,
+                                                                       true);
+                    // Update controller field data
                     _controller.CurrentFieldData = fieldData;
-                    // draw field data
-                    if (_controller.ViewResultsType == ViewResultsType.ColorContours) _controller.UpdatePartsScalarFields();
+                    // Draw field data
+                    if (_controller.ViewResultsType == ViewResultsTypeEnum.ColorContours) _controller.UpdatePartsScalarFields();
                 }
+                //
+                UpdateComplexControlStates();
                 // Move focus from step and step increment dropdown menus
                 this.ActiveControl = null;
             }
         }
-        public void SetAllStepAndIncrementIds()
+        public void SetAllStepAndIncrementIds(bool reset = false)
         {
             InvokeIfRequired(() =>
             {
                 // Save current step and increment id
                 string currentStepIncrement = (string)tscbStepAndIncrement.SelectedItem;
                 string[] prevStepIncrementIds = null;
-                if (currentStepIncrement != null)
+                if (!reset && currentStepIncrement != null)
+                {
                     prevStepIncrementIds = currentStepIncrement.Split(new string[] { ",", " " }, StringSplitOptions.RemoveEmptyEntries);
+                }
                 // Set all increments
                 tscbStepAndIncrement.SelectedIndexChanged -= FieldOutput_SelectionChanged;  // detach event
                 tscbStepAndIncrement.Items.Clear();
@@ -7873,13 +8075,13 @@ namespace PrePoMax
         public void SetDefaultStepAndIncrementIds()
         {
             string[] tmp;
-            CaeResults.FieldData fieldData = _controller.CurrentFieldData;
+            FieldData fieldData = _controller.CurrentFieldData;
             if (fieldData.StepId == -1 && fieldData.StepIncrementId == -1) return;
             else SetStepAndIncrementIds(fieldData.StepId, fieldData.StepIncrementId);
             //
             return;
             //
-            if (_controller.CurrentFieldData.Type == CaeResults.StepType.Frequency)
+            if (_controller.CurrentFieldData.StepType == CaeResults.StepTypeEnum.Frequency)
             {
                 string firstStepIncrement = (string)tscbStepAndIncrement.Items[tscbStepAndIncrement.Items.Count - 1];
             }
@@ -7907,9 +8109,10 @@ namespace PrePoMax
             InvokeIfRequired(_vtk.SetAnimationAcceleration, animationAcceleration);
         }
         public void SetAnimationFrameData(float[] time, int[] stepId, int[] stepIncrementId, float[] scale,
-                                          double[] allFramesScalarRange)
+                                          double[] allFramesScalarRange, vtkMaxAnimationType animationType)
         {
-            InvokeIfRequired(_vtk.SetAnimationFrameData, time, stepId, stepIncrementId, scale, allFramesScalarRange);
+            InvokeIfRequired(_vtk.SetAnimationFrameData, time, stepId, stepIncrementId, scale, allFramesScalarRange,
+                             animationType);
         }
         public void SetAnimationFrame(int frameNum, bool scalarRangeFromAllFrames)
         {
@@ -7921,7 +8124,8 @@ namespace PrePoMax
             InvokeIfRequired(_vtk.SaveAnimationAsAVI, fileName, firstLastFrame, step, fps, scalarRangeFromAllFrames,
                              swing, encoderOptions);
         }
-        public void SaveAnimationAsImages(string fileName, int[] firstLastFrame, int step, bool scalarRangeFromAllFrames, bool swing)
+        public void SaveAnimationAsImages(string fileName, int[] firstLastFrame, int step, bool scalarRangeFromAllFrames,
+                                          bool swing)
         {
             InvokeIfRequired(_vtk.SaveAnimationAsImages, fileName, firstLastFrame, step, scalarRangeFromAllFrames, swing);
         }
@@ -8306,7 +8510,8 @@ namespace PrePoMax
         {
             try
             {
-                _controller.TestCreateSurface();
+                _vtk.SwithchLights();
+                //_controller.TestCreateSurface();
             }
             catch
             {
@@ -8366,7 +8571,7 @@ namespace PrePoMax
             // Add distances
             CaeResults.FieldData fieldData = new CaeResults.FieldData(CaeResults.FOFieldNames.Distance);
             fieldData.GlobalIncrementId = 1;
-            fieldData.Type = CaeResults.StepType.Static;
+            fieldData.StepType = CaeResults.StepTypeEnum.Static;
             fieldData.Time = 1;
             fieldData.MethodId = 1;
             fieldData.StepId = 1;
@@ -8377,14 +8582,14 @@ namespace PrePoMax
             field.AddComponent(CaeResults.FOComponentNames.D1, distances1);
             field.AddComponent(CaeResults.FOComponentNames.D2, distances2);
             field.AddComponent(CaeResults.FOComponentNames.D3, distances3);
-            outResults.AddFiled(fieldData, field);
+            outResults.AddField(fieldData, field);
             // Add values
             fieldData = new CaeResults.FieldData(fieldData);
             fieldData.Name = CaeResults.FOFieldNames.Imported;
             //
             field = new CaeResults.Field(fieldData.Name);
             field.AddComponent(CaeResults.FOComponentNames.PRESS, values);
-            outResults.AddFiled(fieldData, field);
+            outResults.AddField(fieldData, field);
             // Unit system
             outResults.UnitSystem = new UnitSystem(_controller.Model.UnitSystem.UnitSystemType);
             _controller.SetResults(outResults);
@@ -8400,7 +8605,7 @@ namespace PrePoMax
                 SelectFirstComponentOfFirstFieldOutput();
             }
             // Set the representation which also calls Draw
-            _controller.ViewResultsType = ViewResultsType.ColorContours;  // Draw
+            _controller.ViewResultsType = ViewResultsTypeEnum.ColorContours;  // Draw
             //
             SetMenuAndToolStripVisibility();
             

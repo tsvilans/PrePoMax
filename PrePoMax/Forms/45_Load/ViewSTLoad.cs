@@ -69,6 +69,13 @@ namespace PrePoMax
             }
         }
         //
+        [CategoryAttribute("Force phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the surface traction phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 5)]
+        public double Phase { get { return _stLoad.PhaseDeg; } set { _stLoad.PhaseDeg = value; } }
+        //
         public override string AmplitudeName { get { return _stLoad.AmplitudeName; } set { _stLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _stLoad.Color; } set { _stLoad.Color = value; } }
 
@@ -87,6 +94,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             // 2D
             DynamicCustomTypeDescriptor.GetProperty(nameof(F3)).SetIsBrowsable(!stLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(stLoad.Complex);
         }
 
 

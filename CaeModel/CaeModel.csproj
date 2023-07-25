@@ -85,10 +85,15 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\Section\CalLinearSpringSection.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\SurfaceInteraction\CalGapConductance.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\BC\CalTemperatureBC.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalModalDynamicsStep.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalSteadyStateDynamicsStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalDynamicStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalHeatTransferStep.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalCoupledTempDispStep.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalOutput.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\CalUncoupledTempDispStep.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Damping\CalDamping.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Damping\CalModalDamping.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\DefinedField\CalDefinedTemperature.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\InitialConditions\CalInitialTemperature.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalPreTensionSection.cs" />
@@ -110,6 +115,7 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\ModelDefinition\CalSubmodel.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalCFlux.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalBodyFlux.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalLoadEnums.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalDFlux.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalFilmHeatTransfer.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\Load\CalImportedPressureLoad.cs" />
@@ -139,6 +145,11 @@
     <Compile Include="Constraints\RigidBody.cs" />
     <Compile Include="Constraints\Constraint.cs" />
     <Compile Include="FeModel.cs" />
+    <Compile Include="Steps\Damping\DampingRatioFromTo.cs" />
+    <Compile Include="Steps\Damping\Damping.cs" />
+    <Compile Include="Steps\Damping\ModalDamping.cs" />
+    <Compile Include="Steps\ModalDynamicsStep.cs" />
+    <Compile Include="Steps\SteadyStateDynamicsStep.cs" />
     <Compile Include="Steps\DefinedFields\DefinedField.cs" />
     <Compile Include="Steps\DefinedFields\DefinedTemperature.cs" />
     <Compile Include="Steps\FieldOutputs\ElementFieldOutput.cs" />

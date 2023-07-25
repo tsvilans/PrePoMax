@@ -26,7 +26,7 @@ namespace CaeModel
 
 
         // Static Methods                                                                                                           
-        public bool MulitRegionSelectionExists(string stepName, IMultiRegion newRegion)
+        public bool MultiRegionSelectionExists(string stepName, IMultiRegion newRegion)
         {
             List<Step> prevSteps = new List<Step>();
             foreach (var step in _steps)
@@ -45,9 +45,9 @@ namespace CaeModel
                 else throw new NotSupportedException();
             }
             //
-            return MulitRegionSelectionExists(existingRegions, newRegion);
+            return MultiRegionSelectionExists(existingRegions, newRegion);
         }
-        private bool MulitRegionSelectionExists(List<IMultiRegion> existingRegions, IMultiRegion newRegion)
+        private bool MultiRegionSelectionExists(List<IMultiRegion> existingRegions, IMultiRegion newRegion)
         {
             foreach (var existingRegion in existingRegions)
             {
@@ -104,6 +104,7 @@ namespace CaeModel
             if (copyBCsAndLoads && _steps.Count >= 1)
             {
                 Step lastStep = _steps.Last();
+                //Step lastStep = _steps.First();
                 //
                 foreach (var entry in lastStep.BoundaryConditions)
                 {
@@ -119,6 +120,7 @@ namespace CaeModel
                 }
             }
             _steps.Add(step);
+            //_steps.Insert(0, step);
         }
         public Step GetStep(string stepName)
         {
@@ -235,13 +237,6 @@ namespace CaeModel
             foreach (var step in _steps) allNames.UnionWith(step.BoundaryConditions.Keys);
             return allNames.ToArray();
         }
-        public void AddBoundaryCondition(BoundaryCondition boundaryCondition, string stepName)
-        {
-            foreach (var step in _steps)
-            {
-                if (step.Name == stepName) step.AddBoundaryCondition(boundaryCondition);
-            }
-        }
         public Dictionary<string, int> GetBoundaryConditionRegionsCount()
         {
             Dictionary<string, int> regionsCount = new Dictionary<string, int>();
@@ -349,13 +344,6 @@ namespace CaeModel
             HashSet<string> allNames = new HashSet<string>();
             foreach (var step in _steps) allNames.UnionWith(step.Loads.Keys);
             return allNames.ToArray();
-        }
-        public void AddLoad(Load load, string stepName)
-        {
-            foreach (var step in _steps)
-            {
-                if (step.Name == stepName)  step.AddLoad(load);
-            }
         }
         public Dictionary<string, int> GetLoadRegionsCount()
         {

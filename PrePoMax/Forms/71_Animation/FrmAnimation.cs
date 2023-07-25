@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CaeResults;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,7 +21,8 @@ namespace PrePoMax.Forms
     enum AnimationType
     {
         ScaleFactor,
-        TimeIncrements
+        TimeIncrements,
+        Harmonic
     }
 
     enum ColorSpectrumLimitsType
@@ -35,9 +37,9 @@ namespace PrePoMax.Forms
         private int _countFrames;
         private Size _expandedSize;
         private bool _updateAnimation;
+        private bool _doUpdateFrame;
         private int _numFrames;
-        private int _prevNumFrmes;
-        private int _currFrme;
+        private int _currFrame;
         private int _frameDelta;
         private int _fps;
         private bool _isFirstFrame;
@@ -45,7 +47,7 @@ namespace PrePoMax.Forms
         private AnimationStyle _animationStyle;
         private ColorSpectrumLimitsType _colorSpectrumLimitsType;
         private bool _setSaveAsFolder;
-
+        //
         private Controller _controller;
         private FrmMain _form;
 
@@ -71,7 +73,8 @@ namespace PrePoMax.Forms
         // Event handling                                                                                                           
         private void FrmAnimation_Shown(object sender, EventArgs e)
         {
-            if (_form == null || _controller == null) throw new Exception("The controler or the form of the FrmAnimation form are not set.");
+            if (_form == null || _controller == null)
+                throw new Exception("The controler or the form of the FrmAnimation form are not set.");
         }
         private void btnPlayBackward_Click(object sender, EventArgs e)
         {
@@ -106,7 +109,7 @@ namespace PrePoMax.Forms
         private void tbarFrameSelector_ValueChanged(object sender, EventArgs e)
         {
             Stop();
-            _currFrme = tbarFrameSelector.Value;
+            _currFrame = tbarFrameSelector.Value;
             UpdateFrame();
         }
         private void btnClose_Click(object sender, EventArgs e)
@@ -136,7 +139,6 @@ namespace PrePoMax.Forms
             if (cbSaveAsImages.Checked) SaveAsImages();
             else SaveAsMovie();
         }
-
         // Frames
         private void numFirstFrame_ValueChanged(object sender, EventArgs e)
         {
@@ -148,7 +150,7 @@ namespace PrePoMax.Forms
         private void numCurrFrame_ValueChanged(object sender, EventArgs e)
         {
             Stop();
-            _currFrme = (int)numCurrFrame.Value;
+            _currFrame = (int)numCurrFrame.Value;
             UpdateFrame();
         }
         private void numLastFrame_ValueChanged(object sender, EventArgs e)
@@ -158,40 +160,62 @@ namespace PrePoMax.Forms
             numFirstFrame.Maximum = numLastFrame.Value - 1;
             numCurrFrame.Maximum = (int)numLastFrame.Value;
         }
-
         // Animation type
         private void AnimationType_CheckedChanged(object sender, EventArgs e)
         {
-            AnimationTypeChanged(true);
+            RadioButton rb = sender as RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked) AnimationTypeChanged(true);
+            }
         }
-        private void numNumOfFrames_ValueChanged(object sender, EventArgs e)
+        private void numNumberOfFrames_ValueChanged(object sender, EventArgs e)
         {
             Stop();
             //
-            if ((int)numNumOfFrames.Value != _numFrames)
+            SetNumberOfFrames((int)numNumberOfFrames.Value, false);
+        }
+        private void numNumberOfAngles_ValueChanged(object sender, EventArgs e)
+        {
+            Stop();
+            //
+            SetNumberOfFrames((int)numNumberOfAngles.Value, false);
+        }
+        private void SetNumberOfFrames(int value, bool setCurrentToLast)
+        {
+            _doUpdateFrame = false;
+            //
+            if (value != _numFrames)
             {
-                _numFrames = (int)numNumOfFrames.Value;
+                _numFrames = value;
                 //
                 tbarFrameSelector.Maximum = _numFrames;
                 numCurrFrame.Maximum = _numFrames;
                 numFirstFrame.Maximum = _numFrames;
                 numLastFrame.Maximum = _numFrames;
                 //
-                if (_currFrme > _numFrames) tbarFrameSelector.Value = _numFrames;
                 numFirstFrame.Value = 1;
                 numLastFrame.Value = _numFrames;
+                if (_currFrame > _numFrames || setCurrentToLast)
+                {
+                    _currFrame = _numFrames;
+                    tbarFrameSelector.Value = _numFrames;
+                }
                 //
                 _updateAnimation = true;
             }
+            //
+            _doUpdateFrame = true;
         }
         private void NumIncrementStep_ValueChanged(object sender, EventArgs e)
         {
             Stop();
             //
             if (_animationType == AnimationType.ScaleFactor) _frameDelta = 1;
-            else _frameDelta = (int)numIncrementStep.Value;
+            else if (_animationType == AnimationType.TimeIncrements) _frameDelta = (int)numIncrementStep.Value;
+            else if (_animationType == AnimationType.Harmonic) _frameDelta = 1;
+            else throw new NotSupportedException();
         }
-
         // Animation style
         private void rbAnimationStyle_CheckedChanged(object sender, EventArgs e)
         {
@@ -203,7 +227,6 @@ namespace PrePoMax.Forms
         {
             _fps = (int)numFramesPerSecond.Value;
         }
-
         // Color spectrum
         private void rbLimitChanged_CheckedChanged(object sender, EventArgs e)
         {
@@ -211,7 +234,6 @@ namespace PrePoMax.Forms
             else _colorSpectrumLimitsType = ColorSpectrumLimitsType.AllFrames;
             UpdateAnimation();
         }
-
         // Acceleration
         private void cbGraphicsRam_CheckedChanged(object sender, EventArgs e)
         {
@@ -219,62 +241,59 @@ namespace PrePoMax.Forms
             Stop();
             _updateAnimation = true;
         }
-
         // Movie options
         private void cbEncoderOptions_CheckedChanged(object sender, EventArgs e)
         {
             if (cbEncoderOptions.Checked) cbSaveAsImages.Checked = false;
         }
-
         private void cbSaveAsImages_CheckedChanged(object sender, EventArgs e)
         {
             if (cbSaveAsImages.Checked) cbEncoderOptions.Checked = false;
         }
-
         // Timer
         private void timerAnimation_Tick(object sender, EventArgs e)
         {
             int firstFrame = (int)numFirstFrame.Value;
             int lastFrame = (int)numLastFrame.Value;
 
-            _currFrme += _frameDelta;
+            _currFrame += _frameDelta;
             timerAnimation.Interval = (int)(1000f / _fps);
 
             if (_animationStyle == AnimationStyle.Once)
             {
-                if (_currFrme <= firstFrame - 1) 
+                if (_currFrame <= firstFrame - 1) 
                 {
-                    if (_isFirstFrame) _currFrme = lastFrame;
+                    if (_isFirstFrame) _currFrame = lastFrame;
                     else
                     {
-                        _currFrme = firstFrame;
+                        _currFrame = firstFrame;
                         Stop();
                     }
                 }
-                else if (_currFrme >= lastFrame + 1)
+                else if (_currFrame >= lastFrame + 1)
                 {
-                    if (_isFirstFrame) _currFrme = firstFrame;
+                    if (_isFirstFrame) _currFrame = firstFrame;
                     else
                     {
-                        _currFrme = lastFrame;
+                        _currFrame = lastFrame;
                         Stop();
                     }
                 }
             }
             else if (_animationStyle == AnimationStyle.Loop)
             {
-                if (_currFrme <= firstFrame - 1) _currFrme = lastFrame;
-                else if (_currFrme >= lastFrame + 1) _currFrme = firstFrame;
+                if (_currFrame <= firstFrame - 1) _currFrame = lastFrame;
+                else if (_currFrame >= lastFrame + 1) _currFrame = firstFrame;
             }
             else if (_animationStyle == AnimationStyle.Swing)
             {
-                if (_currFrme <= firstFrame - 1 || _currFrme >= lastFrame + 1)
+                if (_currFrame <= firstFrame - 1 || _currFrame >= lastFrame + 1)
                 {
                     _frameDelta *= -1;
                     //_currFrme += 2 * _frameDelta;
 
-                    if (_currFrme <= firstFrame - 1) _currFrme = firstFrame;
-                    else if (_currFrme >= lastFrame + 1) _currFrme = lastFrame;
+                    if (_currFrame <= firstFrame - 1) _currFrame = firstFrame;
+                    else if (_currFrame >= lastFrame + 1) _currFrame = lastFrame;
                 }
             }
 
@@ -299,8 +318,16 @@ namespace PrePoMax.Forms
                 rbLimitsCurrentFrame.Checked = false;
                 rbLimitsAllFrames.Checked = false;
             }
+            // Harmonic
+            FieldData fieldData = _controller.CurrentFieldData;
+            Field field = _controller.CurrentResult.GetField(fieldData);
+            ComplexResultTypeEnum resultType = _form.GetComplexResultType();
+            rbHarmonic.Enabled = field != null && field.Complex && resultType == ComplexResultTypeEnum.Real;
+            if (rbHarmonic.Checked && !rbHarmonic.Enabled) rbScaleFactor.Checked = true;
             //
             _controller.SetSelectByToOff();
+            //
+            _doUpdateFrame = true;
         }
         private void OnHide()
         {
@@ -309,34 +336,52 @@ namespace PrePoMax.Forms
             Form_ControlsEnable(true);
             _controller.DrawResults(false);
         }
-
+        //
         private void AnimationTypeChanged(bool updateAnimation)
         {
             Stop();
             //
-            numNumOfFrames.Enabled = rbScaleFactor.Checked;
-            numIncrementStep.Enabled = !rbScaleFactor.Checked;
-            //
             if (rbScaleFactor.Checked)
             {
-                numNumOfFrames.Value = _prevNumFrmes;
-                _animationType = AnimationType.ScaleFactor;
+                lNumberOfFrames.Enabled = true;
+                numNumberOfFrames.Enabled = true;
+                lIncrementStep.Enabled = false;
+                numIncrementStep.Enabled = false;
+                lNumberOfAngles.Enabled = false;
+                numNumberOfAngles.Enabled = false;
+                //
+                _animationType = AnimationType.ScaleFactor; // must be before SetNumberOfFrames
+                //if (updateAnimation) _updateAnimation = true;
+                SetNumberOfFrames((int)numNumberOfFrames.Value, true);
+            }
+            else if(rbTimeIncrements.Checked)
+            {
+                lNumberOfFrames.Enabled = false;
+                numNumberOfFrames.Enabled = false;
+                lIncrementStep.Enabled = true;
+                numIncrementStep.Enabled = true;
+                lNumberOfAngles.Enabled = false;
+                numNumberOfAngles.Enabled = false;
+                //
+                _animationType = AnimationType.TimeIncrements;
             }
             else
             {
-                _prevNumFrmes = (int)numNumOfFrames.Value;                
-                _animationType = AnimationType.TimeIncrements;
+                lNumberOfFrames.Enabled = false;
+                numNumberOfFrames.Enabled = false;
+                lIncrementStep.Enabled = false;
+                numIncrementStep.Enabled = false;
+                lNumberOfAngles.Enabled = true;
+                numNumberOfAngles.Enabled = true;
+                //
+                _animationType = AnimationType.Harmonic;
+                //if (updateAnimation) _updateAnimation = true;
+                SetNumberOfFrames((int)numNumberOfAngles.Value, true); // must be before SetNumberOfFrames
             }
             //
             NumIncrementStep_ValueChanged(null, null);
             //
-            if (updateAnimation)
-            {
-                _updateAnimation = true;
-                UpdateFrame();
-                //
-                numCurrFrame.Value = numNumOfFrames.Value;
-            }
+            if (updateAnimation) UpdateAnimation();
         }
         public void UpdateAnimation()
         {
@@ -344,13 +389,12 @@ namespace PrePoMax.Forms
             _updateAnimation = true;
             UpdateFrame();
         }
-
+        //
         private void InitializeVariables()
         {
             _countFrames = 0;
-            numNumOfFrames_ValueChanged(null, null);
-            _prevNumFrmes = _numFrames;
-            _currFrme = (int)numLastFrame.Value;
+            numNumberOfFrames_ValueChanged(null, null);
+            _currFrame = (int)numLastFrame.Value;
 
             AnimationTypeChanged(false);
             rbAnimationStyle_CheckedChanged(null, null);
@@ -362,7 +406,7 @@ namespace PrePoMax.Forms
 
             //_updateAnimation = true;
         }
-        
+        //
         private void PlayForward()
         {
             Stop();
@@ -459,12 +503,13 @@ namespace PrePoMax.Forms
         }
         private void UpdateFrame()
         {
+            if (!_doUpdateFrame) return;
             try
             {
                 tbarFrameSelector.ValueChanged -= tbarFrameSelector_ValueChanged;
                 numCurrFrame.ValueChanged -= numCurrFrame_ValueChanged;
-                tbarFrameSelector.Value = _currFrme;
-                numCurrFrame.Value = _currFrme;
+                tbarFrameSelector.Value = _currFrame;
+                numCurrFrame.Value = _currFrame;
                 tbarFrameSelector.ValueChanged += tbarFrameSelector_ValueChanged;
                 numCurrFrame.ValueChanged += numCurrFrame_ValueChanged;
                 //
@@ -479,13 +524,19 @@ namespace PrePoMax.Forms
                     {
                         if (!_controller.DrawScaleFactorAnimation(_numFrames)) close = true;
                     }
-                    else
+                    else if (_animationType == AnimationType.TimeIncrements)
                     {
-                        _updateAnimation = false; //numNumOfFrames.Value couses this function to be called again
-                        int numFrames;  // create new variable since _numFrames gets changed by numNumOfFrames_ValueChanged
+                        _updateAnimation = false; // numNumOfFrames.Value causes this function to be called again
+                        int numFrames; // create new variable since _numFrames gets changed by numNumOfFrames_ValueChanged
                         if (!_controller.DrawTimeIncrementAnimation(out numFrames)) close = true;
-                        if (numFrames > 0) numNumOfFrames.Value = numFrames;   // this changes _updateAnimation = true
+                        if (numFrames > 0) SetNumberOfFrames(numFrames, true); // this changes _updateAnimation = true
                     }
+                    else if (_animationType == AnimationType.Harmonic)
+                    {
+                        if (!_controller.DrawHarmonicAnimation(_numFrames)) close = true;
+                    }
+                    else throw new NotSupportedException();
+                    //
                     _updateAnimation = false;
                     //
                     if (close)
@@ -503,7 +554,7 @@ namespace PrePoMax.Forms
                     _updateAnimation = true;
                     _countFrames = 0;
                 }
-                _form.SetAnimationFrame(_currFrme - 1, _colorSpectrumLimitsType == ColorSpectrumLimitsType.AllFrames);
+                _form.SetAnimationFrame(_currFrame - 1, _colorSpectrumLimitsType == ColorSpectrumLimitsType.AllFrames);
                 _countFrames++;
             }
             catch (Exception ex)

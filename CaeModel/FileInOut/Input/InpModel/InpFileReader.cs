@@ -142,13 +142,14 @@ namespace FileInOut.Input
                 StringComparer sc = StringComparer.OrdinalIgnoreCase;
                 //
                 OrderedDictionary<string, FeReferencePoint> referencePoints
-                    = new OrderedDictionary<string, FeReferencePoint>("Reference points", sc);
+                    = new OrderedDictionary<string, FeReferencePoint>("Reference Points", sc);
                 OrderedDictionary<string, Material> materials = new OrderedDictionary<string, Material>("Materials", sc);
                 OrderedDictionary<string, Section> sections = new OrderedDictionary<string, Section>("Sections", sc);
                 OrderedDictionary<string, Constraint> constraints = new OrderedDictionary<string, Constraint>("Constraints", sc);
                 OrderedDictionary<string, SurfaceInteraction> surfaceInteractions = 
-                    new OrderedDictionary<string, SurfaceInteraction>("Surface interactions", sc);
-                OrderedDictionary<string, ContactPair> contactPairs = new OrderedDictionary<string, ContactPair>("Contact pairs", sc);
+                    new OrderedDictionary<string, SurfaceInteraction>("Surface Interactions", sc);
+                OrderedDictionary<string, ContactPair> contactPairs =
+                    new OrderedDictionary<string, ContactPair>("Contact Pairs", sc);
                 OrderedDictionary<string, Amplitude> amplitudes = new OrderedDictionary<string, Amplitude>("Amplitudes", sc);
                 OrderedDictionary<string, Step> steps = new OrderedDictionary<string, Step>("Steps", sc);
                 List<CalculixUserKeyword> userKeywords = new List<CalculixUserKeyword>();
@@ -1791,7 +1792,7 @@ namespace FileInOut.Input
                     {
                         name = allBCNames.GetNextNumberedKey("Displacement_rotation");
                         DisplacementRotation dispRotBC = new DisplacementRotation(name, regionName, RegionTypeEnum.NodeSetName,
-                                                                                  false);
+                                                                                  false, false, 0);
                         // Amplitude
                         if (amplitudeName != null) dispRotBC.AmplitudeName = amplitudeName;
                         // Assign DOF prescribed displacement
@@ -1951,8 +1952,9 @@ namespace FileInOut.Input
                     // Get degree of freedom and value
                     int dof = int.Parse(recordCL[1]); ;
                     double dofValue = double.Parse(recordCL[2]);
-                    CLoad cfLoad = new CLoad(nameCF, regionName, RegionTypeEnum.NodeSetName, 0.0, 0.0, 0.0, false);
-                    MomentLoad momentLoad = new MomentLoad(nameMom, regionName, RegionTypeEnum.NodeSetName, 0.0, 0.0, 0.0, false);
+                    CLoad cfLoad = new CLoad(nameCF, regionName, RegionTypeEnum.NodeSetName, 0, 0, 0, false, false, 0);
+                    MomentLoad momentLoad = new MomentLoad(nameMom, regionName, RegionTypeEnum.NodeSetName, 0, 0, 0,
+                                                           false, false, 0);
                     // Amplitude
                     if (amplitudeName != null)
                     {
@@ -2026,7 +2028,7 @@ namespace FileInOut.Input
                         name = step.Loads.GetNextNumberedKey("Grav");
                         //
                         GravityLoad gLoad = new GravityLoad(name, regionName, RegionTypeEnum.ElementSetName,
-                                                            0.0, 0.0, 0.0, false);
+                                                            0, 0, 0, false, false, 0);
                         //
                         gLoad.F1 = double.Parse(recordDL[3]) * gValue;
                         gLoad.F2 = double.Parse(recordDL[4]) * gValue;
@@ -2090,7 +2092,6 @@ namespace FileInOut.Input
                         variables |= (NodalFieldVariable)Enum.Parse(typeof(NodalFieldVariable), record1[i].ToUpper());
                     }
                     NodalFieldOutput nodalFieldOutput = new NodalFieldOutput(name, variables);
-                    if (frequency != null) nodalFieldOutput.Frequency = (int)frequency;
                     // Add to step
                     step.FieldOutputs.Add(name, nodalFieldOutput);
                 }
@@ -2131,7 +2132,6 @@ namespace FileInOut.Input
                         variables |= (ElementFieldVariable)Enum.Parse(typeof(ElementFieldVariable), record1[i].ToUpper());
                     }
                     ElementFieldOutput elementFieldOutput = new ElementFieldOutput(name, variables);
-                    if (frequency != null) elementFieldOutput.Frequency = (int)frequency;
                     // Add to step
                     step.FieldOutputs.Add(name, elementFieldOutput);
                 }
@@ -2172,7 +2172,6 @@ namespace FileInOut.Input
                         variables |= (ContactFieldVariable)Enum.Parse(typeof(ContactFieldVariable), record1[i].ToUpper());
                     }
                     ContactFieldOutput contactFieldOutput = new ContactFieldOutput(name, variables);
-                    if (frequency != null) contactFieldOutput.Frequency = (int)frequency;
                     // Add to step
                     step.FieldOutputs.Add(name, contactFieldOutput);
                 }
@@ -2228,7 +2227,6 @@ namespace FileInOut.Input
                     if (regionName != null)
                     {
                         NodalHistoryOutput nodalHistoryOutput = new NodalHistoryOutput(name, variables, regionName, regionType);
-                        if (frequency != null) nodalHistoryOutput.Frequency = (int)frequency;
                         if (totalsType != TotalsTypeEnum.No) nodalHistoryOutput.TotalsType = totalsType;
                         // Add to step
                         step.HistoryOutputs.Add(name, nodalHistoryOutput);
@@ -2286,7 +2284,6 @@ namespace FileInOut.Input
                     {
                         ElementHistoryOutput elementHistoryOutput = new ElementHistoryOutput(name, variables, regionName,
                                                                                              regionType);
-                        if (frequency != null) elementHistoryOutput.Frequency = (int)frequency;
                         if (totalsType != TotalsTypeEnum.No) elementHistoryOutput.TotalsType = totalsType;
                         // Add to step
                         step.HistoryOutputs.Add(name, elementHistoryOutput);
@@ -2361,7 +2358,6 @@ namespace FileInOut.Input
                         if (contactPairName != null)
                         {
                             ContactHistoryOutput contactHistoryOutput = new ContactHistoryOutput(name, variables, contactPairName);
-                            if (frequency != null) contactHistoryOutput.Frequency = (int)frequency;
                             if (totalsType != TotalsTypeEnum.No) contactHistoryOutput.TotalsType = totalsType;
                             // Add to step
                             step.HistoryOutputs.Add(name, contactHistoryOutput);

@@ -38,7 +38,6 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         public override string Name { get { return _historyOutput.Name; } set { _historyOutput.Name = value; } }
-        public override int Frequency { get { return _historyOutput.Frequency; } set { _historyOutput.Frequency = value; } }
         //
         [OrderedDisplayName(2, 10, "Variables to output")]
         [CategoryAttribute("Data")]
@@ -80,7 +79,7 @@ namespace PrePoMax
         public ViewNodalHistoryOutput(CaeModel.NodalHistoryOutput historyOutput)
         {
             // The order is important
-            _historyOutput = historyOutput;
+            _historyOutput = historyOutput;            
             //
             Dictionary<RegionTypeEnum, string> regionTypePropertyNamePairs = new Dictionary<RegionTypeEnum, string>();
             regionTypePropertyNamePairs.Add(RegionTypeEnum.Selection, nameof(SelectionHidden));
@@ -90,6 +89,8 @@ namespace PrePoMax
             //
             base.SetBase(_historyOutput, regionTypePropertyNamePairs);
             base.DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
+            //
+            StringIntegerDefaultConverter.SetInitialValue = 1;
         }
 
 

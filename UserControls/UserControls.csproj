@@ -141,6 +141,12 @@
     <Compile Include="TextBoxes\AnnotationEditorRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TextBoxes\UnitAwareToolStripTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TextBoxes\UnitAwareToolStripTextBox.Designer.cs">
+      <DependentUpon>UnitAwareToolStripTextBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextBoxes\NumericToolStripTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -255,6 +261,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TextBoxes\AutoScrollTextBox.resx">
       <DependentUpon>AutoScrollTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextBoxes\UnitAwareToolStripTextBox.resx">
+      <DependentUpon>UnitAwareToolStripTextBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextBoxes\NumericToolStripTextBox.resx">
       <DependentUpon>NumericToolStripTextBox.cs</DependentUpon>
@@ -398,6 +407,7 @@
     <None Include="Resources\Show2.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Meshing_parameters.ico" />
     <None Include="Images\Collapse.png" />
     <None Include="Images\Expand.png" />
     <Content Include="License-LGPL.txt" />

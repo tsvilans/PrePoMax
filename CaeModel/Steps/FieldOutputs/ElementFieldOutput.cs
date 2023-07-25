@@ -13,16 +13,17 @@ namespace CaeModel
     {
         // Must start at 1 for the UI to work
         S = 1,
-        E = 2,
-        ME = 4,
-        PEEQ = 8,
-        ENER = 16,
+        PHS = 2,
+        E = 4,
+        ME = 8,
+        PEEQ = 16,
+        ENER = 32,
         // Thermal
-        HFL = 32,
+        HFL = 64,
         // Error
-        ERR = 64,
-        HER = 128,
-        ZZS = 256
+        ERR = 128,
+        HER = 256,
+        ZZS = 512
     }
 
     [Serializable]

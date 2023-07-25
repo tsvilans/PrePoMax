@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
+using System.Reflection;
 
 namespace CaeGlobals
 {
@@ -45,7 +46,6 @@ namespace CaeGlobals
     public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {
         // Variables                                                                                                                
-        private static StringComparer _comparer = StringComparer.OrdinalIgnoreCase;
         private string _name;                               //ISerializable
         private List<TKey> _list;                           //ISerializable
         private Dictionary<TKey, TValue> _dictionary;       //ISerializable
@@ -260,18 +260,15 @@ namespace CaeGlobals
         /// 
         public void Add(TKey key, TValue value)
         {
-            try
-            {
-                _dictionary.Add(key, value);
-                if (!_list.Contains(key)) _list.Add(key);
-            }
-            catch (Exception ex)
+            if (_dictionary.ContainsKey(key) || _list.Contains(key))
             {
                 string name = _name;
                 if (name != null && name.Length > 0) name += " ";
-                throw new Exception("The dictionary " + name + "already contains the key " + key.ToString() + "." +
-                                    Environment.NewLine + ex.Message);
+                throw new Exception("The dictionary " + name + "already contains the key " + key.ToString() + ".");
             }
+            //
+            _dictionary.Add(key, value);
+            _list.Add(key);
 
         }
 
@@ -283,9 +280,29 @@ namespace CaeGlobals
         /// 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            ((IDictionary<TKey, TValue>)_dictionary).Add(item);
-            if (!_list.Contains(item.Key))
-                _list.Add(item.Key);
+            Add(item.Key, item.Value);
+        }
+        /// <summary>
+        /// Inserts an element with the provided index and key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// 
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="key">The object to use as the key of the element to add.</param>
+        /// <param name="value">The object to use as the value of the element to add.</param>
+        /// 
+        public void Insert(int index, TKey key, TValue value)
+        {
+            if (index < 0 || index >= _list.Count) throw new IndexOutOfRangeException();
+            //
+            if (_dictionary.ContainsKey(key) || _list.Contains(key))
+            {
+                string name = _name;
+                if (name != null && name.Length > 0) name += " ";
+                throw new Exception("The dictionary " + name + "already contains the key " + key.ToString() + ".");
+            }
+            //
+            _dictionary.Add(key, value);
+            _list.Insert(index, key);
         }
 
         /// <summary>

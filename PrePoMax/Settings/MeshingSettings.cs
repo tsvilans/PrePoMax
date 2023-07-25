@@ -26,7 +26,7 @@ namespace PrePoMax
         // Constructors                                                                                                             
         public MeshingSettings()
         {
-            _meshingParameters = new MeshingParameters();
+            _meshingParameters = new MeshingParameters("Settings");
         }
         public MeshingSettings(MeshingParameters meshingParameters)
         {

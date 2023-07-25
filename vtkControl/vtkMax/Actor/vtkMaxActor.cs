@@ -1553,7 +1553,7 @@ namespace vtkControl
                 //
                 _geometryProperty.SetOpacity(opacity);
                 // This changes the base color and forces graphics update !?
-                //_geometryProperty.SetSpecularColor(1, 1, 1);
+                _geometryProperty.SetSpecularColor(1, 1, 1); // must be here to enable specular for colorTable
                 _geometryProperty.SetSpecular(0.6);
                 _geometryProperty.SetSpecularPower(100);
             }

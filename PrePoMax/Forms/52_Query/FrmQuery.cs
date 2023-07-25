@@ -528,8 +528,8 @@ namespace PrePoMax.Forms
             //
             angle = ComputeAngle(baseV1, baseV2, baseV3, out p, out axis);
             angle2draw = angle;
-            string angleUnit = "°";
-            string angleUnitInBrackets = "[°]";
+            string angleUnit = StringAngleDegConverter.GetUnitAbbreviation();
+            string angleUnitInBrackets = "[" + angleUnit + "]";
             //
             data = string.Format("{0,16}{1,8}{2,16}{3,16}, {4,16}, {5,16}",
                                  "Angle".PadRight(16), "[/]", "id1, id2, id3:", nodeId1, nodeId2, nodeId3);

@@ -130,8 +130,9 @@ namespace CaeModel
                            string slaveSurfaceName, RegionTypeEnum slaveRegionType)
             : base(name)
         {
-            if (masterRegionType == RegionTypeEnum.SurfaceName && slaveRegionType == RegionTypeEnum.SurfaceName &&
-                slaveSurfaceName == masterSurfaceName) throw new CaeException("The master and slave surface names must be different.");
+            // Same name can be used for single surface contact
+            //if (masterRegionType == RegionTypeEnum.SurfaceName && slaveRegionType == RegionTypeEnum.SurfaceName &&
+            //    slaveSurfaceName == masterSurfaceName) throw new CaeException("The master and slave surface names must be different.");
             //
             _surfaceInteractionName = surfaceInteractionName;
             Method = method;

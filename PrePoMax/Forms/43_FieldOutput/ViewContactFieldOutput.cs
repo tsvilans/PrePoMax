@@ -38,7 +38,6 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         public override string Name { get { return _fieldOutput.Name; } set { _fieldOutput.Name = value; } }
-        public override int Frequency { get { return _fieldOutput.Frequency; } set { _fieldOutput.Frequency = value; } }
         public override bool LastIterations
         {
             get { return _fieldOutput.LastIterations; }
@@ -80,6 +79,8 @@ namespace PrePoMax
             _dctd = ProviderInstaller.Install(this);
             //
             _dctd.RenameBooleanPropertyToOnOff(nameof(LastIterations));
+            //
+            StringIntegerDefaultConverter.SetInitialValue = 1;
         }
     }
 

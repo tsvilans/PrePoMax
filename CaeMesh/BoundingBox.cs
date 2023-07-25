@@ -7,7 +7,7 @@ using CaeGlobals;
 
 namespace CaeMesh
 {
-    public class BoundingBoxVolmeComparer : IComparer<BoundingBox>
+    public class BoundingBoxVolumeComparer : IComparer<BoundingBox>
     {
         public int Compare(BoundingBox bb1, BoundingBox bb2)
         {
@@ -18,6 +18,30 @@ namespace CaeMesh
             if (v1 < v2) return 1;
             else if (v1 > v2) return -1;
             else return 0;
+        }
+    }
+    public class BoundingBoxDistanceVolumeComparer : IComparer<BoundingBox>
+    {
+        public static double[] Center;
+        public int Compare(BoundingBox bb1, BoundingBox bb2)
+        {
+            if (Center == null || Center.Length != 3)
+                throw new NotSupportedException();
+            double[] c1 = bb1.GetCenter();
+            double[] c2 = bb2.GetCenter();
+            double dist1 = Math.Pow(c1[0] - Center[0], 2) + Math.Pow(c1[1] - Center[1], 2) + Math.Pow(c1[2] - Center[2], 2);
+            double dist2 = Math.Pow(c2[0] - Center[0], 2) + Math.Pow(c2[1] - Center[1], 2) + Math.Pow(c2[2] - Center[2], 2);
+            // Use rounding to eliminate numerical error - different exploded view
+            dist1 = Tools.RoundToSignificantDigits(dist1, 6);
+            dist2 = Tools.RoundToSignificantDigits(dist2, 6);
+            //
+            if (dist1 > dist2) return 1;
+            else if (dist1 < dist2) return -1;
+            else
+            {
+                BoundingBoxVolumeComparer boundingBoxVolumeComparer = new BoundingBoxVolumeComparer();
+                return boundingBoxVolumeComparer.Compare(bb1, bb2);
+            }
         }
     }
 
@@ -62,7 +86,7 @@ namespace CaeMesh
             foreach (var box in boxes) bb.IncludeBox(box);
             return bb.GetCenter();
         }
-        public static double[][] GetExplodedBBOffsets(int explodedType, double scaleFactor, BoundingBox[] boxes,
+        public static double[][] GetExplodedBBOffsets(int explodedDirection, double scaleFactor, BoundingBox[] boxes,
                                                       BoundingBox[] fixedBoxes = null)
         {
             //
@@ -74,7 +98,8 @@ namespace CaeMesh
                 boxes[i].Tag = i;
                 boxes[i].Scale(1.2);
             }
-            Array.Sort(boxes, new BoundingBoxVolmeComparer());
+            // Sort by size
+            Array.Sort(boxes, new BoundingBoxVolumeComparer());
             //
             int firstBoxId = 0;
             BoundingBox globalBox = new BoundingBox();
@@ -105,22 +130,22 @@ namespace CaeMesh
                 center = new Vec3D(globalBox.GetCenter());
                 offset = new Vec3D();
                 direction = new Vec3D(box.GetCenter()) - center;
-                // Set the offset type
-                if (explodedType == 1) direction.Y = direction.Z = 0;
-                else if (explodedType == 2) direction.X = direction.Z = 0;
-                else if (explodedType == 3) direction.X = direction.Y = 0;
-                else if (explodedType == 4) direction.Z = 0;
-                else if (explodedType == 5) direction.Y = 0;
-                else if (explodedType == 6) direction.X = 0;
+                // Set the offset direction
+                if (explodedDirection == 1) direction.Y = direction.Z = 0;
+                else if (explodedDirection == 2) direction.X = direction.Z = 0;
+                else if (explodedDirection == 3) direction.X = direction.Y = 0;
+                else if (explodedDirection == 4) direction.Z = 0;
+                else if (explodedDirection == 5) direction.Y = 0;
+                else if (explodedDirection == 6) direction.X = 0;
                 // Fix the 0 length direction
                 if (direction.Len2 < 1E-6 * globalBox.GetDiagonal()) direction.Coor = new double[] { 1, 1, 1 };
-                // Set the offset type
-                if (explodedType == 1) direction.Y = direction.Z = 0;
-                else if (explodedType == 2) direction.X = direction.Z = 0;
-                else if (explodedType == 3) direction.X = direction.Y = 0;
-                else if (explodedType == 4) direction.Z = 0;
-                else if (explodedType == 5) direction.Y = 0;
-                else if (explodedType == 6) direction.X = 0;
+                // Set the offset direction
+                if (explodedDirection == 1) direction.Y = direction.Z = 0;
+                else if (explodedDirection == 2) direction.X = direction.Z = 0;
+                else if (explodedDirection == 3) direction.X = direction.Y = 0;
+                else if (explodedDirection == 4) direction.Z = 0;
+                else if (explodedDirection == 5) direction.Y = 0;
+                else if (explodedDirection == 6) direction.X = 0;
                 //
                 direction.Normalize();
                 direction *= (0.01 * globalBox.GetDiagonal());
@@ -135,6 +160,55 @@ namespace CaeMesh
                 globalBox.IncludeBox(box);
                 //
                 offsets[(int)box.Tag]= (offset * scaleFactor).Coor;
+            }
+            //
+            return offsets;
+        }
+        public static double[][] GetExplodedBBbyCPOffsets(double[] centerPoint, int explodedDirection, double scaleFactor,
+                                                          BoundingBox[] boxes)
+        {
+            BoundingBox assemblyBB = new BoundingBox();
+            // Renumber and add scale
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                assemblyBB.IncludeBox(boxes[i]);
+                //
+                boxes[i].Tag = i;
+                boxes[i].Scale(1.2);
+            }
+            // Sort by distance and size
+            BoundingBoxDistanceVolumeComparer.Center = centerPoint.ToArray();
+            Array.Sort(boxes, new BoundingBoxDistanceVolumeComparer());
+            //
+            int firstBoxId;
+            double[][] offsets = new double[boxes.Length][];
+            // Add the first box
+            firstBoxId = 1;
+            offsets[(int)boxes[0].Tag] = new double[] { 0, 0, 0 };
+            //
+            Vec3D center;
+            Vec3D offset;
+            Vec3D direction;
+            double distance;
+            BoundingBox box;
+            for (int i = firstBoxId; i < boxes.Length; i++)
+            {
+                box = boxes[i];
+                center = new Vec3D(centerPoint);
+                direction = new Vec3D(box.GetCenter()) - center;
+                distance = direction.Len;
+                // Set the offset type
+                if (explodedDirection == 1) direction.Y = direction.Z = 0;
+                else if (explodedDirection == 2) direction.X = direction.Z = 0;
+                else if (explodedDirection == 3) direction.X = direction.Y = 0;
+                else if (explodedDirection == 4) direction.Z = 0;
+                else if (explodedDirection == 5) direction.Y = 0;
+                else if (explodedDirection == 6) direction.X = 0;
+                // Normalize after truncation
+                direction.Normalize();
+                // Compute offset
+                offset = distance * direction * 2;
+                offsets[(int)box.Tag] = (offset * scaleFactor).Coor;
             }
             //
             return offsets;
@@ -178,6 +252,11 @@ namespace CaeMesh
             MinZ -= offset;
             MaxZ += offset;
         }
+        public void InflateIfThinn(double offsetFactor)
+        {
+            if (IsThinnInAnyDirection())
+                Inflate(GetDiagonal() * offsetFactor);
+        }
         public void Scale(double scaleFactor)
         {
             double delta = 0.5 * (MaxX - MinX) * (scaleFactor - 1);
@@ -192,6 +271,7 @@ namespace CaeMesh
             MinZ -= delta;
             MaxZ += delta;
         }
+        
         //
         public void IncludeCoor(double[] coor)
         {
@@ -420,6 +500,15 @@ namespace CaeMesh
             double epsilon = GetDiagonal() * 1E-6;
             //
             if (Math.Abs(MinZ) < epsilon && Math.Abs(MaxZ) < epsilon) return true;
+            else return false;
+        }
+        public bool IsThinnInAnyDirection()
+        {
+            double epsilon = GetDiagonal() * 1E-2;
+            //
+            if (Math.Abs(MaxX - MinX) < epsilon) return true;
+            else if (Math.Abs(MaxY - MinY) < epsilon) return true;
+            else if (Math.Abs(MaxZ - MinZ) < epsilon) return true;
             else return false;
         }
         //

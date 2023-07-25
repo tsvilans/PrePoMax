@@ -12,6 +12,8 @@ using CaeGlobals;
 using PrePoMax.PropertyViews;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using CaeResults;
+using CaeMesh;
 
 namespace PrePoMax.Forms
 {
@@ -55,8 +57,6 @@ namespace PrePoMax.Forms
             //
             _controller = controller;
             _material = null;
-            //
-            propertyGrid.SetParent(this);   // for the Tab key to work
             //
             int i = 0;
             _pages = new TabPage[tcProperties.TabPages.Count];
@@ -171,8 +171,9 @@ namespace PrePoMax.Forms
                 //
                 if (lvAddedProperties.Items.Count > 0) lvAddedProperties.Items[index].Selected = true;
                 else ClearControls();
+                //
+                _propertyItemChanged = true;
             }
-            _propertyItemChanged = true;
         }
         private void btnMoveUp_Click(object sender, EventArgs e)
         {
@@ -185,6 +186,7 @@ namespace PrePoMax.Forms
                     lvAddedProperties.Items.RemoveAt(currentIndex);
                     lvAddedProperties.Items.Insert(currentIndex - 1, item);
                 }
+                _propertyItemChanged = true;
             }
             catch
             { }
@@ -200,6 +202,7 @@ namespace PrePoMax.Forms
                     lvAddedProperties.Items.RemoveAt(currentIndex);
                     lvAddedProperties.Items.Insert(currentIndex + 1, item);
                 }
+                _propertyItemChanged = true;
             }
             catch
             { }
@@ -230,7 +233,7 @@ namespace PrePoMax.Forms
                 }
                 else if (lvAddedProperties.SelectedItems[0].Tag is ViewElasticWithDensity)
                 {
-                    tcProperties.TabPages.Add(_pages[0]);
+                    tcProperties.TabPages.Add(_pages[0]);   // properites
                 }
                 else if (lvAddedProperties.SelectedItems[0].Tag is ViewPlastic vp)
                 {
@@ -262,7 +265,7 @@ namespace PrePoMax.Forms
                 }
                 else if (lvAddedProperties.SelectedItems[0].Tag is ViewSlipWear vsw)
                 {
-                    tcProperties.TabPages.Add(_pages[0]);
+                    tcProperties.TabPages.Add(_pages[0]);   // properites
                 }
                 else throw new NotSupportedException();
                 //
@@ -282,10 +285,6 @@ namespace PrePoMax.Forms
         {
             propertyGrid.Refresh();
             _propertyItemChanged = true;
-        }
-        private void dgvData_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            MessageBoxes.ShowError(e.Exception.Message);
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
@@ -351,18 +350,18 @@ namespace PrePoMax.Forms
             TreeNode node;
             node = tvProperties.Nodes.Find("Density", true)[0];
             node.Tag = new Density(new double[][] { new double[] { 0, 0 } });
+            node = tvProperties.Nodes.Find("Slip Wear", true)[0];
+            node.Tag = new SlipWear(0, 0);
             node = tvProperties.Nodes.Find("Elastic", true)[0];
             node.Tag = new Elastic(new double[][] { new double[] { 0, 0, 0 } });
             node = tvProperties.Nodes.Find("Plastic", true)[0];
             node.Tag = new Plastic(new double[][] { new double[] { 0, 0, 0 } });
-            node = tvProperties.Nodes.Find("ThermalExpansion", true)[0];
+            node = tvProperties.Nodes.Find("Thermal Expansion", true)[0];
             node.Tag = new ThermalExpansion(new double[][] { new double[] { 0, 0 } });
-            node = tvProperties.Nodes.Find("ThermalConductivity", true)[0];
+            node = tvProperties.Nodes.Find("Thermal Conductivity", true)[0];
             node.Tag = new ThermalConductivity(new double[][] { new double[] { 0, 0 } });
-            node = tvProperties.Nodes.Find("SpecificHeat", true)[0];
+            node = tvProperties.Nodes.Find("Specific Heat", true)[0];
             node.Tag = new SpecificHeat(new double[][] { new double[] { 0, 0 } });
-            node = tvProperties.Nodes.Find("SlipWear", true)[0];
-            node.Tag = new SlipWear(0, 0);
             //
             tvProperties.ExpandAll();
             //
@@ -645,7 +644,7 @@ namespace PrePoMax.Forms
                     vte.SetTemperatureDependence(cbTemperatureDependent.Checked);
                     propertyGrid.Refresh();
                 }
-                else if (lvAddedProperties.SelectedItems[0].Tag is ViewSlipWear vsw)
+                else if (lvAddedProperties.SelectedItems[0].Tag is ViewSlipWear)
                 {
                     tcProperties.TabPages.Clear();
                     tcProperties.TabPages.Add(_pages[0]);

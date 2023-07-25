@@ -27,8 +27,8 @@ namespace PrePoMax
         [DescriptionAttribute("Select the surface for the creation of the load.")]
         [Id(3, 2)]
         public string SurfaceName { get { return _importedPressure.SurfaceName; } set {_importedPressure.SurfaceName = value;} }
-        //
-        [CategoryAttribute("Magnitude")]
+        ////
+        [CategoryAttribute("Pressure magnitude")]
         [OrderedDisplayName(0, 10, "Import from file")]
         [DescriptionAttribute("Select the file from which the pressure results will be imported.")]
         [EditorAttribute(typeof(FilteredFileNameEditor), typeof(UITypeEditor))]
@@ -44,7 +44,7 @@ namespace PrePoMax
             }
         }
         //
-        [CategoryAttribute("Magnitude")]
+        [CategoryAttribute("Pressure magnitude")]
         [OrderedDisplayName(1, 10, "Time")]
         [DescriptionAttribute("Select the time at which the pressure will be imported.")]
         [Id(2, 3)]
@@ -59,7 +59,7 @@ namespace PrePoMax
             }
         }
         //
-        [CategoryAttribute("Magnitude")]
+        [CategoryAttribute("Pressure magnitude")]
         [OrderedDisplayName(2, 10, "Variable name")]
         [DescriptionAttribute("Select the name of the pressure variable that will be imported.")]
         [Id(3, 3)]
@@ -74,7 +74,7 @@ namespace PrePoMax
             }
         }
         //
-        [CategoryAttribute("Magnitude")]
+        [CategoryAttribute("Pressure magnitude")]
         [OrderedDisplayName(3, 10, "Interpolator")]
         [DescriptionAttribute("Select the interpolation type. The closest node method takes the value from the closest node " + 
             "on the source mesh while the closest point method interpolates the closest three nodal values.")]
@@ -84,16 +84,42 @@ namespace PrePoMax
             get { return _importedPressure.InterpolatorType; }
             set { _importedPressure.InterpolatorType = value; }
         }
-        ////
-        [CategoryAttribute("Magnitude")]
-        [OrderedDisplayName(4, 10, "Scale factor")]
-        [DescriptionAttribute("Value of the pressure scale factor.")]
+        //
+        [CategoryAttribute("Pressure magnitude")]
+        [OrderedDisplayName(4, 10, "Magnitude factor")]
+        [DescriptionAttribute("Value of the pressure magnitude scale factor.")]
         [TypeConverter(typeof(StringDoubleConverter))]
         [Id(5, 3)]
-        public double ScaleFactor { get { return _importedPressure.ScaleFactor; } set { _importedPressure.ScaleFactor = value; } }
+        public double MagnitudeFactor { get { return _importedPressure.MagnitudeFactor; } set { _importedPressure.MagnitudeFactor = value; } }
+        ////
+        [CategoryAttribute("Pressure phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the pressure phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 4)]
+        public double Phase { get { return _importedPressure.PhaseDeg; } set { _importedPressure.PhaseDeg = value; } }
+        ////
+        [CategoryAttribute("Imported geometry")]
+        [OrderedDisplayName(0, 10, "Scale factor")]
+        [DescriptionAttribute("Value of the imported geometry scale factor.")]
+        [TypeConverter(typeof(StringDoubleConverter))]
+        [Id(1, 5)]
+        public double GeometryScaleFactor
+        {
+            get { return _importedPressure.GeometryScaleFactor; }
+            set { _importedPressure.GeometryScaleFactor = value; }
+        }
         //
-        public override string AmplitudeName { get { return _importedPressure.AmplitudeName; } set { _importedPressure.AmplitudeName = value; } }
-        public override System.Drawing.Color Color { get { return _importedPressure.Color; } set { _importedPressure.Color = value; } }
+        public override string AmplitudeName
+        {
+            get { return _importedPressure.AmplitudeName; }
+            set { _importedPressure.AmplitudeName = value; }
+        }
+        public override System.Drawing.Color Color
+        {
+            get { return _importedPressure.Color; }
+            set { _importedPressure.Color = value; }
+        }
 
 
         // Constructors                                                                                                             
@@ -109,6 +135,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             //
             FilteredFileNameEditor.Filter = "OpenFOAM files|*.foam";
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(_importedPressure.Complex);
         }
 
 

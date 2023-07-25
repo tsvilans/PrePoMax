@@ -26,6 +26,12 @@ namespace CaeResults
             B = b;
             Delta = b - a;
         }
+        public Edge3(Edge3 edge)
+        {
+            A = edge.A.DeepCopy();
+            B = edge.B.DeepCopy();
+            Delta = edge.Delta.DeepCopy();
+        }
 
 
         // Methods                                                                                                                  
@@ -36,6 +42,10 @@ namespace CaeResults
         public double Project(Vec3D p)
         {
             return Vec3D.DotProduct(p - A, Delta) / LengthSquared;
+        }
+        public Edge3 DeepCopy()
+        {
+            return new Edge3(this);
         }
 
     }

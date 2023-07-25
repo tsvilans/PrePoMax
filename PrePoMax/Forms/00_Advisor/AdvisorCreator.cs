@@ -117,8 +117,6 @@ namespace PrePoMax
             advisorLabel1.Text = "The geometry must be discretized into finite elements, to perform any type of analysis in the PrePoMax. Smaller finite elements result in better accuracy but require longer computational time.";
             advisorLabel1.Text += "\n\n";
             advisorLabel1.Text += "Select the option 1 to use the default finite element size and create the FE mesh.";
-            advisorLabel1.Text += "\n\n";
-            advisorLabel1.Text += "To change the size of the largest allowable finite element in the mesh, choose the option 2 and change the Max element size field.";
             advisorPage.Items.Add(advisorLabel1);
             //
             AdvisorItemLinkLabel advisorLinkLabel1 = new AdvisorItemLinkLabel();
@@ -126,18 +124,6 @@ namespace PrePoMax
             advisorLinkLabel1.AddAction(frmMain.CreateDefaultMesh);
             advisorLinkLabel1.IndentLevel = 0;
             advisorPage.Items.Add(advisorLinkLabel1);
-            //
-            AdvisorItemLinkLabel advisorLinkLabel2 = new AdvisorItemLinkLabel();
-            advisorLinkLabel2.Text = "2 Create user defined mesh";
-            advisorLinkLabel2.AddAction(frmMain.CreateUserDefinedMesh);
-            advisorLinkLabel2.IndentLevel = 0;
-            advisorPage.Items.Add(advisorLinkLabel2);
-            //
-            AdvisorItemLabel advisorLabel2 = new AdvisorItemLabel();
-            advisorLabel2.Text = "After the mesh is generated the size of the finite elements can be adjusted by repeating the step 2.";
-            advisorLabel2.Text += "\n\n";
-            advisorLabel2.Text += "Select Next to continue.";
-            advisorPage.Items.Add(advisorLabel2);
             //
             return advisorPage;
         }

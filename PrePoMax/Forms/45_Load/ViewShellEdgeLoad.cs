@@ -27,12 +27,19 @@ namespace PrePoMax
         [Id(3, 2)]
         public string SurfaceName { get { return _shellEdgeLoad.SurfaceName; } set {_shellEdgeLoad.SurfaceName = value;} }
         //
-        [CategoryAttribute("Magnitude")]
-        [OrderedDisplayName(0, 10, "Edge load")]
-        [DescriptionAttribute("Value of the edge load.")]
+        [CategoryAttribute("Edge load magnitude")]
+        [OrderedDisplayName(0, 10, "Magnitude")]
+        [DescriptionAttribute("Magnitude of the edge load.")]
         [TypeConverter(typeof(StringForcePerLenghtConverter))]
         [Id(1, 3)]
         public double Magnitude { get { return _shellEdgeLoad.Magnitude; } set { _shellEdgeLoad.Magnitude = value; } }
+        //
+        [CategoryAttribute("Edge load phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Phase of the edge load.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 4)]
+        public double Phase { get { return _shellEdgeLoad.PhaseDeg; } set { _shellEdgeLoad.PhaseDeg = value; } }
         //
         public override string AmplitudeName
         {
@@ -53,6 +60,8 @@ namespace PrePoMax
             //
             SetBase(_shellEdgeLoad, regionTypePropertyNamePairs);
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(_shellEdgeLoad.Complex);
         }
 
 

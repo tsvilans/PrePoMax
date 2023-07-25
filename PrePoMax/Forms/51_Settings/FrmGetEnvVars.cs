@@ -88,7 +88,7 @@ namespace PrePoMax.Forms
             int  rowId = 1;
             foreach (DataGridViewRow row in dgvEnvironmentVariables.Rows)
             {
-                if (rowId == dgvEnvironmentVariables.Rows.Count) continue; // shkip the last row
+                if (rowId == dgvEnvironmentVariables.Rows.Count) continue; // skip the last row
 
                 if (row.Cells[0].Value == null || row.Cells[0].Value.ToString().Trim() == "" || row.Cells[1].Value == null || row.Cells[1].Value.ToString().Trim() == "")
                     throw new CaeException("Row " + rowId.ToString() + " contains empty data. Add missing data or delete entire row.");

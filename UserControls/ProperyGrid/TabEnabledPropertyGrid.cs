@@ -12,6 +12,7 @@ namespace UserControls
     public class TabEnabledPropertyGrid : PropertyGrid
     {
         // Variables                                                                                                                
+        private bool _tabInitialized;
         private bool _readOnly;
 
 
@@ -20,30 +21,17 @@ namespace UserControls
 
 
         // Constructors                                                                                                             
-        public TabEnabledPropertyGrid() : base() 
+        public TabEnabledPropertyGrid() : base()
         {
             this.LineColor = System.Drawing.SystemColors.Control;
             this.DisabledItemForeColor = System.Drawing.Color.FromArgb(80, 80, 80);
             //
+            _tabInitialized = false;
             _readOnly = false;
             //
-            Site = new MySite(this);
+            //Site = new MySite(this); moved to OnSelectedObjectsChanged
         }
         //
-        public void SetParent(Form form)
-        {
-            // Catch null arguments
-            if (form == null)
-            {
-                throw new ArgumentNullException("form");
-            }
-
-            // Set this property to intercept all events
-            form.KeyPreview = true;
-
-            // Listen for keydown event
-            form.KeyDown += new KeyEventHandler(this.Form_KeyDown);
-        }
         public void SetLabelColumnWidth(double labelRatio)
         {
             // get the grid view
@@ -100,13 +88,13 @@ namespace UserControls
             // Get position of selected griditem in collection
             int index = gridItems.IndexOf(gridItem);
 
-            int nextIndex = index + 1;  
-            if (nextIndex >= gridItems.Count) 
+            int nextIndex = index + 1;
+            if (nextIndex >= gridItems.Count)
             {
                 //this.SelectedGridItem = gridItems[0];
                 e.Handled = false;
                 e.SuppressKeyPress = false;
-                return; 
+                return;
             }
             // Select next griditem in collection
             this.SelectedGridItem = gridItems[nextIndex];
@@ -138,6 +126,29 @@ namespace UserControls
             }
         }
         // Overrides
+        protected override void OnSelectedObjectsChanged(EventArgs e)
+        {
+            // Site
+            if (Site == null) Site = new MySite(this);
+            // For the Tab key to work set the key event handlers
+            Control parent = this.Parent;
+            while (!_tabInitialized && parent != null)
+            {
+                if (parent is Form frm)
+                {
+                    // Set this property to intercept all events
+                    frm.KeyPreview = true;
+                    // Listen for keydown event
+                    frm.KeyDown += new KeyEventHandler(this.Form_KeyDown);
+                    //
+                    _tabInitialized = true;
+                }
+                //
+                parent = parent.Parent;
+            }
+            //
+            base.OnSelectedObjectsChanged(e);
+        }
         protected override void OnGotFocus(EventArgs e)
         {
             //System.Diagnostics.Debug.WriteLine(DateTime.Now.Millisecond + " OnGotFocus");
@@ -156,7 +167,7 @@ namespace UserControls
 
             ////this.SelectedGridItem = gridItems[0];
             //this.SelectedGridItem = gridItem;
-            
+
             ////SendKeys.Send("{Tab}");
 
             base.OnGotFocus(e);
@@ -176,7 +187,7 @@ namespace UserControls
             List<GridItem> gridItems = new List<GridItem>();
             this.FindItems(root, gridItems);
             //
-            this.SelectedGridItem = gridItems[0];
+            if (gridItems[0].Expanded) this.SelectedGridItem = gridItems[0];
             //
             base.OnEnter(e);
         }
@@ -199,8 +210,11 @@ namespace UserControls
         private void InitializeComponent()
         {
             this.SuspendLayout();
+            // 
+            // TabEnabledPropertyGrid
+            // 
             this.ResumeLayout(false);
         }
-        
     }
+       
 }

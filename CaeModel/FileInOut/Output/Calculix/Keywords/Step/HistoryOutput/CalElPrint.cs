@@ -28,12 +28,11 @@ namespace FileInOut.Output.Calculix
         // Methods                                                                                                                  
         public override string GetKeywordString()
         {
-            string frequency = _elementHistoryOutput.Frequency > 1 ? ", Frequency=" + _elementHistoryOutput.Frequency : "";
             string regionName = ", Elset=" + _elementHistoryOutput.RegionName;
             string totals = "";
             if (_elementHistoryOutput.TotalsType == TotalsTypeEnum.Yes) totals = ", Totals=Yes";
             else if (_elementHistoryOutput.TotalsType == TotalsTypeEnum.Only) totals = ", Totals=Only";
-            return string.Format("*El print{0}{1}{2}{3}", frequency, regionName, totals, Environment.NewLine);
+            return string.Format("*El print{0}{1}{2}", regionName, totals, Environment.NewLine);
         }
         public override string GetDataString()
         {

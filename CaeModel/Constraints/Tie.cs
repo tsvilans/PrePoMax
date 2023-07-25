@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using CaeMesh;
 using CaeGlobals;
 using System.Runtime.Serialization;
+using System.Runtime.Remoting.Contexts;
+using System.Text.RegularExpressions;
 
 
 namespace CaeModel
 {
     [Serializable]
-    public class Tie : Constraint, ISerializable
+    public class Tie : Constraint, ISerializable // ISerializable must be here
     {
         // Variables                                                                                                                
         private static string _positive = "The value must be larger than 0.";
@@ -24,7 +26,10 @@ namespace CaeModel
         public double PositionTolerance
         {
             get { return _positionTolerance; }
-            set { if (double.IsNaN(value) || value > 0) _positionTolerance = value; else throw new CaeException(_positive); }
+            set
+            {
+                if (double.IsNaN(value) || value > 0) _positionTolerance = value; else throw new CaeException(_positive);
+            }
         }
         public bool Adjust { get { return _adjust; } set { _adjust = value; } }       
 
@@ -42,7 +47,7 @@ namespace CaeModel
             if (masterRegionType == RegionTypeEnum.SurfaceName && slaveRegionType == RegionTypeEnum.SurfaceName &&
                 slaveSurfaceName == masterSurfaceName) throw new CaeException("Master and slave surface names must be different.");
             //
-            PositionTolerance = positionTolerance;
+            _positionTolerance = positionTolerance;
             _adjust = adjust;
         }
         public Tie(SerializationInfo info, StreamingContext context)
@@ -94,6 +99,7 @@ namespace CaeModel
             MasterCreationData = SlaveCreationData;
             SlaveCreationData = tmpCreationData;
         }
+        
         
         // ISerialization
         public new void GetObjectData(SerializationInfo info, StreamingContext context)

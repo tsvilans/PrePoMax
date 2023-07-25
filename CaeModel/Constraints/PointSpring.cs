@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace CaeModel
 {
     [Serializable]
-    public class PointSpring : SpringConstraint, ISerializable
+    public class PointSpring : SpringConstraint, ISerializable // ISerializable must be here
     {
         // Variables                                                                                                                
         private int _nodeId;                  //ISerializable

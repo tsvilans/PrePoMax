@@ -100,11 +100,20 @@ namespace PrePoMax.Forms
         }
         //
         [Category("Slip wear model")]
-        [OrderedDisplayName(3, 10, "BDM remeshing")]
+        [OrderedDisplayName(3, 10, "Wear smoothing steps")]
+        [Description("Set the number of slip wear smoothing steps using the node averaging method.")]
+        [Id(4, 3)]
+        public int NumOfSmoothingLoops
+        {
+            get { return _modelProperties.NumOfSmoothingSteps; }
+            set { _modelProperties.NumOfSmoothingSteps = value; }
+        }
+        [Category("Slip wear model")]
+        [OrderedDisplayName(4, 10, "BDM remeshing")]
         [Description("Use boundary displacement method (BDM) for remeshing due to the applied surface wear displacements " +
                      "after each wear cycle. Boundary displacement step must be used to define fixed model regions to prevent all " +
                      "rigid body motions.")]
-        [Id(4, 3)]
+        [Id(5, 3)]
         public bool BdmRemeshing { get { return _modelProperties.BdmRemeshing; } set { _modelProperties.BdmRemeshing = value; } }
         // Physical constants
         [Category("Physical constants")]
@@ -181,6 +190,7 @@ namespace PrePoMax.Forms
             _dctd.GetProperty(nameof(SlipWearResults)).SetIsBrowsable(slipWearModel);
             _dctd.GetProperty(nameof(NumberOfCycles)).SetIsBrowsable(slipWearModel);
             _dctd.GetProperty(nameof(CyclesIncrement)).SetIsBrowsable(slipWearModel);
+            _dctd.GetProperty(nameof(NumOfSmoothingLoops)).SetIsBrowsable(slipWearModel);
             _dctd.GetProperty(nameof(BdmRemeshing)).SetIsBrowsable(slipWearModel);
         }
 

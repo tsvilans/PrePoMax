@@ -88,8 +88,8 @@ namespace UserControls
             }
         }
 
-        // Methods                                                                                                                  
 
+        // Methods                                                                                                                  
         private void TryConvertText()
         {
             try

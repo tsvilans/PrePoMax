@@ -75,6 +75,13 @@ namespace PrePoMax
             }
         }
         //
+        [CategoryAttribute("Gravity phase")]
+        [OrderedDisplayName(0, 10, "Phase")]
+        [DescriptionAttribute("Value of the gravity load phase.")]
+        [TypeConverter(typeof(StringAngleDegConverter))]
+        [Id(1, 5)]
+        public double Phase { get { return _gLoad.PhaseDeg; } set { _gLoad.PhaseDeg = value; } }
+        ////
         public override string AmplitudeName { get { return _gLoad.AmplitudeName; } set { _gLoad.AmplitudeName = value; } }
         public override System.Drawing.Color Color { get { return _gLoad.Color; } set { _gLoad.Color = value; } }
 
@@ -94,6 +101,8 @@ namespace PrePoMax
             DynamicCustomTypeDescriptor = ProviderInstaller.Install(this);
             //
             DynamicCustomTypeDescriptor.GetProperty(nameof(F3)).SetIsBrowsable(!gLoad.TwoD);
+            // Phase
+            DynamicCustomTypeDescriptor.GetProperty(nameof(Phase)).SetIsBrowsable(gLoad.Complex);
         }
 
 

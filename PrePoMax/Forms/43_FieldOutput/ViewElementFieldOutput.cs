@@ -19,32 +19,34 @@ namespace PrePoMax
         // Must start at 1 for the UI to work
         [StandardValue("S", Description = "Stresses.")]
         S = 1,
+        [StandardValue("PHS", Description = "Stresses magnitude and phase.")]
+        PHS = 2,
         //
         [StandardValue("E", Description = "Total strains.")]
-        E = 2,
+        E = 4,
         //
         [StandardValue("ME", Description = "Mechanical strains.")]
-        ME = 4,
+        ME = 8,
         //
         [StandardValue("PEEQ", Description = "Equivalent plastic strain.")]
-        PEEQ = 8,
+        PEEQ = 16,
         //
         [StandardValue("ENER", Description = "Energy density.")]
-        ENER = 16,
+        ENER = 32,
         // Thermal
         [StandardValue("HFL", Description = "Heat flux.")]
-        HFL = 32,
+        HFL = 64,
         // Error
         [StandardValue("ERR", Description = "Extrapolation error estimator for stress calculations. " +
                                             "ERR and ZZS are mutually exclusive.")]
-        ERR = 64,
+        ERR = 128,
         //
         [StandardValue("HER", Description = "Extrapolation error estimator for heat calculations. " +
                                             "HER and ZZS are mutually exclusive.")]
-        HER = 128,
+        HER = 256,
         //
         [StandardValue("ZZS", Description = "Zienkiewicz-Zhu improved stress. ERR and ZZS are mutually exclusive.")]
-        ZZS = 256
+        ZZS = 512
     }
 
     [Serializable]
@@ -56,7 +58,6 @@ namespace PrePoMax
 
         // Properties                                                                                                               
         public override string Name { get { return _fieldOutput.Name; } set { _fieldOutput.Name = value; } }
-        public override int Frequency { get { return _fieldOutput.Frequency; } set { _fieldOutput.Frequency = value; } }
         public override bool LastIterations
         {
             get { return _fieldOutput.LastIterations; }
@@ -115,6 +116,8 @@ namespace PrePoMax
             //
             _dctd.RenameBooleanPropertyToOnOff(nameof(LastIterations));
             _dctd.RenameBooleanPropertyToOnOff(nameof(ContactElements));
+            //
+            StringIntegerDefaultConverter.SetInitialValue = 1;
         }
 
 

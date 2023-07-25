@@ -60,7 +60,7 @@ namespace PrePoMax.Forms
             CheckName(_elementSetToEditName, _viewElementSet.Name, _elementSetNames, "element set");
             //
             if (ElementSet.Labels == null || ElementSet.Labels.Length <= 0)
-                throw new CaeException("The element set must contain at least one item.");
+                throw new CaeException("The element set selection must contain at least one item.");
             //
             if (_elementSetToEditName == null)
             {
@@ -153,7 +153,7 @@ namespace PrePoMax.Forms
         // Methods                                                                                                                  
         private string GetElementSetName()
         {
-            return _elementSetNames.GetNextNumberedKey("Element_set");
+            return _elementSetNames.GetNextNumberedKey("Element_Set");
         }
         private void HighlightElementSet()
         {

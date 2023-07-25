@@ -43,11 +43,10 @@ namespace FileInOut.Output.Calculix
         // Methods                                                                                                                  
         public override string GetKeywordString()
         {
-            string frequency = _nodalHistoryOutput.Frequency > 1 ? ", Frequency=" + _nodalHistoryOutput.Frequency : "";
             string totals = "";
             if (_nodalHistoryOutput.TotalsType == TotalsTypeEnum.Yes) totals = ", Totals=Yes";
             else if (_nodalHistoryOutput.TotalsType == TotalsTypeEnum.Only) totals = ", Totals=Only";
-            return string.Format("*Node print{0}{1}{2}{3}", frequency, _regionName, totals, Environment.NewLine);
+            return string.Format("*Node print{0}{1}{2}", _regionName, totals, Environment.NewLine);
         }
         public override string GetDataString()
         {

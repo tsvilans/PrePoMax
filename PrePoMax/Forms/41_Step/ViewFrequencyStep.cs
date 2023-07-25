@@ -13,28 +13,53 @@ namespace PrePoMax
     public class ViewFrequencyStep : ViewStep
     {
         // Variables                                                                                                                
-        private CaeModel.FrequencyStep _frequencystep;
+        private CaeModel.FrequencyStep _frequencyStep;
 
 
         // Properties                                                                                                               
         [CategoryAttribute("Data")]
         [OrderedDisplayName(4, 10, "Perturbation")]
         [DescriptionAttribute("Perturbation parameter set to On applies preloads from the previous step if it exists.")]
-        public bool Perturbation { get { return _frequencystep.Perturbation; } set { _frequencystep.Perturbation = value; } }
+        [Id(5, 1)]
+        public bool Perturbation { get { return _frequencyStep.Perturbation; } set { _frequencyStep.Perturbation = value; } }
         //
         [CategoryAttribute("Data")]
         [OrderedDisplayName(5, 10, "Storage")]
         [DescriptionAttribute("Store eigenvalues, eigenmodes, mass and stiffness matrix in a binary form in file jobname.eig " +
                               "for further use.")]
-        public bool Storage { get { return _frequencystep.Storage; } set { _frequencystep.Storage = value; } }
+        [Id(6, 1)]
+        public bool Storage { get { return _frequencyStep.Storage; } set { _frequencyStep.Storage = value; } }
         //
         [CategoryAttribute("Data")]
         [OrderedDisplayName(6, 10, "Number of frequencies")]
         [DescriptionAttribute("Number of eigenfrequencies to compute.")]
+        [Id(7, 1)]
         public int NumOfFrequencies
         {
-            get { return _frequencystep.NumOfFrequencies; }
-            set { _frequencystep.NumOfFrequencies = value; }
+            get { return _frequencyStep.NumOfFrequencies; }
+            set { _frequencyStep.NumOfFrequencies = value; }
+        }
+        //
+        [CategoryAttribute("Data")]
+        [OrderedDisplayName(7, 10, "Lower frequency bound")]
+        [DescriptionAttribute("Lower bound of the frequency range.")]
+        [TypeConverter(typeof(StringFrequencyDefaultConverter))]
+        [Id(8, 1)]
+        public double LowestFrequency
+        {
+            get { return _frequencyStep.LowerFrequency; }
+            set { _frequencyStep.LowerFrequency = value; }
+        }
+        //
+        [CategoryAttribute("Data")]
+        [OrderedDisplayName(8, 10, "Upper frequency bound")]
+        [DescriptionAttribute("Upper bound of the frequency range.")]
+        [TypeConverter(typeof(StringFrequencyDefaultConverter))]
+        [Id(9, 1)]
+        public double UpperFrequency
+        {
+            get { return _frequencyStep.UpperFrequency; }
+            set { _frequencyStep.UpperFrequency = value; }
         }
 
 
@@ -42,7 +67,7 @@ namespace PrePoMax
         public ViewFrequencyStep(CaeModel.FrequencyStep step, bool installProvider = true)
             : base(step)
         {
-            _frequencystep = step;
+            _frequencyStep = step;
             //
             if (installProvider)
             {
@@ -55,7 +80,7 @@ namespace PrePoMax
         // Methods
         public override CaeModel.Step GetBase()
         {
-            return _frequencystep;
+            return _frequencyStep;
         }
         public override void InstallProvider()
         {
