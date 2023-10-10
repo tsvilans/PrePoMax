@@ -18,7 +18,8 @@ namespace CaeMesh
         public double YY;
         public double YZ;
 
-        // Constructors                                                                                                             
+        // Constructors
+
         public FeMaterialOrientation(int id, double xx, double xy, double xz, double yx, double yy, double yz)
         {
             Id = id;
@@ -38,13 +39,26 @@ namespace CaeMesh
         {
         }
 
+        public static FeMaterialOrientation Default
+        {
+            get
+            {
+                return new FeMaterialOrientation(-1, new double[] { 1, 0, 0 }, new double[] { 0, 1, 0 });
+            }
+        }
 
-        // Methods                                                                                                                  
+        // Methods
         public void SetX(double x, double y, double z)
         {
             XX = x;
             XY = y;
             XZ = z;
+        }
+        public void SetY(double x, double y, double z)
+        {
+            YX = x;
+            YY = y;
+            YZ = z;
         }
         public double[] XAxis
         {
