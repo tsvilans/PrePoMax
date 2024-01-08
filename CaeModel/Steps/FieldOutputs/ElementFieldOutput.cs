@@ -42,19 +42,22 @@ namespace CaeModel
         // Variables                                                                                                                
         private ElementFieldOutputOutputEnum _output;
         private ElementFieldVariable _variables;
+        private bool _binary;
 
 
         // Properties                                                                                                               
         public ElementFieldOutputOutputEnum Output { get { return _output; } set { _output = value; } }
         public ElementFieldVariable Variables { get { return _variables; } set { _variables = value; } }
+        public bool Binary { get { return _binary; } set { _binary = value; } }
 
 
         // Constructors                                                                                                             
-        public ElementFieldOutput(string name, ElementFieldVariable variables)
+        public ElementFieldOutput(string name, ElementFieldVariable variables, bool binary = false)
             : base(name) 
         {
             _variables |= variables;
             _output = ElementFieldOutputOutputEnum.Default;
+            _binary = binary;
         }
 
 

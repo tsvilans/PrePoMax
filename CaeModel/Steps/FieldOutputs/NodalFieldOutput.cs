@@ -27,18 +27,22 @@ namespace CaeModel
     public class NodalFieldOutput : FieldOutput
     {
         // Variables                                                                                                                
-        private NodalFieldVariable _variables;        
+        private NodalFieldVariable _variables;
+        private bool _binary;
 
 
         // Properties                                                                                                               
         public NodalFieldVariable Variables { get { return _variables; } set { _variables = value; } }
+        public bool Binary { get { return _binary; } set { _binary = value; } }
 
 
         // Constructors                                                                                                             
-        public NodalFieldOutput(string name, NodalFieldVariable variables)
+        public NodalFieldOutput(string name, NodalFieldVariable variables, bool binary = false)
             : base(name) 
         {
             _variables |= variables;
+            _binary = binary;
+
         }
 
 

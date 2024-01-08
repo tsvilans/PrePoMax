@@ -9,6 +9,7 @@ using System.IO;
 using FileInOut.Output.Calculix;
 using CaeGlobals;
 using Microsoft.SqlServer.Server;
+using static System.Net.WebRequestMethods;
 
 namespace FileInOut.Output
 {
@@ -25,7 +26,7 @@ namespace FileInOut.Output
             {
                 WriteKeywordRecursively(sb, keyword);
             }
-            File.WriteAllText(fileName, sb.ToString());
+            System.IO.File.WriteAllText(fileName, sb.ToString());
         }
         static public void WriteMaterials(string fileName, FeModel model, string[] materialNames)
         {
@@ -44,7 +45,7 @@ namespace FileInOut.Output
             {
                 WriteKeywordRecursively(sb, keyword);
             }
-            File.WriteAllText(fileName, sb.ToString());
+            System.IO.File.WriteAllText(fileName, sb.ToString());
         }
         //
         static public List<CalculixKeyword> GetAllKeywords(FeModel model, Dictionary<int, double[]> deformations = null)
@@ -575,15 +576,19 @@ namespace FileInOut.Output
             if (model.Mesh != null)
             {
                 CalDistribution distribution;
-                foreach (var entry in model.Mesh.Distributions)
+                if (model.Mesh.Distributions != null)
                 {
-                    distribution = new CalDistribution(entry.Value, model);
-                    parent.AddKeyword(distribution);
+                    foreach (var entry in model.Mesh.Distributions)
+                    {
+                        distribution = new CalDistribution(entry.Value, model);
+                        parent.AddKeyword(distribution);
+                    }
                 }
 
                 if (additionalDistributions != null)
                     foreach (var additionalDistribution in additionalDistributions)
                         parent.AddKeyword(additionalDistribution);
+
             }
         }
 
@@ -592,10 +597,13 @@ namespace FileInOut.Output
             if (model.Mesh != null)
             {
                 CalOrientation orientation;
-                foreach(var entry in model.Mesh.Orientations)
+                if (model.Mesh.Orientations != null)
                 {
-                    orientation = new CalOrientation(entry.Value);
-                    parent.AddKeyword(orientation);
+                    foreach (var entry in model.Mesh.Orientations)
+                    {
+                        orientation = new CalOrientation(entry.Value);
+                        parent.AddKeyword(orientation);
+                    }
                 }
 
                 if (additionalOrientations != null)
@@ -1275,13 +1283,29 @@ namespace FileInOut.Output
         {
             if (fieldOutput is NodalFieldOutput nfo)
             {
-                CalNodeFile nodeFile = new CalNodeFile(nfo);
-                parent.AddKeyword(nodeFile);
+                if (nfo.Binary)
+                {
+                    CalNodeOutput nodeFile = new CalNodeOutput(nfo);
+                    parent.AddKeyword(nodeFile);
+                }
+                else
+                {
+                    CalNodeFile nodeFile = new CalNodeFile(nfo);
+                    parent.AddKeyword(nodeFile);
+                }
             }
             else if (fieldOutput is ElementFieldOutput efo)
             {
-                CalElFile elFile = new CalElFile(efo);
-                parent.AddKeyword(elFile);
+                if (efo.Binary)
+                {
+                    CalElOutput elFile = new CalElOutput(efo);
+                    parent.AddKeyword(elFile);
+                }
+                else
+                {
+                    CalElFile elFile = new CalElFile(efo);
+                    parent.AddKeyword(elFile);
+                }
             }
             else if (fieldOutput is ContactFieldOutput cfo)
             {

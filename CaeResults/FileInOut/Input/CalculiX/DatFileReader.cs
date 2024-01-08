@@ -1178,6 +1178,7 @@ namespace CaeResults
                             //
                             for (int i = 0; i < values[0].Length; i++)
                             {
+                                // Calculate Von Mises values
                                 vmArray[i] = Math.Sqrt(0.5 * (
                                                               Math.Pow(values[0][i] - values[1][i], 2)
                                                             + Math.Pow(values[1][i] - values[2][i], 2)

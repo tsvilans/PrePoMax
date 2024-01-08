@@ -109,6 +109,8 @@
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\BC\CalFixedBC.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\BC\CalSubmodelBC.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\FieldOutput\CalContactFile.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\FieldOutput\CalElOutput.cs" />
+    <Compile Include="FileInOut\Output\Calculix\Keywords\Step\FieldOutput\CalNodeOutput.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\HistoryOutput\CalContactPrint.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\HistoryOutput\CalElPrint.cs" />
     <Compile Include="FileInOut\Output\Calculix\Keywords\Step\HistoryOutput\CalNodePrint.cs" />

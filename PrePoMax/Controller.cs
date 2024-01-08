@@ -10294,6 +10294,8 @@ namespace PrePoMax
                 int num = _model.CalculixUserKeywords.Count;
                 _model.RemoveLostUserKeywords(_form.SetNumberOfModelUserKeywords);
                 int delta = num - _model.CalculixUserKeywords.Count;
+                
+                
                 if (delta > 0) MessageBoxes.ShowWarning("Number of removed CalculiX user keywords: " + delta + ".");
             }
             // Tuple<NamedClass, string>   ...   Tuple<invalidItem, stepName>
